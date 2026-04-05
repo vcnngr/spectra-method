@@ -9,7 +9,7 @@
 <h1 align="center">S P E C T R A</h1>
 
 <p align="center">
-  <strong>Security Protocol Engineering for Cyber Threat Response & Assessment</strong>
+  <strong><em>S</em>ecurity <em>P</em>rotocol <em>E</em>ngineering for <em>C</em>yber <em>T</em>hreat <em>R</em>esponse & <em>A</em>ssessment</strong>
 </p>
 
 <p align="center">
