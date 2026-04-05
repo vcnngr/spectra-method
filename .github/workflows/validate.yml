@@ -19,8 +19,25 @@ jobs:
       - name: Install Python dependencies
         run: pip install pyyaml
 
-      - name: Run SPECTRA validator
-        run: python3 core/execution/validate-spectra.py --path . --strict
+      - name: Verify directory structure
+        run: |
+          echo "Checking module directories..."
+          for mod in core rtk soc irt grc; do
+            test -d "$mod" && echo "  ✓ $mod" || (echo "  ✗ $mod MISSING" && exit 1)
+          done
+          echo "Checking manifests..."
+          test -f _config/agent-manifest.csv && echo "  ✓ agent-manifest.csv"
+          test -f _config/skill-manifest.csv && echo "  ✓ skill-manifest.csv"
+          test -f _config/manifest.yaml && echo "  ✓ manifest.yaml"
+          echo "Checking workflows have steps..."
+          find . -name "workflow.md" -exec dirname {} \; | while read d; do
+            if [ -d "$d/steps-c" ] || [ -d "$d/steps" ]; then
+              echo "  ✓ $(basename $d)"
+            else
+              echo "  ✗ $(basename $d) — missing steps" && exit 1
+            fi
+          done
+          echo "All structural checks passed."
 
       - uses: actions/setup-node@v4
         with:

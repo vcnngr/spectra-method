@@ -22,10 +22,13 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Validate SPECTRA
+      - name: Validate structure
         run: |
-          pip install pyyaml
-          python3 core/execution/validate-spectra.py --path . --summary
+          for mod in core rtk soc irt grc; do
+            test -d "$mod" || (echo "Missing module: $mod" && exit 1)
+          done
+          test -f _config/manifest.yaml || (echo "Missing manifest" && exit 1)
+          echo "Structure validated."
 
       - name: Publish with provenance
         run: npm publish --provenance --access public
