@@ -7,6 +7,10 @@
     "spectra": "./cli/spectra-cli.js"
   },
   "main": "./cli/spectra-cli.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vcnngr/spectra-method"
+  },
   "scripts": {
     "validate": "python3 core/execution/validate-spectra.py --path .",
     "test": "python3 core/execution/validate-spectra.py --path . --strict"
