@@ -1,0 +1,1072 @@
+{
+  "framework": "MITRE ATT&CK Enterprise",
+  "version": "15.1",
+  "generated": "2026-04-05",
+  "note": "Curated high-value subset — 98 techniques across all 14 tactics for SPECTRA workflows",
+  "tactics": [
+    {
+      "id": "TA0043",
+      "name": "Reconnaissance",
+      "techniques": [
+        {
+          "id": "T1595",
+          "name": "Active Scanning",
+          "sub_techniques": ["T1595.001", "T1595.002", "T1595.003"],
+          "platforms": ["PRE"],
+          "description": "Adversaries may execute active reconnaissance scans to gather information that can be used during targeting. Active scans involve probing victim infrastructure directly.",
+          "data_sources": ["Network Traffic: Network Traffic Flow", "Network Traffic: Network Traffic Content"],
+          "detection": "Monitor for suspicious network traffic that could indicate scanning activity such as large volumes of requests to varying ports or unusual protocol usage.",
+          "kill_chain_phase": "reconnaissance"
+        },
+        {
+          "id": "T1589",
+          "name": "Gather Victim Identity Information",
+          "sub_techniques": ["T1589.001", "T1589.002", "T1589.003"],
+          "platforms": ["PRE"],
+          "description": "Adversaries may gather information about the victim's identity that can be used during targeting, including credentials, email addresses, and employee names.",
+          "data_sources": [],
+          "detection": "Monitor for suspicious attempts to gather employee information through social engineering or data breaches exposed on dark web forums.",
+          "kill_chain_phase": "reconnaissance"
+        },
+        {
+          "id": "T1590",
+          "name": "Gather Victim Network Information",
+          "sub_techniques": ["T1590.001", "T1590.002", "T1590.003", "T1590.004", "T1590.005", "T1590.006"],
+          "platforms": ["PRE"],
+          "description": "Adversaries may gather information about the victim's networks that can be used during targeting, including domain properties, DNS, network topology, and IP addresses.",
+          "data_sources": [],
+          "detection": "Monitor for indicators of network reconnaissance such as DNS enumeration, WHOIS lookups, and BGP route analysis targeting organizational assets.",
+          "kill_chain_phase": "reconnaissance"
+        },
+        {
+          "id": "T1591",
+          "name": "Gather Victim Org Information",
+          "sub_techniques": ["T1591.001", "T1591.002", "T1591.003", "T1591.004"],
+          "platforms": ["PRE"],
+          "description": "Adversaries may gather information about the victim's organization, including business relationships, physical locations, and organizational structure.",
+          "data_sources": [],
+          "detection": "Monitor for scraping of organizational websites, job postings, social media profiles, and public filings that may reveal internal structure or technology stacks.",
+          "kill_chain_phase": "reconnaissance"
+        },
+        {
+          "id": "T1598",
+          "name": "Phishing for Information",
+          "sub_techniques": ["T1598.001", "T1598.002", "T1598.003"],
+          "platforms": ["PRE"],
+          "description": "Adversaries may send phishing messages to elicit sensitive information that can be used during targeting, rather than to deliver malware or gain direct access.",
+          "data_sources": ["Application Log: Application Log Content", "Network Traffic: Network Traffic Content", "Network Traffic: Network Traffic Flow"],
+          "detection": "Monitor for inbound emails with social engineering indicators requesting sensitive information, credential harvesting links, or replies containing internal data.",
+          "kill_chain_phase": "reconnaissance"
+        }
+      ]
+    },
+    {
+      "id": "TA0042",
+      "name": "Resource Development",
+      "techniques": [
+        {
+          "id": "T1583",
+          "name": "Acquire Infrastructure",
+          "sub_techniques": ["T1583.001", "T1583.003", "T1583.004", "T1583.006", "T1583.008"],
+          "platforms": ["PRE"],
+          "description": "Adversaries may buy, lease, or rent infrastructure that can be used during targeting. This includes domains, DNS servers, VPS, and web services.",
+          "data_sources": ["Domain Name: Active DNS", "Domain Name: Domain Registration", "Internet Scan: Response Content"],
+          "detection": "Monitor for newly registered domains or infrastructure that may be associated with known adversary patterns or typosquatting of organizational assets.",
+          "kill_chain_phase": "resource_development"
+        },
+        {
+          "id": "T1588",
+          "name": "Obtain Capabilities",
+          "sub_techniques": ["T1588.001", "T1588.002", "T1588.003", "T1588.005", "T1588.006"],
+          "platforms": ["PRE"],
+          "description": "Adversaries may buy, steal, or download software tools and exploits that can be used during targeting, including malware, exploits, certificates, and vulnerabilities.",
+          "data_sources": ["Malware Repository: Malware Content", "Internet Scan: Response Content"],
+          "detection": "Monitor dark web marketplaces and exploit repositories for capabilities being acquired that target organizational technology stacks.",
+          "kill_chain_phase": "resource_development"
+        },
+        {
+          "id": "T1586",
+          "name": "Compromise Accounts",
+          "sub_techniques": ["T1586.001", "T1586.002", "T1586.003"],
+          "platforms": ["PRE"],
+          "description": "Adversaries may compromise accounts with services that can be used during targeting, such as social media, email, or cloud accounts to support operations.",
+          "data_sources": ["Network Traffic: Network Traffic Content", "Social Media: Social Media"],
+          "detection": "Monitor for compromised accounts being used in phishing campaigns, social engineering operations, or as infrastructure for adversary communications.",
+          "kill_chain_phase": "resource_development"
+        },
+        {
+          "id": "T1587",
+          "name": "Develop Capabilities",
+          "sub_techniques": ["T1587.001", "T1587.002", "T1587.003", "T1587.004"],
+          "platforms": ["PRE"],
+          "description": "Adversaries may build capabilities that can be used during targeting, including malware, exploits, self-signed certificates, and code-signing certificates.",
+          "data_sources": ["Internet Scan: Response Content", "Malware Repository: Malware Metadata"],
+          "detection": "Monitor for new malware samples, custom exploit code, and newly generated certificates that may be associated with adversary development activities.",
+          "kill_chain_phase": "resource_development"
+        }
+      ]
+    },
+    {
+      "id": "TA0001",
+      "name": "Initial Access",
+      "techniques": [
+        {
+          "id": "T1566",
+          "name": "Phishing",
+          "sub_techniques": ["T1566.001", "T1566.002", "T1566.003", "T1566.004"],
+          "platforms": ["Windows", "macOS", "Linux", "SaaS", "Office 365", "Google Workspace"],
+          "description": "Adversaries may send phishing messages to gain access to victim systems. This includes spearphishing attachments, links, via service, and spearphishing voice.",
+          "data_sources": ["Application Log: Application Log Content", "Network Traffic: Network Traffic Content", "Network Traffic: Network Traffic Flow"],
+          "detection": "Monitor for suspicious email attachments, links to credential harvesting sites, and unusual sender patterns or domain spoofing.",
+          "kill_chain_phase": "initial_access"
+        },
+        {
+          "id": "T1190",
+          "name": "Exploit Public-Facing Application",
+          "sub_techniques": [],
+          "platforms": ["Windows", "Linux", "macOS", "Containers", "IaaS", "Network", "SaaS"],
+          "description": "Adversaries may attempt to exploit vulnerabilities in internet-facing applications to gain initial access. Common targets include web servers, VPNs, and firewalls.",
+          "data_sources": ["Application Log: Application Log Content", "Network Traffic: Network Traffic Content"],
+          "detection": "Monitor application logs for abnormal input patterns, unexpected error codes, and known exploit signatures targeting web applications and network devices.",
+          "kill_chain_phase": "initial_access"
+        },
+        {
+          "id": "T1133",
+          "name": "External Remote Services",
+          "sub_techniques": [],
+          "platforms": ["Windows", "Linux", "macOS", "Containers", "IaaS"],
+          "description": "Adversaries may leverage external-facing remote services to initially access a network. Remote services such as VPNs, Citrix, and other access mechanisms allow users to connect from external locations.",
+          "data_sources": ["Application Log: Application Log Content", "Logon Session: Logon Session Creation", "Network Traffic: Network Traffic Flow"],
+          "detection": "Monitor for logon attempts to external remote services from unusual geographic locations, at unusual times, or using atypical client configurations.",
+          "kill_chain_phase": "initial_access"
+        },
+        {
+          "id": "T1078",
+          "name": "Valid Accounts",
+          "sub_techniques": ["T1078.001", "T1078.002", "T1078.003", "T1078.004"],
+          "platforms": ["Windows", "Linux", "macOS", "SaaS", "IaaS", "Azure AD", "Office 365", "Google Workspace", "Containers", "Network"],
+          "description": "Adversaries may obtain and abuse credentials of existing accounts to gain initial access, persistence, privilege escalation, or defense evasion.",
+          "data_sources": ["Logon Session: Logon Session Creation", "Logon Session: Logon Session Metadata", "User Account: User Account Authentication"],
+          "detection": "Monitor for logon events from unusual locations or devices, impossible travel scenarios, and usage of dormant or service accounts for interactive logons.",
+          "kill_chain_phase": "initial_access"
+        },
+        {
+          "id": "T1195",
+          "name": "Supply Chain Compromise",
+          "sub_techniques": ["T1195.001", "T1195.002", "T1195.003"],
+          "platforms": ["Windows", "Linux", "macOS"],
+          "description": "Adversaries may manipulate products or product delivery mechanisms prior to receipt by a final consumer to compromise data or systems.",
+          "data_sources": ["File: File Metadata"],
+          "detection": "Monitor for unexpected changes to software packages, verify hashes of downloaded software against known-good values, and track supply chain integrity.",
+          "kill_chain_phase": "initial_access"
+        },
+        {
+          "id": "T1199",
+          "name": "Trusted Relationship",
+          "sub_techniques": [],
+          "platforms": ["Windows", "Linux", "macOS", "SaaS", "IaaS", "Office 365"],
+          "description": "Adversaries may breach or leverage organizations who have access to intended victims through trusted third-party relationships such as IT service providers or contractors.",
+          "data_sources": ["Application Log: Application Log Content", "Logon Session: Logon Session Creation", "Network Traffic: Network Traffic Content"],
+          "detection": "Monitor for unusual activity from third-party provider accounts, connections from partner networks at odd hours, and escalation of third-party privileges.",
+          "kill_chain_phase": "initial_access"
+        },
+        {
+          "id": "T1189",
+          "name": "Drive-by Compromise",
+          "sub_techniques": [],
+          "platforms": ["Windows", "Linux", "macOS", "SaaS"],
+          "description": "Adversaries may gain access to a system through a user visiting a compromised website that exploits the user's browser or browser plugins.",
+          "data_sources": ["Application Log: Application Log Content", "File: File Creation", "Network Traffic: Network Connection Creation", "Network Traffic: Network Traffic Content", "Process: Process Creation"],
+          "detection": "Monitor for browser exploit indicators including unexpected child processes from browsers, abnormal plugin behavior, and connections to known watering hole domains.",
+          "kill_chain_phase": "initial_access"
+        },
+        {
+          "id": "T1091",
+          "name": "Replication Through Removable Media",
+          "sub_techniques": [],
+          "platforms": ["Windows"],
+          "description": "Adversaries may move onto systems by copying malware to removable media and exploiting Autorun features when the media is inserted into a system.",
+          "data_sources": ["Drive: Drive Creation", "File: File Access", "File: File Creation", "Process: Process Creation"],
+          "detection": "Monitor for file execution from removable media, new autorun configurations, and unexpected USB device connections in sensitive environments.",
+          "kill_chain_phase": "initial_access"
+        }
+      ]
+    },
+    {
+      "id": "TA0002",
+      "name": "Execution",
+      "techniques": [
+        {
+          "id": "T1059",
+          "name": "Command and Scripting Interpreter",
+          "sub_techniques": ["T1059.001", "T1059.003", "T1059.004", "T1059.005", "T1059.006", "T1059.007", "T1059.008", "T1059.009"],
+          "platforms": ["Windows", "macOS", "Linux"],
+          "description": "Adversaries may abuse command and script interpreters to execute commands, scripts, or binaries. Includes PowerShell, Windows Command Shell, Unix Shell, Python, VBScript, and JavaScript.",
+          "data_sources": ["Command: Command Execution", "Process: Process Creation", "Script: Script Execution", "Module: Module Load"],
+          "detection": "Monitor for abnormal process creation events, unusual command-line arguments, and script execution with obfuscation or encoding techniques.",
+          "kill_chain_phase": "execution"
+        },
+        {
+          "id": "T1204",
+          "name": "User Execution",
+          "sub_techniques": ["T1204.001", "T1204.002", "T1204.003"],
+          "platforms": ["Windows", "macOS", "Linux", "IaaS", "Containers"],
+          "description": "Adversaries may rely upon specific user actions to gain execution, such as opening a malicious file, clicking a link, or granting elevated permissions.",
+          "data_sources": ["File: File Creation", "Network Traffic: Network Traffic Content", "Process: Process Creation"],
+          "detection": "Monitor for processes spawned from user-facing applications such as email clients, browsers, or document editors that execute suspicious child processes.",
+          "kill_chain_phase": "execution"
+        },
+        {
+          "id": "T1047",
+          "name": "Windows Management Instrumentation",
+          "sub_techniques": [],
+          "platforms": ["Windows"],
+          "description": "Adversaries may abuse Windows Management Instrumentation (WMI) to execute malicious commands and payloads on local and remote systems.",
+          "data_sources": ["Command: Command Execution", "Network Traffic: Network Connection Creation", "Process: Process Creation", "WMI: WMI Creation"],
+          "detection": "Monitor for WMI process creation events (wmiprvse.exe spawning child processes), remote WMI connections, and suspicious WMI event subscriptions.",
+          "kill_chain_phase": "execution"
+        },
+        {
+          "id": "T1053",
+          "name": "Scheduled Task/Job",
+          "sub_techniques": ["T1053.002", "T1053.003", "T1053.005", "T1053.006", "T1053.007"],
+          "platforms": ["Windows", "Linux", "macOS", "Containers"],
+          "description": "Adversaries may abuse task scheduling to facilitate execution of malicious code. Includes Windows Task Scheduler, cron, at jobs, and systemd timers.",
+          "data_sources": ["Command: Command Execution", "File: File Creation", "Process: Process Creation", "Scheduled Job: Scheduled Job Creation"],
+          "detection": "Monitor for newly created scheduled tasks or cron jobs, especially those executing from unusual directories or with encoded/obfuscated command lines.",
+          "kill_chain_phase": "execution"
+        },
+        {
+          "id": "T1559",
+          "name": "Inter-Process Communication",
+          "sub_techniques": ["T1559.001", "T1559.002", "T1559.003"],
+          "platforms": ["Windows"],
+          "description": "Adversaries may abuse inter-process communication mechanisms to execute code. This includes Component Object Model (COM), Dynamic Data Exchange (DDE), and XPC Services.",
+          "data_sources": ["Module: Module Load", "Process: Process Access", "Process: Process Creation", "Script: Script Execution"],
+          "detection": "Monitor for unusual COM object creation, DDE protocol execution from Office applications, and unexpected inter-process communication patterns.",
+          "kill_chain_phase": "execution"
+        },
+        {
+          "id": "T1106",
+          "name": "Native API",
+          "sub_techniques": [],
+          "platforms": ["Windows", "macOS", "Linux"],
+          "description": "Adversaries may interact with the native OS application programming interface to execute behaviors, bypassing higher-level APIs and security monitoring.",
+          "data_sources": ["Process: OS API Execution", "Process: Process Creation"],
+          "detection": "Monitor for direct syscall usage, calls to undocumented NT API functions, and processes making native API calls that bypass standard Windows API layers.",
+          "kill_chain_phase": "execution"
+        },
+        {
+          "id": "T1569",
+          "name": "System Services",
+          "sub_techniques": ["T1569.001", "T1569.002"],
+          "platforms": ["Windows", "macOS", "Linux"],
+          "description": "Adversaries may abuse system services or daemons to execute commands or programs. Windows service execution and Launchctl are common methods.",
+          "data_sources": ["Command: Command Execution", "File: File Modification", "Process: Process Creation", "Service: Service Creation", "Windows Registry: Windows Registry Key Modification"],
+          "detection": "Monitor for service creation events, execution via sc.exe or launchctl, and services configured to execute from unusual paths or with suspicious binary paths.",
+          "kill_chain_phase": "execution"
+        },
+        {
+          "id": "T1203",
+          "name": "Exploitation for Client Execution",
+          "sub_techniques": [],
+          "platforms": ["Windows", "macOS", "Linux"],
+          "description": "Adversaries may exploit software vulnerabilities in client applications to execute code. Common targets include browsers, Office applications, and PDF readers.",
+          "data_sources": ["Process: Process Creation"],
+          "detection": "Monitor for client applications spawning unexpected child processes, abnormal memory operations, and processes exhibiting behavior inconsistent with normal application use.",
+          "kill_chain_phase": "execution"
+        }
+      ]
+    },
+    {
+      "id": "TA0003",
+      "name": "Persistence",
+      "techniques": [
+        {
+          "id": "T1547",
+          "name": "Boot or Logon Autostart Execution",
+          "sub_techniques": ["T1547.001", "T1547.004", "T1547.005", "T1547.009", "T1547.012", "T1547.014"],
+          "platforms": ["Windows", "macOS", "Linux"],
+          "description": "Adversaries may configure system settings to automatically execute a program during boot or logon to maintain persistence. Registry Run Keys are a common method on Windows.",
+          "data_sources": ["Command: Command Execution", "File: File Creation", "File: File Modification", "Windows Registry: Windows Registry Key Creation", "Windows Registry: Windows Registry Key Modification"],
+          "detection": "Monitor Registry Run/RunOnce key modifications, startup folder changes, and new entries in boot configuration that reference unknown executables.",
+          "kill_chain_phase": "persistence"
+        },
+        {
+          "id": "T1053",
+          "name": "Scheduled Task/Job",
+          "sub_techniques": ["T1053.002", "T1053.003", "T1053.005", "T1053.006", "T1053.007"],
+          "platforms": ["Windows", "Linux", "macOS", "Containers"],
+          "description": "Adversaries may abuse task scheduling functionality to facilitate recurring execution of malicious code. Includes Windows Task Scheduler, cron, and at jobs.",
+          "data_sources": ["Command: Command Execution", "File: File Creation", "Process: Process Creation", "Scheduled Job: Scheduled Job Creation"],
+          "detection": "Monitor for newly created scheduled tasks or cron jobs, especially those executing from unusual directories or with encoded/obfuscated command lines.",
+          "kill_chain_phase": "persistence"
+        },
+        {
+          "id": "T1543",
+          "name": "Create or Modify System Process",
+          "sub_techniques": ["T1543.001", "T1543.002", "T1543.003", "T1543.004"],
+          "platforms": ["Windows", "macOS", "Linux"],
+          "description": "Adversaries may create or modify system-level processes to repeatedly execute malicious payloads as part of persistence. Includes Windows services, systemd services, and Launch Daemons.",
+          "data_sources": ["Command: Command Execution", "File: File Creation", "File: File Modification", "Process: OS API Execution", "Process: Process Creation", "Service: Service Creation", "Service: Service Modification", "Windows Registry: Windows Registry Key Creation", "Windows Registry: Windows Registry Key Modification"],
+          "detection": "Monitor for new service installations, modifications to existing service binaries or configurations, and creation of Launch Daemon or systemd unit files.",
+          "kill_chain_phase": "persistence"
+        },
+        {
+          "id": "T1546",
+          "name": "Event Triggered Execution",
+          "sub_techniques": ["T1546.001", "T1546.002", "T1546.003", "T1546.004", "T1546.008", "T1546.011", "T1546.012", "T1546.013", "T1546.015", "T1546.016"],
+          "platforms": ["Windows", "macOS", "Linux"],
+          "description": "Adversaries may establish persistence using system mechanisms that trigger execution based on specific events, such as WMI event subscriptions, AppInit DLLs, or accessibility features.",
+          "data_sources": ["Command: Command Execution", "File: File Creation", "File: File Metadata", "File: File Modification", "Module: Module Load", "Process: Process Creation", "WMI: WMI Creation", "Windows Registry: Windows Registry Key Modification"],
+          "detection": "Monitor for WMI event subscriptions, changes to AppInit_DLLs registry keys, modification of accessibility feature binaries, and new shell profile entries.",
+          "kill_chain_phase": "persistence"
+        },
+        {
+          "id": "T1574",
+          "name": "Hijack Execution Flow",
+          "sub_techniques": ["T1574.001", "T1574.002", "T1574.004", "T1574.005", "T1574.006", "T1574.007", "T1574.008", "T1574.009", "T1574.011", "T1574.012", "T1574.013"],
+          "platforms": ["Windows", "macOS", "Linux"],
+          "description": "Adversaries may execute their own payloads by hijacking the way operating systems run programs, including DLL search order hijacking, DLL side-loading, and PATH interception.",
+          "data_sources": ["File: File Creation", "File: File Modification", "Module: Module Load", "Process: Process Creation", "Service: Service Creation", "Windows Registry: Windows Registry Key Modification"],
+          "detection": "Monitor for DLLs loaded from unusual locations, unexpected modifications to system PATH, and binaries placed in directories that precede legitimate search paths.",
+          "kill_chain_phase": "persistence"
+        },
+        {
+          "id": "T1136",
+          "name": "Create Account",
+          "sub_techniques": ["T1136.001", "T1136.002", "T1136.003"],
+          "platforms": ["Windows", "Linux", "macOS", "IaaS", "SaaS", "Azure AD", "Office 365", "Google Workspace"],
+          "description": "Adversaries may create new accounts to maintain access to victim systems. This includes local accounts, domain accounts, and cloud accounts.",
+          "data_sources": ["Process: Process Creation", "User Account: User Account Creation"],
+          "detection": "Monitor for new account creation events, especially those created by non-administrative users, accounts with elevated privileges, or accounts created outside normal provisioning workflows.",
+          "kill_chain_phase": "persistence"
+        },
+        {
+          "id": "T1098",
+          "name": "Account Manipulation",
+          "sub_techniques": ["T1098.001", "T1098.002", "T1098.003", "T1098.004", "T1098.005"],
+          "platforms": ["Windows", "Linux", "macOS", "IaaS", "SaaS", "Azure AD", "Office 365", "Google Workspace"],
+          "description": "Adversaries may manipulate accounts to maintain or elevate access, including adding credentials, modifying permissions, or adding accounts to privileged groups.",
+          "data_sources": ["Active Directory: Active Directory Object Modification", "Command: Command Execution", "File: File Modification", "Group: Group Modification", "Process: Process Creation", "User Account: User Account Modification"],
+          "detection": "Monitor for modifications to account attributes, addition of accounts to privileged groups, SSH authorized_keys changes, and unexpected credential resets.",
+          "kill_chain_phase": "persistence"
+        },
+        {
+          "id": "T1505",
+          "name": "Server Software Component",
+          "sub_techniques": ["T1505.001", "T1505.002", "T1505.003", "T1505.004", "T1505.005"],
+          "platforms": ["Windows", "Linux", "macOS", "Network"],
+          "description": "Adversaries may abuse legitimate extensible components of servers to establish persistent access, including web shells, IIS modules, SQL stored procedures, and transport agents.",
+          "data_sources": ["Application Log: Application Log Content", "File: File Creation", "File: File Modification", "Network Traffic: Network Traffic Content", "Network Traffic: Network Traffic Flow", "Process: Process Creation"],
+          "detection": "Monitor for new or modified files in web server directories, unexpected IIS module registrations, new SQL stored procedures, and unusual server process behavior.",
+          "kill_chain_phase": "persistence"
+        }
+      ]
+    },
+    {
+      "id": "TA0004",
+      "name": "Privilege Escalation",
+      "techniques": [
+        {
+          "id": "T1548",
+          "name": "Abuse Elevation Control Mechanism",
+          "sub_techniques": ["T1548.001", "T1548.002", "T1548.003", "T1548.004"],
+          "platforms": ["Windows", "macOS", "Linux"],
+          "description": "Adversaries may circumvent mechanisms designed to control elevate privileges to gain higher-level permissions. UAC bypass on Windows is a prevalent technique.",
+          "data_sources": ["Command: Command Execution", "Process: OS API Execution", "Process: Process Creation", "Process: Process Metadata", "Windows Registry: Windows Registry Key Modification"],
+          "detection": "Monitor for processes requesting elevation outside of normal patterns, manipulation of UAC-related registry keys, and unexpected auto-elevation behavior.",
+          "kill_chain_phase": "privilege_escalation"
+        },
+        {
+          "id": "T1068",
+          "name": "Exploitation for Privilege Escalation",
+          "sub_techniques": [],
+          "platforms": ["Windows", "macOS", "Linux", "Containers"],
+          "description": "Adversaries may exploit software vulnerabilities to escalate privileges. These exploits target kernel, driver, or service vulnerabilities to gain SYSTEM or root access.",
+          "data_sources": ["Driver: Driver Load", "Process: Process Creation"],
+          "detection": "Monitor for unusual process behavior indicative of exploitation such as unexpected privilege changes, process injection, or abnormal kernel driver loading.",
+          "kill_chain_phase": "privilege_escalation"
+        },
+        {
+          "id": "T1134",
+          "name": "Access Token Manipulation",
+          "sub_techniques": ["T1134.001", "T1134.002", "T1134.003", "T1134.004", "T1134.005"],
+          "platforms": ["Windows"],
+          "description": "Adversaries may modify access tokens to operate under a different user or system security context to perform actions and bypass access controls.",
+          "data_sources": ["Command: Command Execution", "Process: OS API Execution", "Process: Process Creation", "Process: Process Metadata"],
+          "detection": "Monitor for token manipulation API calls (AdjustTokenPrivileges, DuplicateToken), unexpected privilege escalation, and processes running under mismatched user contexts.",
+          "kill_chain_phase": "privilege_escalation"
+        },
+        {
+          "id": "T1078",
+          "name": "Valid Accounts",
+          "sub_techniques": ["T1078.001", "T1078.002", "T1078.003", "T1078.004"],
+          "platforms": ["Windows", "Linux", "macOS", "SaaS", "IaaS", "Azure AD", "Office 365", "Google Workspace", "Containers", "Network"],
+          "description": "Adversaries may obtain and abuse credentials of existing accounts as a means of gaining privilege escalation where those accounts have higher privileges.",
+          "data_sources": ["Logon Session: Logon Session Creation", "Logon Session: Logon Session Metadata", "User Account: User Account Authentication"],
+          "detection": "Monitor for use of privileged accounts from unusual sources, privilege escalation through group membership changes, and service account misuse.",
+          "kill_chain_phase": "privilege_escalation"
+        },
+        {
+          "id": "T1055",
+          "name": "Process Injection",
+          "sub_techniques": ["T1055.001", "T1055.002", "T1055.003", "T1055.004", "T1055.005", "T1055.008", "T1055.009", "T1055.011", "T1055.012", "T1055.013", "T1055.014", "T1055.015"],
+          "platforms": ["Windows", "macOS", "Linux"],
+          "description": "Adversaries may inject code into processes to evade defenses and elevate privileges. Techniques include DLL injection, process hollowing, thread execution hijacking, and APC injection.",
+          "data_sources": ["File: File Metadata", "File: File Modification", "Module: Module Load", "Process: OS API Execution", "Process: Process Access", "Process: Process Metadata", "Process: Process Modification"],
+          "detection": "Monitor for processes allocating memory in other processes, writing to remote process memory, creating remote threads, and loading unexpected DLLs.",
+          "kill_chain_phase": "privilege_escalation"
+        },
+        {
+          "id": "T1547",
+          "name": "Boot or Logon Autostart Execution",
+          "sub_techniques": ["T1547.001", "T1547.004", "T1547.005", "T1547.009", "T1547.012", "T1547.014"],
+          "platforms": ["Windows", "macOS", "Linux"],
+          "description": "Adversaries may configure system settings to automatically execute a program during boot or logon that runs with elevated privileges to escalate.",
+          "data_sources": ["Command: Command Execution", "File: File Creation", "File: File Modification", "Windows Registry: Windows Registry Key Creation", "Windows Registry: Windows Registry Key Modification"],
+          "detection": "Monitor for autostart entries that execute with SYSTEM or root privileges, modifications to services running as elevated accounts, and boot-time persistence with high privilege contexts.",
+          "kill_chain_phase": "privilege_escalation"
+        },
+        {
+          "id": "T1543",
+          "name": "Create or Modify System Process",
+          "sub_techniques": ["T1543.001", "T1543.002", "T1543.003", "T1543.004"],
+          "platforms": ["Windows", "macOS", "Linux"],
+          "description": "Adversaries may create or modify system-level processes that run with elevated privileges, providing persistent privileged execution.",
+          "data_sources": ["Command: Command Execution", "File: File Creation", "File: File Modification", "Process: OS API Execution", "Process: Process Creation", "Service: Service Creation", "Service: Service Modification", "Windows Registry: Windows Registry Key Creation", "Windows Registry: Windows Registry Key Modification"],
+          "detection": "Monitor for new services configured to run as SYSTEM or root, modifications to existing privileged service binaries, and unusual service account configurations.",
+          "kill_chain_phase": "privilege_escalation"
+        },
+        {
+          "id": "T1484",
+          "name": "Domain or Tenant Policy Modification",
+          "sub_techniques": ["T1484.001", "T1484.002"],
+          "platforms": ["Windows", "Azure AD", "SaaS"],
+          "description": "Adversaries may modify the configuration settings of a domain or identity tenant to evade defenses and escalate privileges in centralized directory services.",
+          "data_sources": ["Active Directory: Active Directory Object Creation", "Active Directory: Active Directory Object Modification"],
+          "detection": "Monitor for modifications to Group Policy Objects, trust relationships between domains, and changes to Azure AD tenant policies that could weaken security controls.",
+          "kill_chain_phase": "privilege_escalation"
+        }
+      ]
+    },
+    {
+      "id": "TA0005",
+      "name": "Defense Evasion",
+      "techniques": [
+        {
+          "id": "T1027",
+          "name": "Obfuscated Files or Information",
+          "sub_techniques": ["T1027.001", "T1027.002", "T1027.003", "T1027.004", "T1027.005", "T1027.006", "T1027.009", "T1027.010", "T1027.011", "T1027.012", "T1027.013"],
+          "platforms": ["Windows", "macOS", "Linux"],
+          "description": "Adversaries may attempt to make payloads and files difficult to discover or analyze by encrypting, encoding, or otherwise obfuscating their contents.",
+          "data_sources": ["Command: Command Execution", "File: File Creation", "File: File Metadata", "Process: Process Creation"],
+          "detection": "Monitor for files with high entropy, unusual encoding patterns, or known packer signatures, and processes that decode or decrypt content at runtime.",
+          "kill_chain_phase": "defense_evasion"
+        },
+        {
+          "id": "T1562",
+          "name": "Impair Defenses",
+          "sub_techniques": ["T1562.001", "T1562.002", "T1562.003", "T1562.004", "T1562.006", "T1562.007", "T1562.008", "T1562.009", "T1562.010", "T1562.012"],
+          "platforms": ["Windows", "macOS", "Linux", "IaaS", "Containers", "Network"],
+          "description": "Adversaries may maliciously modify components of a victim environment to hinder or disable defensive mechanisms. This includes disabling security tools and logging.",
+          "data_sources": ["Command: Command Execution", "Process: Process Termination", "Sensor Health: Host Status", "Windows Registry: Windows Registry Key Modification"],
+          "detection": "Monitor for security tool processes being stopped or tampered with, changes to security-related registry keys, and gaps in expected telemetry data.",
+          "kill_chain_phase": "defense_evasion"
+        },
+        {
+          "id": "T1055",
+          "name": "Process Injection",
+          "sub_techniques": ["T1055.001", "T1055.002", "T1055.003", "T1055.004", "T1055.005", "T1055.008", "T1055.009", "T1055.011", "T1055.012", "T1055.013", "T1055.014", "T1055.015"],
+          "platforms": ["Windows", "macOS", "Linux"],
+          "description": "Adversaries may inject code into processes to evade process-based defenses and potentially elevate privileges. Running code in the context of legitimate processes helps blend into normal activity.",
+          "data_sources": ["File: File Metadata", "File: File Modification", "Module: Module Load", "Process: OS API Execution", "Process: Process Access", "Process: Process Metadata", "Process: Process Modification"],
+          "detection": "Monitor for cross-process memory writes, remote thread creation, suspicious API call sequences (VirtualAllocEx, WriteProcessMemory, CreateRemoteThread), and process hollowing indicators.",
+          "kill_chain_phase": "defense_evasion"
+        },
+        {
+          "id": "T1070",
+          "name": "Indicator Removal",
+          "sub_techniques": ["T1070.001", "T1070.002", "T1070.003", "T1070.004", "T1070.005", "T1070.006", "T1070.008", "T1070.009"],
+          "platforms": ["Windows", "macOS", "Linux", "Containers", "Network"],
+          "description": "Adversaries may delete or modify artifacts generated on a host or network to remove evidence of their presence. This includes clearing event logs, deleting files, and timestomping.",
+          "data_sources": ["Command: Command Execution", "File: File Deletion", "File: File Metadata", "File: File Modification", "Process: OS API Execution", "Process: Process Creation", "Windows Registry: Windows Registry Key Deletion", "Windows Registry: Windows Registry Key Modification"],
+          "detection": "Monitor for event log clearing (Event ID 1102/104), bulk file deletions, timestamp modifications on critical files, and firewall rule deletions.",
+          "kill_chain_phase": "defense_evasion"
+        },
+        {
+          "id": "T1036",
+          "name": "Masquerading",
+          "sub_techniques": ["T1036.001", "T1036.003", "T1036.004", "T1036.005", "T1036.006", "T1036.007", "T1036.008"],
+          "platforms": ["Windows", "macOS", "Linux", "Containers"],
+          "description": "Adversaries may attempt to manipulate features of their artifacts to make them appear legitimate or benign. This includes renaming utilities, matching legitimate file names, and invalid code signatures.",
+          "data_sources": ["Command: Command Execution", "File: File Metadata", "File: File Modification", "Process: Process Creation", "Process: Process Metadata", "Scheduled Job: Scheduled Job Metadata", "Service: Service Creation", "Service: Service Metadata"],
+          "detection": "Monitor for executables with names matching system binaries but running from non-standard locations, mismatched PE metadata, and invalid or unusual code signatures.",
+          "kill_chain_phase": "defense_evasion"
+        },
+        {
+          "id": "T1218",
+          "name": "System Binary Proxy Execution",
+          "sub_techniques": ["T1218.001", "T1218.002", "T1218.003", "T1218.004", "T1218.005", "T1218.007", "T1218.008", "T1218.009", "T1218.010", "T1218.011", "T1218.012", "T1218.013", "T1218.014"],
+          "platforms": ["Windows"],
+          "description": "Adversaries may bypass process and signature-based defenses by proxying execution of malicious content with signed, trusted binaries such as mshta, rundll32, regsvr32, and msiexec.",
+          "data_sources": ["Command: Command Execution", "File: File Creation", "Module: Module Load", "Network Traffic: Network Connection Creation", "Process: Process Creation", "Windows Registry: Windows Registry Key Modification"],
+          "detection": "Monitor for known LOLBAS (Living Off the Land Binaries and Scripts) executing with unusual arguments, loading unexpected DLLs, or making network connections.",
+          "kill_chain_phase": "defense_evasion"
+        },
+        {
+          "id": "T1140",
+          "name": "Deobfuscate/Decode Files or Information",
+          "sub_techniques": [],
+          "platforms": ["Windows", "macOS", "Linux"],
+          "description": "Adversaries may use obfuscated files or information to hide artifacts of an intrusion from analysis, then deobfuscate or decode them for use.",
+          "data_sources": ["File: File Modification", "Process: Process Creation", "Script: Script Execution"],
+          "detection": "Monitor for execution of decoding utilities (certutil -decode, base64), PowerShell decoding operations, and file write operations immediately following decode operations.",
+          "kill_chain_phase": "defense_evasion"
+        },
+        {
+          "id": "T1112",
+          "name": "Modify Registry",
+          "sub_techniques": [],
+          "platforms": ["Windows"],
+          "description": "Adversaries may interact with the Windows Registry to hide configuration information, remove information, or store data for payloads and persistence.",
+          "data_sources": ["Command: Command Execution", "Process: OS API Execution", "Process: Process Creation", "Windows Registry: Windows Registry Key Creation", "Windows Registry: Windows Registry Key Deletion", "Windows Registry: Windows Registry Key Modification"],
+          "detection": "Monitor for changes to registry keys associated with security settings, persistence mechanisms, and known malware storage locations (e.g., registry run keys, services).",
+          "kill_chain_phase": "defense_evasion"
+        },
+        {
+          "id": "T1497",
+          "name": "Virtualization/Sandbox Evasion",
+          "sub_techniques": ["T1497.001", "T1497.002", "T1497.003"],
+          "platforms": ["Windows", "macOS", "Linux"],
+          "description": "Adversaries may employ techniques to detect and avoid virtualization and sandbox environments. Checks include looking for VM artifacts, time-based delays, and user activity.",
+          "data_sources": ["Command: Command Execution", "Process: OS API Execution", "Process: Process Creation"],
+          "detection": "Monitor for processes checking for VM-specific registry keys, hardware identifiers, known sandbox artifacts, or implementing sleep/delay mechanisms before execution.",
+          "kill_chain_phase": "defense_evasion"
+        },
+        {
+          "id": "T1078",
+          "name": "Valid Accounts",
+          "sub_techniques": ["T1078.001", "T1078.002", "T1078.003", "T1078.004"],
+          "platforms": ["Windows", "Linux", "macOS", "SaaS", "IaaS", "Azure AD", "Office 365", "Google Workspace", "Containers", "Network"],
+          "description": "Adversaries may use valid accounts to blend into normal user activity, making detection difficult since the credentials appear legitimate.",
+          "data_sources": ["Logon Session: Logon Session Creation", "Logon Session: Logon Session Metadata", "User Account: User Account Authentication"],
+          "detection": "Monitor for behavioral anomalies in legitimate account usage, including unusual access times, geographic anomalies, and access to atypical resources.",
+          "kill_chain_phase": "defense_evasion"
+        }
+      ]
+    },
+    {
+      "id": "TA0006",
+      "name": "Credential Access",
+      "techniques": [
+        {
+          "id": "T1003",
+          "name": "OS Credential Dumping",
+          "sub_techniques": ["T1003.001", "T1003.002", "T1003.003", "T1003.004", "T1003.005", "T1003.006", "T1003.007", "T1003.008"],
+          "platforms": ["Windows", "Linux", "macOS"],
+          "description": "Adversaries may dump credentials to obtain account login and credential material from the operating system. Targets include LSASS memory, SAM database, NTDS.dit, and DCSync.",
+          "data_sources": ["Active Directory: Active Directory Object Access", "Command: Command Execution", "File: File Access", "Process: OS API Execution", "Process: Process Access", "Process: Process Creation"],
+          "detection": "Monitor for access to LSASS process memory, unusual access to SAM or NTDS.dit files, and execution of known credential dumping tools like Mimikatz or secretsdump.",
+          "kill_chain_phase": "credential_access"
+        },
+        {
+          "id": "T1110",
+          "name": "Brute Force",
+          "sub_techniques": ["T1110.001", "T1110.002", "T1110.003", "T1110.004"],
+          "platforms": ["Windows", "Linux", "macOS", "SaaS", "IaaS", "Office 365", "Google Workspace", "Azure AD", "Containers"],
+          "description": "Adversaries may use brute force techniques to gain access to accounts. This includes password guessing, credential stuffing, password spraying, and cracking.",
+          "data_sources": ["Application Log: Application Log Content", "User Account: User Account Authentication"],
+          "detection": "Monitor for multiple failed authentication attempts from single sources, distributed login failures across many accounts, and authentication anomalies indicating password spray.",
+          "kill_chain_phase": "credential_access"
+        },
+        {
+          "id": "T1558",
+          "name": "Steal or Forge Kerberos Tickets",
+          "sub_techniques": ["T1558.001", "T1558.002", "T1558.003", "T1558.004"],
+          "platforms": ["Windows"],
+          "description": "Adversaries may attempt to subvert Kerberos authentication by stealing or forging Kerberos tickets. This includes Golden Ticket, Silver Ticket, Kerberoasting, and AS-REP Roasting.",
+          "data_sources": ["Active Directory: Active Directory Credential Request", "Logon Session: Logon Session Metadata"],
+          "detection": "Monitor for anomalous Kerberos ticket requests (TGS requests for service accounts, encryption downgrade attacks), unusual TGT lifetimes, and tickets with forged PAC data.",
+          "kill_chain_phase": "credential_access"
+        },
+        {
+          "id": "T1555",
+          "name": "Credentials from Password Stores",
+          "sub_techniques": ["T1555.001", "T1555.002", "T1555.003", "T1555.004", "T1555.005", "T1555.006"],
+          "platforms": ["Windows", "macOS", "Linux"],
+          "description": "Adversaries may search for common password storage locations to obtain user credentials. This includes browser credential stores, Keychain, Windows Credential Manager, and password managers.",
+          "data_sources": ["Command: Command Execution", "File: File Access", "Process: OS API Execution", "Process: Process Access", "Process: Process Creation"],
+          "detection": "Monitor for access to browser credential databases (Login Data, logins.json), Keychain queries, and credential manager enumeration via cmdkey or vaultcmd.",
+          "kill_chain_phase": "credential_access"
+        },
+        {
+          "id": "T1056",
+          "name": "Input Capture",
+          "sub_techniques": ["T1056.001", "T1056.002", "T1056.003", "T1056.004"],
+          "platforms": ["Windows", "macOS", "Linux", "Network"],
+          "description": "Adversaries may use methods of capturing user input to obtain credentials or collect information. This includes keylogging, GUI input capture, web portal capture, and credential API hooking.",
+          "data_sources": ["Driver: Driver Load", "File: File Modification", "Process: OS API Execution", "Windows Registry: Windows Registry Key Modification"],
+          "detection": "Monitor for known keylogger signatures, API hooking of credential input functions, unexpected keyboard driver installations, and processes intercepting authentication prompts.",
+          "kill_chain_phase": "credential_access"
+        },
+        {
+          "id": "T1552",
+          "name": "Unsecured Credentials",
+          "sub_techniques": ["T1552.001", "T1552.002", "T1552.003", "T1552.004", "T1552.005", "T1552.006", "T1552.007", "T1552.008"],
+          "platforms": ["Windows", "macOS", "Linux", "IaaS", "Containers", "SaaS"],
+          "description": "Adversaries may search compromised systems for insecurely stored credentials in files, registries, Group Policy Preferences, cloud instance metadata, and chat logs.",
+          "data_sources": ["Command: Command Execution", "File: File Access", "Process: Process Creation", "Windows Registry: Windows Registry Key Access"],
+          "detection": "Monitor for file access to known credential storage locations, queries to cloud metadata services (169.254.169.254), and searches for files containing passwords or keys.",
+          "kill_chain_phase": "credential_access"
+        },
+        {
+          "id": "T1557",
+          "name": "Adversary-in-the-Middle",
+          "sub_techniques": ["T1557.001", "T1557.002", "T1557.003"],
+          "platforms": ["Windows", "Linux", "macOS", "Network"],
+          "description": "Adversaries may attempt to position themselves between two or more networked devices to support techniques such as credential harvesting via LLMNR/NBT-NS poisoning or ARP spoofing.",
+          "data_sources": ["Network Traffic: Network Traffic Content", "Network Traffic: Network Traffic Flow", "Service: Service Creation", "Windows Registry: Windows Registry Key Modification"],
+          "detection": "Monitor for LLMNR/NBT-NS poisoning attempts, ARP spoofing, unusual DHCP responses, and network traffic interception via proxy or relay tools like Responder or Impacket.",
+          "kill_chain_phase": "credential_access"
+        },
+        {
+          "id": "T1187",
+          "name": "Forced Authentication",
+          "sub_techniques": [],
+          "platforms": ["Windows"],
+          "description": "Adversaries may gather credential material by invoking or forcing a user to automatically provide authentication information through a mechanism such as SMB relay or .lnk/.scf files.",
+          "data_sources": ["File: File Access", "File: File Creation", "File: File Modification", "Network Traffic: Network Traffic Content", "Network Traffic: Network Traffic Flow"],
+          "detection": "Monitor for creation of .scf or .lnk files with UNC paths, outbound SMB connections to unexpected destinations, and NTLM authentication attempts to external systems.",
+          "kill_chain_phase": "credential_access"
+        }
+      ]
+    },
+    {
+      "id": "TA0007",
+      "name": "Discovery",
+      "techniques": [
+        {
+          "id": "T1082",
+          "name": "System Information Discovery",
+          "sub_techniques": [],
+          "platforms": ["Windows", "macOS", "Linux", "IaaS", "Network"],
+          "description": "Adversaries may attempt to get detailed information about the operating system and hardware, including version, patches, hotfixes, architecture, and connected peripherals.",
+          "data_sources": ["Command: Command Execution", "Process: OS API Execution", "Process: Process Creation"],
+          "detection": "Monitor for execution of system information gathering commands such as systeminfo, uname, hostname, and ver in sequences that suggest enumeration.",
+          "kill_chain_phase": "discovery"
+        },
+        {
+          "id": "T1018",
+          "name": "Remote System Discovery",
+          "sub_techniques": [],
+          "platforms": ["Windows", "macOS", "Linux", "Network"],
+          "description": "Adversaries may attempt to discover other systems on the network by querying network resources such as ARP, DNS, LDAP, and NetBIOS.",
+          "data_sources": ["Command: Command Execution", "Network Traffic: Network Traffic Flow", "Process: Process Creation"],
+          "detection": "Monitor for network scanning tools, ARP broadcasts, LDAP queries for computer objects, and net view or similar network enumeration commands.",
+          "kill_chain_phase": "discovery"
+        },
+        {
+          "id": "T1083",
+          "name": "File and Directory Discovery",
+          "sub_techniques": [],
+          "platforms": ["Windows", "macOS", "Linux"],
+          "description": "Adversaries may enumerate files and directories or search in specific locations of a host or network share for certain information within a file system.",
+          "data_sources": ["Command: Command Execution", "Process: OS API Execution", "Process: Process Creation"],
+          "detection": "Monitor for excessive directory listing commands (dir, ls, find), recursive file searches for sensitive file types, and enumeration of network shares.",
+          "kill_chain_phase": "discovery"
+        },
+        {
+          "id": "T1046",
+          "name": "Network Service Discovery",
+          "sub_techniques": [],
+          "platforms": ["Windows", "macOS", "Linux", "Containers"],
+          "description": "Adversaries may attempt to get a listing of services running on remote hosts and local network infrastructure devices, including those that may be vulnerable to remote exploitation.",
+          "data_sources": ["Command: Command Execution", "Network Traffic: Network Traffic Flow"],
+          "detection": "Monitor for network port scanning activity, execution of service enumeration tools (nmap, masscan), and systematic connection attempts to multiple ports on network hosts.",
+          "kill_chain_phase": "discovery"
+        },
+        {
+          "id": "T1087",
+          "name": "Account Discovery",
+          "sub_techniques": ["T1087.001", "T1087.002", "T1087.003", "T1087.004"],
+          "platforms": ["Windows", "macOS", "Linux", "SaaS", "IaaS", "Azure AD", "Office 365", "Google Workspace"],
+          "description": "Adversaries may attempt to get a listing of valid accounts, usernames, or email addresses on a system or domain, including local, domain, email, and cloud accounts.",
+          "data_sources": ["Command: Command Execution", "Process: Process Creation"],
+          "detection": "Monitor for commands that enumerate users (net user, whoami, id, Get-ADUser), LDAP queries for user objects, and cloud API calls listing accounts.",
+          "kill_chain_phase": "discovery"
+        },
+        {
+          "id": "T1069",
+          "name": "Permission Groups Discovery",
+          "sub_techniques": ["T1069.001", "T1069.002", "T1069.003"],
+          "platforms": ["Windows", "macOS", "Linux", "SaaS", "IaaS", "Azure AD", "Office 365", "Google Workspace"],
+          "description": "Adversaries may attempt to discover group and permission settings on local systems, domains, or cloud environments to identify high-value targets.",
+          "data_sources": ["Command: Command Execution", "Group: Group Enumeration", "Process: Process Creation"],
+          "detection": "Monitor for group enumeration commands (net localgroup, net group, Get-ADGroup), LDAP queries for group objects, and cloud API calls listing group memberships.",
+          "kill_chain_phase": "discovery"
+        },
+        {
+          "id": "T1049",
+          "name": "System Network Connections Discovery",
+          "sub_techniques": [],
+          "platforms": ["Windows", "macOS", "Linux"],
+          "description": "Adversaries may attempt to get a listing of network connections to or from the compromised system to identify targets for lateral movement or data exfiltration.",
+          "data_sources": ["Command: Command Execution", "Process: OS API Execution", "Process: Process Creation"],
+          "detection": "Monitor for execution of netstat, ss, or similar commands, especially in rapid succession or combined with other discovery techniques.",
+          "kill_chain_phase": "discovery"
+        },
+        {
+          "id": "T1016",
+          "name": "System Network Configuration Discovery",
+          "sub_techniques": ["T1016.001"],
+          "platforms": ["Windows", "macOS", "Linux", "Network"],
+          "description": "Adversaries may look for details about the network configuration and settings of systems, including IP addresses, DNS settings, gateways, and routing information.",
+          "data_sources": ["Command: Command Execution", "Process: OS API Execution", "Process: Process Creation", "Script: Script Execution"],
+          "detection": "Monitor for execution of network configuration commands (ipconfig, ifconfig, route print, arp -a) and script-based network enumeration.",
+          "kill_chain_phase": "discovery"
+        }
+      ]
+    },
+    {
+      "id": "TA0008",
+      "name": "Lateral Movement",
+      "techniques": [
+        {
+          "id": "T1021",
+          "name": "Remote Services",
+          "sub_techniques": ["T1021.001", "T1021.002", "T1021.003", "T1021.004", "T1021.005", "T1021.006"],
+          "platforms": ["Windows", "macOS", "Linux"],
+          "description": "Adversaries may use valid accounts to log into a remote service to move laterally. Common services include RDP, SMB/Windows Admin Shares, SSH, VNC, and WinRM.",
+          "data_sources": ["Logon Session: Logon Session Creation", "Network Share: Network Share Access", "Network Traffic: Network Traffic Flow", "Process: Process Creation"],
+          "detection": "Monitor for unexpected remote logon sessions, lateral RDP or SMB connections, unusual WinRM activity, and authentication events from non-standard source systems.",
+          "kill_chain_phase": "lateral_movement"
+        },
+        {
+          "id": "T1570",
+          "name": "Lateral Tool Transfer",
+          "sub_techniques": [],
+          "platforms": ["Windows", "macOS", "Linux"],
+          "description": "Adversaries may transfer tools or files between systems in a compromised environment using SMB shares, admin shares, or other internal file transfer methods.",
+          "data_sources": ["Command: Command Execution", "File: File Creation", "File: File Metadata", "Named Pipe: Named Pipe Metadata", "Network Share: Network Share Access", "Network Traffic: Network Traffic Content", "Network Traffic: Network Traffic Flow"],
+          "detection": "Monitor for file transfers between internal systems via SMB, unexpected writes to admin shares (C$, ADMIN$), and staging of tools in common directories.",
+          "kill_chain_phase": "lateral_movement"
+        },
+        {
+          "id": "T1563",
+          "name": "Remote Service Session Hijacking",
+          "sub_techniques": ["T1563.001", "T1563.002"],
+          "platforms": ["Windows", "Linux", "macOS"],
+          "description": "Adversaries may take control of preexisting sessions with remote services to move laterally. This includes SSH hijacking and RDP session hijacking via tscon.",
+          "data_sources": ["Command: Command Execution", "Logon Session: Logon Session Creation", "Network Traffic: Network Traffic Flow", "Process: Process Creation"],
+          "detection": "Monitor for tscon.exe execution for RDP session hijacking, SSH agent forwarding abuse, and unexpected session reconnections from different source IPs.",
+          "kill_chain_phase": "lateral_movement"
+        },
+        {
+          "id": "T1550",
+          "name": "Use Alternate Authentication Material",
+          "sub_techniques": ["T1550.001", "T1550.002", "T1550.003", "T1550.004"],
+          "platforms": ["Windows", "SaaS", "IaaS", "Office 365", "Azure AD", "Google Workspace"],
+          "description": "Adversaries may use alternate authentication material such as password hashes, Kerberos tickets, or application access tokens to move laterally without needing plaintext credentials.",
+          "data_sources": ["Active Directory: Active Directory Credential Request", "Logon Session: Logon Session Creation", "User Account: User Account Authentication", "Web Credential: Web Credential Usage"],
+          "detection": "Monitor for pass-the-hash (NTLM authentication from unusual sources), pass-the-ticket (Kerberos ticket reuse), and authentication via stolen tokens or cookies.",
+          "kill_chain_phase": "lateral_movement"
+        },
+        {
+          "id": "T1534",
+          "name": "Internal Spearphishing",
+          "sub_techniques": [],
+          "platforms": ["Windows", "macOS", "Linux", "SaaS", "Office 365", "Google Workspace"],
+          "description": "Adversaries may use internal spearphishing to gain access to additional systems after already having a foothold, sending phishing messages from compromised internal accounts.",
+          "data_sources": ["Application Log: Application Log Content", "Network Traffic: Network Traffic Content", "Network Traffic: Network Traffic Flow"],
+          "detection": "Monitor for internal email with phishing indicators sent from recently compromised accounts, unusual email volume, and emails containing suspicious attachments or links.",
+          "kill_chain_phase": "lateral_movement"
+        },
+        {
+          "id": "T1080",
+          "name": "Taint Shared Content",
+          "sub_techniques": [],
+          "platforms": ["Windows", "macOS", "Linux", "Office 365", "SaaS", "Google Workspace"],
+          "description": "Adversaries may deliver payloads to remote systems by adding content to shared storage locations such as network drives or internal wiki/SharePoint sites.",
+          "data_sources": ["File: File Creation", "File: File Modification", "Network Share: Network Share Access", "Process: Process Creation"],
+          "detection": "Monitor for modifications to files on network shares, especially executable or script content placed in commonly accessed locations, and unexpected file modifications on shared drives.",
+          "kill_chain_phase": "lateral_movement"
+        },
+        {
+          "id": "T1210",
+          "name": "Exploitation of Remote Services",
+          "sub_techniques": [],
+          "platforms": ["Windows", "Linux", "macOS"],
+          "description": "Adversaries may exploit remote services to gain unauthorized access to internal systems. Common targets include unpatched SMB, RDP, Apache Struts, and similar network services.",
+          "data_sources": ["Application Log: Application Log Content", "Network Traffic: Network Traffic Content"],
+          "detection": "Monitor for exploit signatures in network traffic, unusual service crashes or restarts, and unexpected code execution following network connections to vulnerable services.",
+          "kill_chain_phase": "lateral_movement"
+        }
+      ]
+    },
+    {
+      "id": "TA0009",
+      "name": "Collection",
+      "techniques": [
+        {
+          "id": "T1560",
+          "name": "Archive Collected Data",
+          "sub_techniques": ["T1560.001", "T1560.002", "T1560.003"],
+          "platforms": ["Windows", "macOS", "Linux"],
+          "description": "Adversaries may compress and/or encrypt collected data prior to exfiltration using utilities like 7zip, WinRAR, tar, or custom tools to reduce data size and evade detection.",
+          "data_sources": ["Command: Command Execution", "File: File Creation", "Process: Process Creation"],
+          "detection": "Monitor for execution of archive utilities creating compressed files in staging directories, especially with encryption flags or password-protected archives.",
+          "kill_chain_phase": "collection"
+        },
+        {
+          "id": "T1005",
+          "name": "Data from Local System",
+          "sub_techniques": [],
+          "platforms": ["Windows", "macOS", "Linux"],
+          "description": "Adversaries may search local system sources such as file systems and configuration databases for sensitive data prior to exfiltration.",
+          "data_sources": ["Command: Command Execution", "File: File Access"],
+          "detection": "Monitor for processes accessing large numbers of files, unusual directory traversal patterns, and bulk file reads from sensitive directories.",
+          "kill_chain_phase": "collection"
+        },
+        {
+          "id": "T1039",
+          "name": "Data from Network Shared Drive",
+          "sub_techniques": [],
+          "platforms": ["Windows", "macOS", "Linux"],
+          "description": "Adversaries may search network shares on computers they have compromised to find files of interest for collection and exfiltration.",
+          "data_sources": ["Command: Command Execution", "File: File Access", "Network Share: Network Share Access"],
+          "detection": "Monitor for bulk file access across network shares, enumeration of multiple share paths, and large data transfers from shared network drives.",
+          "kill_chain_phase": "collection"
+        },
+        {
+          "id": "T1114",
+          "name": "Email Collection",
+          "sub_techniques": ["T1114.001", "T1114.002", "T1114.003"],
+          "platforms": ["Windows", "macOS", "Linux", "Office 365", "Google Workspace"],
+          "description": "Adversaries may target user email to collect sensitive information. This includes accessing local email files, remote email servers, and email forwarding rules.",
+          "data_sources": ["Application Log: Application Log Content", "Command: Command Execution", "File: File Access", "Logon Session: Logon Session Creation", "Network Traffic: Network Traffic Content"],
+          "detection": "Monitor for access to email data files (OST/PST), unusual Exchange/IMAP connections, creation of email forwarding rules, and bulk email export operations.",
+          "kill_chain_phase": "collection"
+        },
+        {
+          "id": "T1056",
+          "name": "Input Capture",
+          "sub_techniques": ["T1056.001", "T1056.002", "T1056.003", "T1056.004"],
+          "platforms": ["Windows", "macOS", "Linux", "Network"],
+          "description": "Adversaries may use methods of capturing user input to collect data typed by users, including keylogging and credential prompts.",
+          "data_sources": ["Driver: Driver Load", "File: File Modification", "Process: OS API Execution", "Windows Registry: Windows Registry Key Modification"],
+          "detection": "Monitor for known keylogger patterns, API hooking of keyboard input functions, and processes intercepting or recording user input beyond normal application behavior.",
+          "kill_chain_phase": "collection"
+        }
+      ]
+    },
+    {
+      "id": "TA0011",
+      "name": "Command and Control",
+      "techniques": [
+        {
+          "id": "T1071",
+          "name": "Application Layer Protocol",
+          "sub_techniques": ["T1071.001", "T1071.002", "T1071.003", "T1071.004"],
+          "platforms": ["Windows", "macOS", "Linux", "Network"],
+          "description": "Adversaries may communicate using OSI application layer protocols to avoid detection. Common protocols abused include HTTP/S, DNS, SMTP, and other web protocols.",
+          "data_sources": ["Network Traffic: Network Traffic Content", "Network Traffic: Network Traffic Flow"],
+          "detection": "Monitor for unusual DNS query volumes or patterns, beaconing HTTP traffic, abnormal protocol usage, and domain generation algorithm indicators.",
+          "kill_chain_phase": "command_and_control"
+        },
+        {
+          "id": "T1105",
+          "name": "Ingress Tool Transfer",
+          "sub_techniques": [],
+          "platforms": ["Windows", "macOS", "Linux"],
+          "description": "Adversaries may transfer tools or files from an external system into the compromised environment using command and control channels or alternate protocols.",
+          "data_sources": ["File: File Creation", "Network Traffic: Network Connection Creation", "Network Traffic: Network Traffic Content", "Network Traffic: Network Traffic Flow"],
+          "detection": "Monitor for new files written to disk from network connections, especially executables downloaded via PowerShell, certutil, curl, or wget.",
+          "kill_chain_phase": "command_and_control"
+        },
+        {
+          "id": "T1572",
+          "name": "Protocol Tunneling",
+          "sub_techniques": [],
+          "platforms": ["Windows", "macOS", "Linux"],
+          "description": "Adversaries may tunnel network communications to and from a victim system within a separate protocol to avoid detection and blend in with existing traffic.",
+          "data_sources": ["Network Traffic: Network Connection Creation", "Network Traffic: Network Traffic Content", "Network Traffic: Network Traffic Flow"],
+          "detection": "Monitor for DNS tunneling indicators (high-entropy subdomains, excessive TXT records), SSH tunnels to unexpected destinations, and encapsulated traffic within allowed protocols.",
+          "kill_chain_phase": "command_and_control"
+        },
+        {
+          "id": "T1090",
+          "name": "Proxy",
+          "sub_techniques": ["T1090.001", "T1090.002", "T1090.003", "T1090.004"],
+          "platforms": ["Windows", "macOS", "Linux", "Network"],
+          "description": "Adversaries may use a connection proxy to direct network traffic between systems or act as an intermediary. This includes internal proxies, external proxies, multi-hop proxies, and domain fronting.",
+          "data_sources": ["Network Traffic: Network Connection Creation", "Network Traffic: Network Traffic Content", "Network Traffic: Network Traffic Flow"],
+          "detection": "Monitor for unexpected proxy connections, domain fronting indicators (TLS SNI mismatch with HTTP Host header), multi-hop traffic patterns, and internal systems acting as relay nodes.",
+          "kill_chain_phase": "command_and_control"
+        },
+        {
+          "id": "T1573",
+          "name": "Encrypted Channel",
+          "sub_techniques": ["T1573.001", "T1573.002"],
+          "platforms": ["Windows", "macOS", "Linux"],
+          "description": "Adversaries may employ an encryption algorithm to conceal command and control traffic. This includes symmetric and asymmetric cryptography applied to C2 channels.",
+          "data_sources": ["Network Traffic: Network Traffic Content"],
+          "detection": "Monitor for encrypted traffic to unusual destinations, use of non-standard ports with TLS/SSL, and network flows with characteristics of custom encryption.",
+          "kill_chain_phase": "command_and_control"
+        },
+        {
+          "id": "T1568",
+          "name": "Dynamic Resolution",
+          "sub_techniques": ["T1568.001", "T1568.002", "T1568.003"],
+          "platforms": ["Windows", "macOS", "Linux"],
+          "description": "Adversaries may dynamically establish connections to C2 infrastructure using domain generation algorithms, DNS calculation, or fast flux DNS to make detection harder.",
+          "data_sources": ["Network Traffic: Network Connection Creation", "Network Traffic: Network Traffic Content"],
+          "detection": "Monitor for DGA-like DNS queries (algorithmically generated domain names), rapidly changing DNS resolutions (fast flux), and connections to newly registered domains.",
+          "kill_chain_phase": "command_and_control"
+        },
+        {
+          "id": "T1571",
+          "name": "Non-Standard Port",
+          "sub_techniques": [],
+          "platforms": ["Windows", "macOS", "Linux"],
+          "description": "Adversaries may communicate using a protocol and port pairing that are typically not associated to avoid detection. For example, HTTPS traffic on non-443 ports.",
+          "data_sources": ["Network Traffic: Network Traffic Content", "Network Traffic: Network Traffic Flow"],
+          "detection": "Monitor for protocol-port mismatches (HTTP on port 8443, DNS on port 5353), unusual high-port connections, and traffic on ports not aligned with baseline network profiles.",
+          "kill_chain_phase": "command_and_control"
+        },
+        {
+          "id": "T1102",
+          "name": "Web Service",
+          "sub_techniques": ["T1102.001", "T1102.002", "T1102.003"],
+          "platforms": ["Windows", "macOS", "Linux"],
+          "description": "Adversaries may use legitimate external web services as a means for relaying C2 communications, including dead drop resolvers, bidirectional communication, and one-way communication via social media, cloud storage, or paste sites.",
+          "data_sources": ["Network Traffic: Network Connection Creation", "Network Traffic: Network Traffic Content", "Network Traffic: Network Traffic Flow"],
+          "detection": "Monitor for C2 traffic masquerading as legitimate web service usage, unusual API calls to cloud storage or social media platforms, and consistent beaconing to paste/code-sharing sites.",
+          "kill_chain_phase": "command_and_control"
+        }
+      ]
+    },
+    {
+      "id": "TA0010",
+      "name": "Exfiltration",
+      "techniques": [
+        {
+          "id": "T1041",
+          "name": "Exfiltration Over C2 Channel",
+          "sub_techniques": [],
+          "platforms": ["Windows", "macOS", "Linux"],
+          "description": "Adversaries may steal data by exfiltrating it over an existing command and control channel rather than establishing separate exfiltration channels.",
+          "data_sources": ["Command: Command Execution", "File: File Access", "Network Traffic: Network Connection Creation", "Network Traffic: Network Traffic Content", "Network Traffic: Network Traffic Flow"],
+          "detection": "Monitor for large outbound data transfers over known C2 channels, unusual upload volumes, and data being staged before transmission.",
+          "kill_chain_phase": "exfiltration"
+        },
+        {
+          "id": "T1048",
+          "name": "Exfiltration Over Alternative Protocol",
+          "sub_techniques": ["T1048.001", "T1048.002", "T1048.003"],
+          "platforms": ["Windows", "macOS", "Linux", "Network"],
+          "description": "Adversaries may steal data by exfiltrating it over a different protocol than the existing C2 channel, such as DNS, FTP, SMTP, or cloud storage APIs.",
+          "data_sources": ["Command: Command Execution", "File: File Access", "Network Traffic: Network Connection Creation", "Network Traffic: Network Traffic Content", "Network Traffic: Network Traffic Flow"],
+          "detection": "Monitor for unusual outbound data transfers over protocols like DNS (large TXT queries), FTP, or SMTP from systems that do not typically use them.",
+          "kill_chain_phase": "exfiltration"
+        },
+        {
+          "id": "T1567",
+          "name": "Exfiltration Over Web Service",
+          "sub_techniques": ["T1567.001", "T1567.002", "T1567.003", "T1567.004"],
+          "platforms": ["Windows", "macOS", "Linux"],
+          "description": "Adversaries may use existing legitimate external web services to exfiltrate data, including cloud storage services (Google Drive, Dropbox, OneDrive) and code repositories.",
+          "data_sources": ["Command: Command Execution", "File: File Access", "Network Traffic: Network Connection Creation", "Network Traffic: Network Traffic Content", "Network Traffic: Network Traffic Flow"],
+          "detection": "Monitor for large uploads to cloud storage services, bulk data transfer to code repositories, and unusual file sharing activity to external accounts.",
+          "kill_chain_phase": "exfiltration"
+        },
+        {
+          "id": "T1020",
+          "name": "Automated Exfiltration",
+          "sub_techniques": ["T1020.001"],
+          "platforms": ["Windows", "macOS", "Linux", "Network"],
+          "description": "Adversaries may exfiltrate data automatically at scheduled intervals or in response to triggers rather than requiring manual interaction with the compromised system.",
+          "data_sources": ["Command: Command Execution", "File: File Access", "Network Traffic: Network Connection Creation", "Network Traffic: Network Traffic Content", "Network Traffic: Network Traffic Flow", "Script: Script Execution"],
+          "detection": "Monitor for periodic outbound data transfers on fixed intervals, automated script execution collecting and transmitting data, and scheduled tasks performing data uploads.",
+          "kill_chain_phase": "exfiltration"
+        },
+        {
+          "id": "T1029",
+          "name": "Scheduled Transfer",
+          "sub_techniques": [],
+          "platforms": ["Windows", "macOS", "Linux"],
+          "description": "Adversaries may schedule data exfiltration to be performed only at certain times of day or at certain intervals to blend with normal network activity patterns.",
+          "data_sources": ["Network Traffic: Network Connection Creation", "Network Traffic: Network Traffic Flow"],
+          "detection": "Monitor for outbound transfers that occur at consistent times, data staging followed by timed uploads, and correlation of exfiltration timing with business hour patterns.",
+          "kill_chain_phase": "exfiltration"
+        },
+        {
+          "id": "T1537",
+          "name": "Transfer Data to Cloud Account",
+          "sub_techniques": [],
+          "platforms": ["IaaS", "SaaS"],
+          "description": "Adversaries may exfiltrate data by transferring it to a cloud account they control, leveraging cloud-to-cloud transfers that may not traverse traditional network monitoring boundaries.",
+          "data_sources": ["Cloud Storage: Cloud Storage Access", "Cloud Storage: Cloud Storage Modification", "Snapshot: Snapshot Creation"],
+          "detection": "Monitor for cloud storage cross-account transfers, snapshot sharing with external accounts, and unusual IAM activity granting access to storage resources.",
+          "kill_chain_phase": "exfiltration"
+        }
+      ]
+    },
+    {
+      "id": "TA0040",
+      "name": "Impact",
+      "techniques": [
+        {
+          "id": "T1486",
+          "name": "Data Encrypted for Impact",
+          "sub_techniques": [],
+          "platforms": ["Windows", "macOS", "Linux", "IaaS"],
+          "description": "Adversaries may encrypt data on target systems to interrupt availability. Ransomware is the most common manifestation, encrypting files and demanding payment for decryption keys.",
+          "data_sources": ["Command: Command Execution", "File: File Creation", "File: File Modification", "Process: Process Creation"],
+          "detection": "Monitor for mass file modification events, unusual file extension changes, creation of ransom notes, and high entropy file writes across multiple directories.",
+          "kill_chain_phase": "impact"
+        },
+        {
+          "id": "T1489",
+          "name": "Service Stop",
+          "sub_techniques": [],
+          "platforms": ["Windows", "Linux", "macOS"],
+          "description": "Adversaries may stop or disable services on a system to render those services unavailable. Stopping critical services can inhibit incident response and recovery.",
+          "data_sources": ["Command: Command Execution", "Process: Process Creation", "Service: Service Metadata", "Windows Registry: Windows Registry Key Modification"],
+          "detection": "Monitor for commands that stop services (net stop, sc stop, systemctl stop), especially targeting security tools, backup services, or databases.",
+          "kill_chain_phase": "impact"
+        },
+        {
+          "id": "T1485",
+          "name": "Data Destruction",
+          "sub_techniques": [],
+          "platforms": ["Windows", "macOS", "Linux", "IaaS"],
+          "description": "Adversaries may destroy data and files on specific systems or in large numbers to interrupt availability. This may include overwriting, wiping, or deleting data from storage.",
+          "data_sources": ["Command: Command Execution", "File: File Deletion", "File: File Modification", "Process: Process Creation"],
+          "detection": "Monitor for mass file deletion operations, disk wiping utilities, overwriting of MBR/VBR/partition tables, and bulk destructive operations across file systems.",
+          "kill_chain_phase": "impact"
+        },
+        {
+          "id": "T1490",
+          "name": "Inhibit System Recovery",
+          "sub_techniques": [],
+          "platforms": ["Windows", "macOS", "Linux"],
+          "description": "Adversaries may delete or remove built-in data recovery options, such as shadow copies, backup catalogs, and system restore points to prevent system recovery.",
+          "data_sources": ["Command: Command Execution", "File: File Deletion", "Process: Process Creation", "Service: Service Metadata", "Windows Registry: Windows Registry Key Modification"],
+          "detection": "Monitor for vssadmin/wmic commands deleting shadow copies, bcdedit disabling recovery, and deletion of Windows backup catalogs or Linux recovery partitions.",
+          "kill_chain_phase": "impact"
+        },
+        {
+          "id": "T1498",
+          "name": "Network Denial of Service",
+          "sub_techniques": ["T1498.001", "T1498.002"],
+          "platforms": ["Windows", "macOS", "Linux", "IaaS", "Network"],
+          "description": "Adversaries may perform Network Denial of Service (DoS) attacks to degrade or block the availability of targeted resources. This includes volumetric floods and protocol-based attacks.",
+          "data_sources": ["Network Traffic: Network Traffic Flow", "Sensor Health: Host Status"],
+          "detection": "Monitor for abnormal spikes in network traffic volume, SYN flood indicators, unusual protocol traffic patterns, and degradation of network service availability.",
+          "kill_chain_phase": "impact"
+        }
+      ]
+    }
+  ]
+}

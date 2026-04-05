@@ -1,0 +1,16 @@
+# GRC Module Configuration — Governance, Risk & Compliance
+# Version: 0.1.0
+# Date: 2026-04-04T12:00:00.000Z
+
+user_name: Vincenzo
+communication_language: English
+document_output_language: English
+output_folder: _spectra-output
+
+grc_artifacts: "{project-root}/_spectra-output/engagements/{engagement_id}/grc"
+grc_risk_registers: "{project-root}/_spectra-output/engagements/{engagement_id}/grc/risk"
+grc_compliance_reports: "{project-root}/_spectra-output/engagements/{engagement_id}/grc/compliance"
+grc_policies: "{project-root}/_spectra-output/engagements/{engagement_id}/grc/policies"
+
+nist_controls_ref: "{project-root}/_spectra/core/frameworks/nist"
+owasp_ref: "{project-root}/_spectra/core/frameworks/owasp"

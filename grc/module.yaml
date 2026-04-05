@@ -1,0 +1,41 @@
+code: grc
+name: "SPECTRA Governance, Risk & Compliance"
+description: "GRC module for risk management, compliance reporting, and policy governance"
+module_version: 0.1.0
+default_selected: false
+
+header: "Governance, Risk & Compliance Configuration"
+subheader: "Configure the GRC module for risk management, compliance reporting, and policy governance."
+
+grc_artifacts:
+  prompt: "Where should GRC engagement artifacts be stored?"
+  default: "{output_folder}/engagements/{engagement_id}/grc"
+  result: "{project-root}/{value}"
+
+grc_risk_registers:
+  prompt: "Where should risk registers be stored?"
+  default: "{output_folder}/engagements/{engagement_id}/grc/risk"
+  result: "{project-root}/{value}"
+
+grc_compliance_reports:
+  prompt: "Where should compliance reports be stored?"
+  default: "{output_folder}/engagements/{engagement_id}/grc/compliance"
+  result: "{project-root}/{value}"
+
+grc_policies:
+  prompt: "Where should policy documents be stored?"
+  default: "{output_folder}/engagements/{engagement_id}/grc/policies"
+  result: "{project-root}/{value}"
+
+nist_controls_ref:
+  prompt: "Path to NIST controls framework reference?"
+  default: "_spectra/core/frameworks/nist"
+  result: "{project-root}/{value}"
+
+owasp_ref:
+  prompt: "Path to OWASP framework reference?"
+  default: "_spectra/core/frameworks/owasp"
+  result: "{project-root}/{value}"
+
+directories:
+  - "{project-root}/{output_folder}/engagements"

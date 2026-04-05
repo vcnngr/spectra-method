@@ -1,0 +1,168 @@
+# SPECTRA Engagement Template
+# Copy this file and fill in for each new engagement
+# This context propagates to ALL agents during the engagement
+
+engagement:
+  id: "ENG-YYYY-NNN"
+  name: ""
+  type: ""                         # pentest | red-team | purple-team | ctf | training | assessment | incident-response | compliance-audit
+  status: "planning"               # planning | active | paused | complete | archived
+
+  authorization:
+    client: ""
+    authorized_by: ""              # Name and title of authorizing person
+    authorization_document: ""     # Path to signed authorization/SOW
+    start_date: ""                 # ISO-8601
+    end_date: ""                   # ISO-8601
+    timezone: ""
+
+  rules_of_engagement:
+    testing_hours: "any"           # any | business-hours | after-hours | custom
+    custom_hours: ""               # If testing_hours is custom
+    notify_before_exploit: false
+    notify_on_critical: true
+    social_engineering_allowed: false
+    physical_access_allowed: false
+    dos_testing_allowed: false
+    data_exfiltration_allowed: false  # Can we actually exfil data or just prove access?
+    production_systems: false         # Are production systems in scope?
+    max_impact_level: "high"          # low | medium | high | critical
+
+  scope:
+    in_scope:
+      networks: []                 # e.g., ["10.0.0.0/24", "192.168.1.0/24"]
+      domains: []                  # e.g., ["example.com", "*.example.com"]
+      applications: []             # e.g., ["https://app.example.com"]
+      cloud_accounts: []           # e.g., ["AWS:123456789012"]
+      users: []                    # e.g., ["test-user-1", "test-user-2"]
+      notes: ""
+
+    out_of_scope:
+      networks: []
+      domains: []
+      applications: []
+      critical_systems: []         # e.g., ["DC01", "SCADA-controller"]
+      users: []                    # e.g., ["CEO", "board-members"]
+      notes: ""
+
+  deconfliction:
+    primary_contact: ""
+    primary_phone: ""
+    primary_email: ""
+    secondary_contact: ""
+    secondary_phone: ""
+    emergency_stop_procedure: ""   # How to immediately halt all testing
+    deconfliction_channel: ""      # e.g., "Slack #red-team-deconflict"
+
+  team:
+    lead: ""                       # Engagement lead name
+    members: []                    # Team member names
+    client_contacts: []            # Client-side contacts
+
+# Kill Chain Status — tracked per engagement phase
+kill_chain:
+  reconnaissance:
+    status: "pending"              # pending | in-progress | complete | skipped
+    agent: ""
+    started: ""
+    completed: ""
+    findings_count: 0
+    artifacts: []
+  weaponization:
+    status: "pending"
+    agent: ""
+    started: ""
+    completed: ""
+    artifacts: []
+  delivery:
+    status: "pending"
+    agent: ""
+    started: ""
+    completed: ""
+    artifacts: []
+  exploitation:
+    status: "pending"
+    agent: ""
+    started: ""
+    completed: ""
+    artifacts: []
+  installation:
+    status: "pending"
+    agent: ""
+    started: ""
+    completed: ""
+    artifacts: []
+  command_and_control:
+    status: "pending"
+    agent: ""
+    started: ""
+    completed: ""
+    artifacts: []
+  actions_on_objectives:
+    status: "pending"
+    agent: ""
+    started: ""
+    completed: ""
+    artifacts: []
+
+# Detection Coverage — populated by SOC module
+detection_coverage:
+  reconnaissance:
+    sigma_rules: 0
+    coverage_percent: 0
+    gaps: []
+  initial_access:
+    sigma_rules: 0
+    coverage_percent: 0
+    gaps: []
+  execution:
+    sigma_rules: 0
+    coverage_percent: 0
+    gaps: []
+  persistence:
+    sigma_rules: 0
+    coverage_percent: 0
+    gaps: []
+  privilege_escalation:
+    sigma_rules: 0
+    coverage_percent: 0
+    gaps: []
+  defense_evasion:
+    sigma_rules: 0
+    coverage_percent: 0
+    gaps: []
+  credential_access:
+    sigma_rules: 0
+    coverage_percent: 0
+    gaps: []
+  discovery:
+    sigma_rules: 0
+    coverage_percent: 0
+    gaps: []
+  lateral_movement:
+    sigma_rules: 0
+    coverage_percent: 0
+    gaps: []
+  collection:
+    sigma_rules: 0
+    coverage_percent: 0
+    gaps: []
+  exfiltration:
+    sigma_rules: 0
+    coverage_percent: 0
+    gaps: []
+  impact:
+    sigma_rules: 0
+    coverage_percent: 0
+    gaps: []
+
+# Risk Summary — populated by GRC module
+risk_summary:
+  overall_risk_level: ""           # critical | high | medium | low
+  critical_findings: 0
+  high_findings: 0
+  medium_findings: 0
+  low_findings: 0
+  informational_findings: 0
+  risk_score: 0                    # 0-100 quantitative score
+  business_impact_assessment: ""

@@ -1,0 +1,361 @@
+# SPECTRA Tools Registry v0.1.0
+# Maps available security tools by operational category.
+# Referenced by agents for tool selection and availability checking.
+#
+# Each tool entry: name, type, description, use_case, license, platforms
+# Types: cli_tool | web_service | framework | gui_tool
+# Licenses: open_source | commercial | dual
+
+registry:
+  version: "0.1.0"
+  last_updated: "2026-04-05"
+
+  categories:
+
+    # -----------------------------------------------------------------
+    # RECONNAISSANCE — information gathering before engagement
+    # -----------------------------------------------------------------
+    reconnaissance:
+      passive:
+        - name: "Shodan"
+          type: "web_service"
+          description: "Internet-connected device search engine"
+          use_case: "Discover exposed services, default credentials, vulnerabilities on target infrastructure"
+          license: "commercial"
+          platforms: ["web"]
+
+        - name: "theHarvester"
+          type: "cli_tool"
+          description: "Email, subdomain, and name harvester from public sources"
+          use_case: "OSINT collection for target domains — emails, subdomains, IPs, URLs"
+          license: "open_source"
+          platforms: ["linux", "macos", "windows"]
+
+        - name: "Amass"
+          type: "cli_tool"
+          description: "In-depth attack surface mapping and asset discovery"
+          use_case: "Subdomain enumeration, ASN discovery, network mapping via passive and active techniques"
+          license: "open_source"
+          platforms: ["linux", "macos", "windows"]
+
+        - name: "subfinder"
+          type: "cli_tool"
+          description: "Fast passive subdomain enumeration tool"
+          use_case: "Discover subdomains using passive online sources without active scanning"
+          license: "open_source"
+          platforms: ["linux", "macos", "windows"]
+
+      active:
+        - name: "Nmap"
+          type: "cli_tool"
+          description: "Network discovery and security auditing scanner"
+          use_case: "Port scanning, service detection, OS fingerprinting, NSE script execution"
+          license: "open_source"
+          platforms: ["linux", "macos", "windows"]
+
+        - name: "Masscan"
+          type: "cli_tool"
+          description: "Internet-scale port scanner"
+          use_case: "High-speed TCP port scanning across large network ranges"
+          license: "open_source"
+          platforms: ["linux", "macos"]
+
+    # -----------------------------------------------------------------
+    # EXPLOITATION — gaining initial access and exploiting vulnerabilities
+    # -----------------------------------------------------------------
+    exploitation:
+      frameworks:
+        - name: "Metasploit"
+          type: "framework"
+          description: "Penetration testing framework with exploit database and payload generation"
+          use_case: "Exploit development, payload delivery, post-exploitation modules"
+          license: "dual"
+          platforms: ["linux", "macos", "windows"]
+
+        - name: "Cobalt Strike"
+          type: "framework"
+          description: "Adversary simulation and red team operations platform"
+          use_case: "C2 infrastructure, beacon deployment, lateral movement, threat emulation"
+          license: "commercial"
+          platforms: ["linux", "windows"]
+
+        - name: "Nuclei"
+          type: "cli_tool"
+          description: "Template-based vulnerability scanner"
+          use_case: "Fast vulnerability detection using community-maintained YAML templates"
+          license: "open_source"
+          platforms: ["linux", "macos", "windows"]
+
+      web:
+        - name: "Burp Suite"
+          type: "gui_tool"
+          description: "Web application security testing platform"
+          use_case: "Intercepting proxy, automated scanning, manual web app exploitation"
+          license: "commercial"
+          platforms: ["linux", "macos", "windows"]
+
+        - name: "SQLMap"
+          type: "cli_tool"
+          description: "Automatic SQL injection detection and exploitation"
+          use_case: "Detect and exploit SQL injection flaws, dump database contents"
+          license: "open_source"
+          platforms: ["linux", "macos", "windows"]
+
+    # -----------------------------------------------------------------
+    # POST-EXPLOITATION — privilege escalation, persistence, pivoting
+    # -----------------------------------------------------------------
+    post_exploitation:
+      - name: "Mimikatz"
+        type: "cli_tool"
+        description: "Windows credential extraction and manipulation toolkit"
+        use_case: "Dump LSASS credentials, Kerberos tickets, DPAPI secrets from Windows hosts"
+        license: "open_source"
+        platforms: ["windows"]
+
+      - name: "BloodHound"
+        type: "gui_tool"
+        description: "Active Directory attack path mapping and analysis"
+        use_case: "Identify shortest path to Domain Admin, map AD relationships and permissions"
+        license: "open_source"
+        platforms: ["linux", "macos", "windows"]
+
+      - name: "Impacket"
+        type: "cli_tool"
+        description: "Python library for working with network protocols"
+        use_case: "SMB/WMI/DCOM execution, Kerberos attacks, secretsdump, NTLM relay"
+        license: "open_source"
+        platforms: ["linux", "macos", "windows"]
+
+      - name: "CrackMapExec"
+        type: "cli_tool"
+        description: "Post-exploitation tool for Active Directory environments"
+        use_case: "Credential spraying, command execution, enumeration across Windows networks"
+        license: "open_source"
+        platforms: ["linux", "macos"]
+
+      - name: "Rubeus"
+        type: "cli_tool"
+        description: "Kerberos abuse and manipulation toolkit for Windows"
+        use_case: "Kerberoasting, AS-REP roasting, ticket forging, delegation attacks"
+        license: "open_source"
+        platforms: ["windows"]
+
+    # -----------------------------------------------------------------
+    # CREDENTIAL ACCESS — cracking, spraying, harvesting
+    # -----------------------------------------------------------------
+    credential_access:
+      - name: "Hashcat"
+        type: "cli_tool"
+        description: "GPU-accelerated password recovery tool"
+        use_case: "Crack password hashes (NTLM, NTLMv2, Kerberos, WPA, bcrypt, etc.) using GPU"
+        license: "open_source"
+        platforms: ["linux", "macos", "windows"]
+
+      - name: "John the Ripper"
+        type: "cli_tool"
+        description: "CPU-based password cracker with format auto-detection"
+        use_case: "Crack password hashes with wordlists, rules, and incremental modes"
+        license: "open_source"
+        platforms: ["linux", "macos", "windows"]
+
+      - name: "Hydra"
+        type: "cli_tool"
+        description: "Online password brute-force tool supporting multiple protocols"
+        use_case: "Brute-force SSH, RDP, HTTP, FTP, SMB, and other network service logins"
+        license: "open_source"
+        platforms: ["linux", "macos"]
+
+      - name: "Responder"
+        type: "cli_tool"
+        description: "LLMNR/NBT-NS/MDNS poisoner and credential harvester"
+        use_case: "Capture NTLMv2 hashes via protocol poisoning on local network segments"
+        license: "open_source"
+        platforms: ["linux"]
+
+    # -----------------------------------------------------------------
+    # LATERAL MOVEMENT — moving between systems within a network
+    # -----------------------------------------------------------------
+    lateral_movement:
+      - name: "PsExec"
+        type: "cli_tool"
+        description: "Remote command execution via SMB named pipes"
+        use_case: "Execute commands on remote Windows hosts using admin credentials"
+        license: "commercial"
+        platforms: ["windows"]
+
+      - name: "WMI (wmiexec)"
+        type: "cli_tool"
+        description: "Remote execution via Windows Management Instrumentation"
+        use_case: "Semi-stealthy remote command execution on Windows without dropping files"
+        license: "open_source"
+        platforms: ["linux", "windows"]
+
+      - name: "WinRM (evil-winrm)"
+        type: "cli_tool"
+        description: "Windows Remote Management shell with pentesting features"
+        use_case: "Interactive PowerShell shell, file transfer, DLL loading on remote Windows hosts"
+        license: "open_source"
+        platforms: ["linux", "macos"]
+
+      - name: "chisel"
+        type: "cli_tool"
+        description: "TCP/UDP tunnel over HTTP with SSH encryption"
+        use_case: "Pivot through firewalls, create reverse tunnels for accessing internal services"
+        license: "open_source"
+        platforms: ["linux", "macos", "windows"]
+
+      - name: "ligolo-ng"
+        type: "cli_tool"
+        description: "Advanced tunneling and pivoting tool using TUN interfaces"
+        use_case: "Create transparent network tunnels for seamless pivoting without SOCKS proxies"
+        license: "open_source"
+        platforms: ["linux", "macos", "windows"]
+
+    # -----------------------------------------------------------------
+    # FORENSICS — disk, memory, network, and timeline analysis
+    # -----------------------------------------------------------------
+    forensics:
+      - name: "Volatility"
+        type: "cli_tool"
+        description: "Memory forensics framework for incident response"
+        use_case: "Analyze RAM dumps for malware, hidden processes, network connections, injected code"
+        license: "open_source"
+        platforms: ["linux", "macos", "windows"]
+
+      - name: "Autopsy"
+        type: "gui_tool"
+        description: "Digital forensics platform for disk image analysis"
+        use_case: "File recovery, timeline analysis, keyword search, artifact extraction from disk images"
+        license: "open_source"
+        platforms: ["linux", "macos", "windows"]
+
+      - name: "FTK Imager"
+        type: "gui_tool"
+        description: "Forensic disk imaging and evidence preview tool"
+        use_case: "Create forensic images (E01, dd), preview file systems, mount images read-only"
+        license: "commercial"
+        platforms: ["windows"]
+
+      - name: "Plaso (log2timeline)"
+        type: "cli_tool"
+        description: "Super timeline creation engine for forensic analysis"
+        use_case: "Generate unified timelines from multiple log sources, file systems, and artifacts"
+        license: "open_source"
+        platforms: ["linux", "macos"]
+
+      - name: "Wireshark"
+        type: "gui_tool"
+        description: "Network protocol analyzer and packet capture tool"
+        use_case: "Deep packet inspection, protocol dissection, network traffic analysis"
+        license: "open_source"
+        platforms: ["linux", "macos", "windows"]
+
+    # -----------------------------------------------------------------
+    # MALWARE ANALYSIS — static, dynamic, and behavioral analysis
+    # -----------------------------------------------------------------
+    malware_analysis:
+      - name: "Ghidra"
+        type: "gui_tool"
+        description: "NSA-developed reverse engineering framework"
+        use_case: "Disassembly, decompilation, binary analysis for malware reverse engineering"
+        license: "open_source"
+        platforms: ["linux", "macos", "windows"]
+
+      - name: "IDA Pro"
+        type: "gui_tool"
+        description: "Industry-standard interactive disassembler and debugger"
+        use_case: "Advanced binary analysis, decompilation (Hex-Rays), malware reverse engineering"
+        license: "commercial"
+        platforms: ["linux", "macos", "windows"]
+
+      - name: "Any.Run"
+        type: "web_service"
+        description: "Interactive malware analysis sandbox"
+        use_case: "Dynamic analysis of suspicious files and URLs in a cloud sandbox environment"
+        license: "commercial"
+        platforms: ["web"]
+
+      - name: "YARA"
+        type: "cli_tool"
+        description: "Pattern matching engine for malware identification"
+        use_case: "Write and apply rules to classify and identify malware families and indicators"
+        license: "open_source"
+        platforms: ["linux", "macos", "windows"]
+
+      - name: "FLOSS"
+        type: "cli_tool"
+        description: "FireEye Labs Obfuscated String Solver"
+        use_case: "Automatically extract obfuscated strings from malware binaries"
+        license: "open_source"
+        platforms: ["linux", "macos", "windows"]
+
+    # -----------------------------------------------------------------
+    # DETECTION — threat detection, monitoring, and alerting
+    # -----------------------------------------------------------------
+    detection:
+      - name: "Sigma"
+        type: "cli_tool"
+        description: "Generic signature format for SIEM detection rules"
+        use_case: "Write vendor-agnostic detection rules, convert to Splunk/Elastic/QRadar queries"
+        license: "open_source"
+        platforms: ["linux", "macos", "windows"]
+
+      - name: "Suricata"
+        type: "cli_tool"
+        description: "High-performance network IDS/IPS and security monitoring engine"
+        use_case: "Network intrusion detection, protocol analysis, file extraction, alerting"
+        license: "open_source"
+        platforms: ["linux"]
+
+      - name: "YARA"
+        type: "cli_tool"
+        description: "Pattern matching engine for threat detection"
+        use_case: "File and memory scanning against threat indicators and malware signatures"
+        license: "open_source"
+        platforms: ["linux", "macos", "windows"]
+
+      - name: "Sysmon"
+        type: "cli_tool"
+        description: "Windows system monitor for advanced logging"
+        use_case: "Log process creation, network connections, file changes, registry modifications"
+        license: "commercial"
+        platforms: ["windows", "linux"]
+
+      - name: "osquery"
+        type: "cli_tool"
+        description: "SQL-powered operating system instrumentation and analytics"
+        use_case: "Query endpoint state (processes, users, files, network) using SQL syntax"
+        license: "open_source"
+        platforms: ["linux", "macos", "windows"]
+
+    # -----------------------------------------------------------------
+    # COMPLIANCE — configuration auditing and hardening verification
+    # -----------------------------------------------------------------
+    compliance:
+      - name: "CIS-CAT"
+        type: "cli_tool"
+        description: "CIS Benchmark configuration assessment tool"
+        use_case: "Audit system configurations against CIS Benchmarks for hardening compliance"
+        license: "commercial"
+        platforms: ["linux", "macos", "windows"]
+
+      - name: "OpenSCAP"
+        type: "cli_tool"
+        description: "NIST SCAP-compliant security configuration scanner"
+        use_case: "Evaluate XCCDF/OVAL security policies, generate compliance reports"
+        license: "open_source"
+        platforms: ["linux"]
+
+      - name: "Lynis"
+        type: "cli_tool"
+        description: "Unix/Linux security auditing and hardening tool"
+        use_case: "System hardening assessment, vulnerability detection, compliance checking"
+        license: "open_source"
+        platforms: ["linux", "macos"]
+
+      - name: "Scout Suite"
+        type: "cli_tool"
+        description: "Multi-cloud security auditing tool"
+        use_case: "Audit AWS, Azure, GCP configurations for security misconfigurations"
+        license: "open_source"
+        platforms: ["linux", "macos", "windows"]

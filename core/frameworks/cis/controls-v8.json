@@ -1,0 +1,260 @@
+{
+  "framework": "CIS Controls v8",
+  "version": "8.0",
+  "generated": "2026-04-05",
+  "note": "SPECTRA reference — all 18 CIS Controls with key safeguards and Implementation Group assignments",
+  "controls": [
+    {
+      "id": "CIS-1",
+      "name": "Inventory and Control of Enterprise Assets",
+      "ig1": true,
+      "ig2": true,
+      "ig3": true,
+      "description": "Actively manage (inventory, track, and correct) all enterprise assets (end-user devices, including portable and mobile; network devices; non-computing/IoT devices; and servers) connected to the infrastructure, physically, virtually, remotely, and those within cloud environments, to accurately know the totality of assets that need to be monitored and protected within the enterprise.",
+      "safeguards": [
+        {"id": "1.1", "name": "Establish and Maintain Detailed Enterprise Asset Inventory", "ig": ["IG1", "IG2", "IG3"]},
+        {"id": "1.2", "name": "Address Unauthorized Assets", "ig": ["IG1", "IG2", "IG3"]},
+        {"id": "1.3", "name": "Utilize an Active Discovery Tool", "ig": ["IG2", "IG3"]},
+        {"id": "1.4", "name": "Use Dynamic Host Configuration Protocol (DHCP) Logging to Update Enterprise Asset Inventory", "ig": ["IG2", "IG3"]}
+      ]
+    },
+    {
+      "id": "CIS-2",
+      "name": "Inventory and Control of Software Assets",
+      "ig1": true,
+      "ig2": true,
+      "ig3": true,
+      "description": "Actively manage (inventory, track, and correct) all software (operating systems and applications) on the network so that only authorized software is installed and can execute, and that unauthorized and unmanaged software is found and prevented from installation or execution.",
+      "safeguards": [
+        {"id": "2.1", "name": "Establish and Maintain a Software Inventory", "ig": ["IG1", "IG2", "IG3"]},
+        {"id": "2.2", "name": "Ensure Authorized Software is Currently Supported", "ig": ["IG1", "IG2", "IG3"]},
+        {"id": "2.3", "name": "Address Unauthorized Software", "ig": ["IG1", "IG2", "IG3"]},
+        {"id": "2.5", "name": "Allowlist Authorized Software", "ig": ["IG2", "IG3"]}
+      ]
+    },
+    {
+      "id": "CIS-3",
+      "name": "Data Protection",
+      "ig1": true,
+      "ig2": true,
+      "ig3": true,
+      "description": "Develop processes and technical controls to identify, classify, securely handle, retain, and dispose of data. This includes data stored on-site, at a remote location, or in cloud environments.",
+      "safeguards": [
+        {"id": "3.1", "name": "Establish and Maintain a Data Management Process", "ig": ["IG1", "IG2", "IG3"]},
+        {"id": "3.3", "name": "Configure Data Access Control Lists", "ig": ["IG1", "IG2", "IG3"]},
+        {"id": "3.4", "name": "Enforce Data Retention", "ig": ["IG1", "IG2", "IG3"]},
+        {"id": "3.11", "name": "Encrypt Sensitive Data at Rest", "ig": ["IG2", "IG3"]}
+      ]
+    },
+    {
+      "id": "CIS-4",
+      "name": "Secure Configuration of Enterprise Assets and Software",
+      "ig1": true,
+      "ig2": true,
+      "ig3": true,
+      "description": "Establish and maintain the secure configuration of enterprise assets (end-user devices, including portable and mobile; network devices; non-computing/IoT devices; and servers) and software (operating systems and applications).",
+      "safeguards": [
+        {"id": "4.1", "name": "Establish and Maintain a Secure Configuration Process", "ig": ["IG1", "IG2", "IG3"]},
+        {"id": "4.2", "name": "Establish and Maintain a Secure Configuration Process for Network Infrastructure", "ig": ["IG1", "IG2", "IG3"]},
+        {"id": "4.7", "name": "Manage Default Accounts on Enterprise Assets and Software", "ig": ["IG1", "IG2", "IG3"]},
+        {"id": "4.8", "name": "Uninstall or Disable Unnecessary Services on Enterprise Assets and Software", "ig": ["IG2", "IG3"]}
+      ]
+    },
+    {
+      "id": "CIS-5",
+      "name": "Account Management",
+      "ig1": true,
+      "ig2": true,
+      "ig3": true,
+      "description": "Use processes and tools to assign and manage authorization to credentials for user accounts, including administrator accounts, as well as service accounts, to enterprise assets and software.",
+      "safeguards": [
+        {"id": "5.1", "name": "Establish and Maintain an Inventory of Accounts", "ig": ["IG1", "IG2", "IG3"]},
+        {"id": "5.2", "name": "Use Unique Passwords", "ig": ["IG1", "IG2", "IG3"]},
+        {"id": "5.3", "name": "Disable Dormant Accounts", "ig": ["IG1", "IG2", "IG3"]},
+        {"id": "5.4", "name": "Restrict Administrator Privileges to Dedicated Administrator Accounts", "ig": ["IG1", "IG2", "IG3"]}
+      ]
+    },
+    {
+      "id": "CIS-6",
+      "name": "Access Control Management",
+      "ig1": true,
+      "ig2": true,
+      "ig3": true,
+      "description": "Use processes and tools to create, assign, manage, and revoke access credentials and privileges for user, administrator, and service accounts for enterprise assets and software.",
+      "safeguards": [
+        {"id": "6.1", "name": "Establish an Access Granting Process", "ig": ["IG1", "IG2", "IG3"]},
+        {"id": "6.2", "name": "Establish an Access Revoking Process", "ig": ["IG1", "IG2", "IG3"]},
+        {"id": "6.3", "name": "Require MFA for Externally-Exposed Applications", "ig": ["IG1", "IG2", "IG3"]},
+        {"id": "6.5", "name": "Require MFA for Administrative Access", "ig": ["IG1", "IG2", "IG3"]}
+      ]
+    },
+    {
+      "id": "CIS-7",
+      "name": "Continuous Vulnerability Management",
+      "ig1": true,
+      "ig2": true,
+      "ig3": true,
+      "description": "Develop a plan to continuously assess and track vulnerabilities on all enterprise assets within the enterprise's infrastructure, in order to remediate, and minimize, the window of opportunity for attackers.",
+      "safeguards": [
+        {"id": "7.1", "name": "Establish and Maintain a Vulnerability Management Process", "ig": ["IG1", "IG2", "IG3"]},
+        {"id": "7.2", "name": "Establish and Maintain a Remediation Process", "ig": ["IG1", "IG2", "IG3"]},
+        {"id": "7.3", "name": "Perform Automated Operating System Patch Management", "ig": ["IG1", "IG2", "IG3"]},
+        {"id": "7.5", "name": "Perform Automated Vulnerability Scans of Internal Enterprise Assets", "ig": ["IG2", "IG3"]}
+      ]
+    },
+    {
+      "id": "CIS-8",
+      "name": "Audit Log Management",
+      "ig1": true,
+      "ig2": true,
+      "ig3": true,
+      "description": "Collect, alert, review, and retain audit logs of events that could help detect, understand, or recover from an attack.",
+      "safeguards": [
+        {"id": "8.1", "name": "Establish and Maintain an Audit Log Management Process", "ig": ["IG1", "IG2", "IG3"]},
+        {"id": "8.2", "name": "Collect Audit Logs", "ig": ["IG1", "IG2", "IG3"]},
+        {"id": "8.5", "name": "Collect Detailed Audit Logs", "ig": ["IG2", "IG3"]},
+        {"id": "8.9", "name": "Centralize Audit Logs", "ig": ["IG2", "IG3"]}
+      ]
+    },
+    {
+      "id": "CIS-9",
+      "name": "Email and Web Browser Protections",
+      "ig1": true,
+      "ig2": true,
+      "ig3": true,
+      "description": "Improve protections and detections of threats from email and web vectors, as these are opportunities for attackers to manipulate human behavior through direct engagement.",
+      "safeguards": [
+        {"id": "9.1", "name": "Ensure Use of Only Fully Supported Browsers and Email Clients", "ig": ["IG1", "IG2", "IG3"]},
+        {"id": "9.2", "name": "Use DNS Filtering Services", "ig": ["IG1", "IG2", "IG3"]},
+        {"id": "9.3", "name": "Maintain and Enforce Network-Based URL Filters", "ig": ["IG2", "IG3"]},
+        {"id": "9.6", "name": "Block Unnecessary File Types", "ig": ["IG2", "IG3"]}
+      ]
+    },
+    {
+      "id": "CIS-10",
+      "name": "Malware Defenses",
+      "ig1": true,
+      "ig2": true,
+      "ig3": true,
+      "description": "Prevent or control the installation, spread, and execution of malicious applications, code, or scripts on enterprise assets.",
+      "safeguards": [
+        {"id": "10.1", "name": "Deploy and Maintain Anti-Malware Software", "ig": ["IG1", "IG2", "IG3"]},
+        {"id": "10.2", "name": "Configure Automatic Anti-Malware Signature Updates", "ig": ["IG1", "IG2", "IG3"]},
+        {"id": "10.4", "name": "Configure Automatic Anti-Malware Scanning of Removable Media", "ig": ["IG2", "IG3"]},
+        {"id": "10.7", "name": "Use Behavior-Based Anti-Malware Software", "ig": ["IG2", "IG3"]}
+      ]
+    },
+    {
+      "id": "CIS-11",
+      "name": "Data Recovery",
+      "ig1": true,
+      "ig2": true,
+      "ig3": true,
+      "description": "Establish and maintain data recovery practices sufficient to restore in-scope enterprise assets to a pre-incident and trusted state.",
+      "safeguards": [
+        {"id": "11.1", "name": "Establish and Maintain a Data Recovery Process", "ig": ["IG1", "IG2", "IG3"]},
+        {"id": "11.2", "name": "Perform Automated Backups", "ig": ["IG1", "IG2", "IG3"]},
+        {"id": "11.3", "name": "Protect Recovery Data", "ig": ["IG1", "IG2", "IG3"]},
+        {"id": "11.4", "name": "Establish and Maintain an Isolated Instance of Recovery Data", "ig": ["IG1", "IG2", "IG3"]}
+      ]
+    },
+    {
+      "id": "CIS-12",
+      "name": "Network Infrastructure Management",
+      "ig1": true,
+      "ig2": true,
+      "ig3": true,
+      "description": "Establish and maintain the secure configuration and management of network infrastructure devices (physical and virtual), including firewalls, routers, and switches.",
+      "safeguards": [
+        {"id": "12.1", "name": "Ensure Network Infrastructure is Up-to-Date", "ig": ["IG1", "IG2", "IG3"]},
+        {"id": "12.2", "name": "Establish and Maintain a Secure Network Architecture", "ig": ["IG2", "IG3"]},
+        {"id": "12.3", "name": "Securely Manage Network Infrastructure", "ig": ["IG2", "IG3"]},
+        {"id": "12.6", "name": "Use of Secure Network Management and Communication Protocols", "ig": ["IG2", "IG3"]}
+      ]
+    },
+    {
+      "id": "CIS-13",
+      "name": "Network Monitoring and Defense",
+      "ig1": false,
+      "ig2": true,
+      "ig3": true,
+      "description": "Operate processes and tooling to establish and maintain comprehensive network monitoring and defense against security threats across the enterprise's network infrastructure and user base.",
+      "safeguards": [
+        {"id": "13.1", "name": "Centralize Security Event Alerting", "ig": ["IG2", "IG3"]},
+        {"id": "13.3", "name": "Deploy a Network Intrusion Detection Solution", "ig": ["IG2", "IG3"]},
+        {"id": "13.6", "name": "Collect Network Traffic Flow Logs", "ig": ["IG2", "IG3"]},
+        {"id": "13.8", "name": "Deploy a Network Intrusion Prevention Solution", "ig": ["IG3"]}
+      ]
+    },
+    {
+      "id": "CIS-14",
+      "name": "Security Awareness and Skills Training",
+      "ig1": true,
+      "ig2": true,
+      "ig3": true,
+      "description": "Establish and maintain a security awareness program to influence behavior among the workforce to be security conscious and properly skilled to reduce cybersecurity risks to the enterprise.",
+      "safeguards": [
+        {"id": "14.1", "name": "Establish and Maintain a Security Awareness Program", "ig": ["IG1", "IG2", "IG3"]},
+        {"id": "14.2", "name": "Train Workforce Members to Recognize Social Engineering Attacks", "ig": ["IG1", "IG2", "IG3"]},
+        {"id": "14.3", "name": "Train Workforce Members on Authentication Best Practices", "ig": ["IG1", "IG2", "IG3"]},
+        {"id": "14.6", "name": "Train Workforce Members on Recognizing and Reporting Security Incidents", "ig": ["IG1", "IG2", "IG3"]}
+      ]
+    },
+    {
+      "id": "CIS-15",
+      "name": "Service Provider Management",
+      "ig1": false,
+      "ig2": true,
+      "ig3": true,
+      "description": "Develop a process to evaluate service providers who hold sensitive data, or are responsible for an enterprise's critical IT platforms or processes, to ensure these providers are protecting those platforms and data appropriately.",
+      "safeguards": [
+        {"id": "15.1", "name": "Establish and Maintain an Inventory of Service Providers", "ig": ["IG2", "IG3"]},
+        {"id": "15.2", "name": "Establish and Maintain a Service Provider Management Policy", "ig": ["IG2", "IG3"]},
+        {"id": "15.3", "name": "Classify Service Providers", "ig": ["IG2", "IG3"]},
+        {"id": "15.4", "name": "Ensure Service Provider Contracts Include Security Requirements", "ig": ["IG2", "IG3"]}
+      ]
+    },
+    {
+      "id": "CIS-16",
+      "name": "Application Software Security",
+      "ig1": false,
+      "ig2": true,
+      "ig3": true,
+      "description": "Manage the security life cycle of in-house developed, hosted, or acquired software to prevent, detect, and remediate security weaknesses before they can impact the enterprise.",
+      "safeguards": [
+        {"id": "16.1", "name": "Establish and Maintain a Secure Application Development Process", "ig": ["IG2", "IG3"]},
+        {"id": "16.2", "name": "Establish and Maintain a Process to Accept and Address Software Vulnerabilities", "ig": ["IG2", "IG3"]},
+        {"id": "16.4", "name": "Establish and Manage an Inventory of Third-Party Software Components", "ig": ["IG2", "IG3"]},
+        {"id": "16.9", "name": "Train Developers in Application Security Concepts and Secure Coding", "ig": ["IG2", "IG3"]}
+      ]
+    },
+    {
+      "id": "CIS-17",
+      "name": "Incident Response Management",
+      "ig1": true,
+      "ig2": true,
+      "ig3": true,
+      "description": "Establish a program to develop and maintain an incident response capability (e.g., policies, plans, procedures, defined roles, training, and communications) to prepare, detect, and quickly respond to an attack.",
+      "safeguards": [
+        {"id": "17.1", "name": "Designate Personnel to Manage Incident Handling", "ig": ["IG1", "IG2", "IG3"]},
+        {"id": "17.2", "name": "Establish and Maintain Contact Information for Reporting Security Incidents", "ig": ["IG1", "IG2", "IG3"]},
+        {"id": "17.3", "name": "Establish and Maintain an Enterprise Process for Reporting Incidents", "ig": ["IG1", "IG2", "IG3"]},
+        {"id": "17.6", "name": "Define Mechanisms for Communicating During Incident Response", "ig": ["IG2", "IG3"]}
+      ]
+    },
+    {
+      "id": "CIS-18",
+      "name": "Penetration Testing",
+      "ig1": false,
+      "ig2": false,
+      "ig3": true,
+      "description": "Test the effectiveness and resiliency of enterprise assets through identifying and exploiting weaknesses in controls (people, processes, and technology), and simulating the objectives and actions of an attacker.",
+      "safeguards": [
+        {"id": "18.1", "name": "Establish and Maintain a Penetration Testing Program", "ig": ["IG3"]},
+        {"id": "18.2", "name": "Perform Periodic External Penetration Tests", "ig": ["IG3"]},
+        {"id": "18.3", "name": "Remediate Penetration Test Findings", "ig": ["IG3"]},
+        {"id": "18.4", "name": "Validate Security Measures", "ig": ["IG3"]}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+code: core
+name: "SPECTRA Core Module"
+
+header: "SPECTRA Core Configuration"
+subheader: "Configure the core settings for Security Protocol Engineering for Cyber Threat Response & Assessment.\nThese settings will be used across all installed SPECTRA skills, workflows, and agents."
+
+user_name:
+  prompt: "What should agents call you?"
+  default: "Operator"
+  result: "{value}"
+
+communication_language:
+  prompt: "What language should agents use for communication?"
+  default: "English"
+  result: "{value}"
+
+document_output_language:
+  prompt: "What language should be used for generated documents and reports?"
+  default: "English"
+  result: "{value}"
+
+output_folder:
+  prompt: "Where should output files be saved (relative to project root)?"
+  default: "_spectra-output"
+  result: "{project-root}/{value}"
+
+engagement_artifacts:
+  prompt: "Where should engagement artifacts be stored?"
+  default: "{output_folder}/engagements"
+  result: "{project-root}/{value}"
+
+report_artifacts:
+  prompt: "Where should reports be stored?"
+  default: "{output_folder}/reports"
+  result: "{project-root}/{value}"
+
+evidence_artifacts:
+  prompt: "Where should evidence files be stored?"
+  default: "{output_folder}/evidence"
+  result: "{project-root}/{value}"
+
+directories:
+  - "{project-root}/{output_folder}"
+  - "{project-root}/{output_folder}/engagements"
+  - "{project-root}/{output_folder}/reports"
+  - "{project-root}/{output_folder}/evidence"

@@ -1,0 +1,16 @@
+# IRT Module Configuration — Incident Response Team
+# Version: 0.1.0
+# Date: 2026-04-04T12:00:00.000Z
+
+user_name: Vincenzo
+communication_language: English
+document_output_language: English
+output_folder: _spectra-output
+
+irt_artifacts: "{project-root}/_spectra-output/engagements/{engagement_id}/irt"
+irt_forensics: "{project-root}/_spectra-output/engagements/{engagement_id}/irt/forensics"
+irt_malware: "{project-root}/_spectra-output/engagements/{engagement_id}/irt/malware"
+irt_intel: "{project-root}/_spectra-output/engagements/{engagement_id}/irt/intel"
+irt_evidence_chain: "{project-root}/_spectra-output/engagements/{engagement_id}/irt/evidence"
+
+nist_ir_ref: "{project-root}/_spectra/core/frameworks/nist"

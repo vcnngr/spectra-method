@@ -1,0 +1,20 @@
+# Development files
+.DS_Store
+*.pyc
+**/__pycache__/
+**/__pycache__/**
+.git/
+.github/
+
+# User data (never published)
+_spectra-output/
+
+# Development docs (not for end users)
+DEV-GUIDE.md
+
+# Test and validation outputs
+core/execution/e2e-test-report.md
+
+# IDE configs
+.vscode/
+.idea/

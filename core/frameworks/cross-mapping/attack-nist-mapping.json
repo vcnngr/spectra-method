@@ -1,0 +1,288 @@
+{
+  "framework_mapping": "MITRE ATT&CK -> NIST 800-53 Rev 5",
+  "version": "1.0",
+  "generated": "2026-04-05",
+  "note": "SPECTRA cross-framework reference — maps operationally relevant ATT&CK techniques to NIST 800-53 controls. Based on MITRE ATT&CK v14 and NIST SP 800-53 Rev 5.",
+  "mappings": [
+    {
+      "attack_technique": "T1566",
+      "attack_name": "Phishing",
+      "tactic": "Initial Access",
+      "nist_controls": ["AT-2", "SC-7", "SI-3", "SI-4", "SI-8"],
+      "rationale": "Security awareness training addresses social engineering; boundary protection and email filtering block phishing delivery; malicious code protection detects payloads; spam protection filters phishing emails"
+    },
+    {
+      "attack_technique": "T1566.001",
+      "attack_name": "Phishing: Spearphishing Attachment",
+      "tactic": "Initial Access",
+      "nist_controls": ["AT-2", "SC-7", "SI-3", "SI-4", "SI-8", "CM-7"],
+      "rationale": "Malicious code protection scans attachments; least functionality restricts dangerous file types; boundary protection filters at email gateways"
+    },
+    {
+      "attack_technique": "T1059",
+      "attack_name": "Command and Scripting Interpreter",
+      "tactic": "Execution",
+      "nist_controls": ["CM-7", "SI-3", "SI-4", "SI-7", "AU-2", "AU-12"],
+      "rationale": "Least functionality restricts scripting engines; malicious code protection detects script-based attacks; system monitoring tracks command execution; audit logging captures execution events"
+    },
+    {
+      "attack_technique": "T1059.001",
+      "attack_name": "Command and Scripting Interpreter: PowerShell",
+      "tactic": "Execution",
+      "nist_controls": ["CM-7", "SI-3", "SI-4", "AU-2", "AU-12", "CM-6"],
+      "rationale": "Configuration settings enforce constrained language mode and script block logging; monitoring detects suspicious PowerShell; least functionality can restrict PowerShell access"
+    },
+    {
+      "attack_technique": "T1053.005",
+      "attack_name": "Scheduled Task/Job: Scheduled Task",
+      "tactic": "Persistence",
+      "nist_controls": ["AC-3", "AC-6", "CM-7", "SI-4", "AU-2"],
+      "rationale": "Access enforcement and least privilege limit who can create tasks; least functionality restricts task scheduler; monitoring detects suspicious task creation"
+    },
+    {
+      "attack_technique": "T1547.001",
+      "attack_name": "Boot or Logon Autostart Execution: Registry Run Keys",
+      "tactic": "Persistence",
+      "nist_controls": ["CM-6", "CM-7", "SI-4", "SI-7", "AC-6"],
+      "rationale": "Configuration settings harden registry; file integrity monitoring detects unauthorized changes; least privilege restricts registry modification; system monitoring tracks registry operations"
+    },
+    {
+      "attack_technique": "T1003",
+      "attack_name": "OS Credential Dumping",
+      "tactic": "Credential Access",
+      "nist_controls": ["AC-3", "AC-6", "IA-5", "SC-28", "SI-4", "CM-6"],
+      "rationale": "Access enforcement and least privilege limit access to credential stores; authenticator management protects credential material; protection at rest encrypts stored credentials; monitoring detects dumping activity"
+    },
+    {
+      "attack_technique": "T1003.001",
+      "attack_name": "OS Credential Dumping: LSASS Memory",
+      "tactic": "Credential Access",
+      "nist_controls": ["AC-3", "AC-6", "CM-6", "SI-4", "SI-7"],
+      "rationale": "Configuration settings enable Credential Guard and RunAsPPL; access enforcement restricts LSASS access; system monitoring detects process access to LSASS; integrity verification detects tampering"
+    },
+    {
+      "attack_technique": "T1003.006",
+      "attack_name": "OS Credential Dumping: DCSync",
+      "tactic": "Credential Access",
+      "nist_controls": ["AC-3", "AC-6", "AU-2", "AU-12", "SI-4"],
+      "rationale": "Access enforcement restricts directory replication rights; least privilege limits who has replication permissions; audit logging captures replication requests; monitoring detects anomalous replication"
+    },
+    {
+      "attack_technique": "T1558.003",
+      "attack_name": "Steal or Forge Kerberos Tickets: Kerberoasting",
+      "tactic": "Credential Access",
+      "nist_controls": ["AC-2", "IA-5", "SI-4", "AU-2", "CM-6"],
+      "rationale": "Account management ensures service accounts use strong passwords; authenticator management enforces password complexity; monitoring detects anomalous TGS requests; configuration settings enforce AES encryption"
+    },
+    {
+      "attack_technique": "T1558.001",
+      "attack_name": "Steal or Forge Kerberos Tickets: Golden Ticket",
+      "tactic": "Credential Access",
+      "nist_controls": ["AC-2", "AC-3", "IA-5", "SI-4", "SI-7"],
+      "rationale": "Account management protects krbtgt account; authenticator management enforces regular krbtgt password rotation; monitoring detects ticket anomalies; integrity verification validates authentication tokens"
+    },
+    {
+      "attack_technique": "T1550.002",
+      "attack_name": "Use Alternate Authentication Material: Pass the Hash",
+      "tactic": "Lateral Movement",
+      "nist_controls": ["AC-3", "IA-2", "CM-6", "SI-4", "SC-8"],
+      "rationale": "MFA through IA-2 mitigates hash-only authentication; configuration settings disable NTLM where possible; monitoring detects anomalous logon patterns; transmission protection encrypts credentials in transit"
+    },
+    {
+      "attack_technique": "T1557.001",
+      "attack_name": "Adversary-in-the-Middle: LLMNR/NBT-NS Poisoning",
+      "tactic": "Credential Access",
+      "nist_controls": ["CM-6", "CM-7", "SC-7", "SC-8", "SI-4"],
+      "rationale": "Configuration settings disable LLMNR and NBT-NS; least functionality removes unnecessary protocols; boundary protection segments network; monitoring detects poisoning activity"
+    },
+    {
+      "attack_technique": "T1021.002",
+      "attack_name": "Remote Services: SMB/Windows Admin Shares",
+      "tactic": "Lateral Movement",
+      "nist_controls": ["AC-3", "AC-6", "AC-17", "CM-7", "SC-7", "SI-4"],
+      "rationale": "Access enforcement and least privilege restrict share access; remote access controls limit SMB exposure; boundary protection segments networks; monitoring detects lateral movement patterns"
+    },
+    {
+      "attack_technique": "T1021.006",
+      "attack_name": "Remote Services: Windows Remote Management",
+      "tactic": "Lateral Movement",
+      "nist_controls": ["AC-3", "AC-6", "AC-17", "AU-2", "SI-4", "CM-6"],
+      "rationale": "Remote access controls restrict WinRM usage; least privilege limits remote management capabilities; audit logging captures remote sessions; configuration settings harden WinRM"
+    },
+    {
+      "attack_technique": "T1047",
+      "attack_name": "Windows Management Instrumentation",
+      "tactic": "Execution",
+      "nist_controls": ["AC-3", "AC-6", "CM-7", "SI-4", "AU-2"],
+      "rationale": "Access enforcement restricts WMI access; least privilege limits remote WMI; least functionality disables WMI where unnecessary; monitoring detects WMI-based execution"
+    },
+    {
+      "attack_technique": "T1055",
+      "attack_name": "Process Injection",
+      "tactic": "Defense Evasion",
+      "nist_controls": ["AC-3", "AC-6", "CM-6", "SI-3", "SI-4", "SI-7"],
+      "rationale": "Access enforcement restricts process access rights; configuration settings enable exploit protection; malicious code protection detects injection; monitoring tracks suspicious process behavior; integrity verification detects memory tampering"
+    },
+    {
+      "attack_technique": "T1548.002",
+      "attack_name": "Abuse Elevation Control Mechanism: Bypass User Account Control",
+      "tactic": "Privilege Escalation",
+      "nist_controls": ["AC-6", "CM-6", "SI-4", "SI-7"],
+      "rationale": "Least privilege sets UAC to highest enforcement; configuration settings harden UAC behavior; monitoring detects UAC bypass patterns; integrity verification detects auto-elevation abuse"
+    },
+    {
+      "attack_technique": "T1562.001",
+      "attack_name": "Impair Defenses: Disable or Modify Tools",
+      "tactic": "Defense Evasion",
+      "nist_controls": ["AC-3", "AC-6", "CM-6", "SI-3", "SI-4", "SI-7"],
+      "rationale": "Access enforcement prevents unauthorized security tool modification; configuration settings enforce tamper protection; monitoring detects defense disablement; integrity verification validates security tool state"
+    },
+    {
+      "attack_technique": "T1562.006",
+      "attack_name": "Impair Defenses: Indicator Blocking",
+      "tactic": "Defense Evasion",
+      "nist_controls": ["AU-2", "AU-12", "SI-4", "SI-7", "CM-6"],
+      "rationale": "Audit logging ensures event collection; audit record generation maintains log pipeline integrity; monitoring detects ETW tampering; integrity verification validates logging infrastructure"
+    },
+    {
+      "attack_technique": "T1070.001",
+      "attack_name": "Indicator Removal: Clear Windows Event Logs",
+      "tactic": "Defense Evasion",
+      "nist_controls": ["AU-2", "AU-6", "AU-12", "SI-4", "AC-6"],
+      "rationale": "Audit logging and generation ensure events are captured; centralized log review detects gaps; monitoring alerts on log clearing; least privilege restricts log management access"
+    },
+    {
+      "attack_technique": "T1105",
+      "attack_name": "Ingress Tool Transfer",
+      "tactic": "Command and Control",
+      "nist_controls": ["CM-7", "SC-7", "SI-3", "SI-4"],
+      "rationale": "Least functionality restricts download tools; boundary protection filters inbound transfers; malicious code protection scans downloaded files; monitoring detects tool staging"
+    },
+    {
+      "attack_technique": "T1071.001",
+      "attack_name": "Application Layer Protocol: Web Protocols",
+      "tactic": "Command and Control",
+      "nist_controls": ["SC-7", "SI-4", "AU-2", "CA-7"],
+      "rationale": "Boundary protection inspects HTTP/HTTPS traffic; monitoring detects C2 beaconing patterns; audit logging captures network connections; continuous monitoring provides ongoing detection"
+    },
+    {
+      "attack_technique": "T1071.004",
+      "attack_name": "Application Layer Protocol: DNS",
+      "tactic": "Command and Control",
+      "nist_controls": ["SC-7", "SI-4", "AU-2", "CM-6"],
+      "rationale": "Boundary protection monitors DNS traffic; system monitoring detects tunneling patterns; audit logging captures DNS queries; configuration settings enforce DNS security"
+    },
+    {
+      "attack_technique": "T1572",
+      "attack_name": "Protocol Tunneling",
+      "tactic": "Command and Control",
+      "nist_controls": ["SC-7", "SI-4", "AU-2", "CM-7"],
+      "rationale": "Boundary protection detects tunneled protocols; monitoring identifies covert channels; audit logging captures connection details; least functionality restricts tunnel-capable tools"
+    },
+    {
+      "attack_technique": "T1197",
+      "attack_name": "BITS Jobs",
+      "tactic": "Defense Evasion",
+      "nist_controls": ["CM-7", "SI-4", "AU-2", "CM-6"],
+      "rationale": "Least functionality restricts BITS access; monitoring detects suspicious BITS jobs; audit logging captures BITS operations; configuration settings limit BITS capabilities"
+    },
+    {
+      "attack_technique": "T1218.011",
+      "attack_name": "System Binary Proxy Execution: Rundll32",
+      "tactic": "Defense Evasion",
+      "nist_controls": ["CM-7", "SI-3", "SI-4", "AU-2"],
+      "rationale": "Least functionality reduces proxy execution surfaces; malicious code protection detects malicious DLL loads; monitoring tracks rundll32 execution patterns; audit logging captures command lines"
+    },
+    {
+      "attack_technique": "T1218.005",
+      "attack_name": "System Binary Proxy Execution: Mshta",
+      "tactic": "Defense Evasion",
+      "nist_controls": ["CM-7", "SI-3", "SI-4", "SC-7"],
+      "rationale": "Least functionality disables mshta where unnecessary; malicious code protection scans HTA files; monitoring detects mshta execution; boundary protection blocks remote HTA loading"
+    },
+    {
+      "attack_technique": "T1218.010",
+      "attack_name": "System Binary Proxy Execution: Regsvr32",
+      "tactic": "Defense Evasion",
+      "nist_controls": ["CM-7", "SI-3", "SI-4", "AU-2"],
+      "rationale": "Least functionality restricts regsvr32; malicious code protection detects scriptlet abuse; monitoring tracks proxy execution; audit logging captures command-line arguments"
+    },
+    {
+      "attack_technique": "T1218.003",
+      "attack_name": "System Binary Proxy Execution: CMSTP",
+      "tactic": "Defense Evasion",
+      "nist_controls": ["CM-7", "SI-4", "AC-6", "AU-2"],
+      "rationale": "Least functionality restricts CMSTP access; monitoring detects INF-based execution; least privilege prevents UAC bypass exploitation; audit logging captures CMSTP invocations"
+    },
+    {
+      "attack_technique": "T1087",
+      "attack_name": "Account Discovery",
+      "tactic": "Discovery",
+      "nist_controls": ["AC-3", "AC-6", "SI-4", "AU-2"],
+      "rationale": "Access enforcement restricts account enumeration; least privilege limits visibility into directory services; monitoring detects enumeration activity; audit logging captures discovery commands"
+    },
+    {
+      "attack_technique": "T1560.001",
+      "attack_name": "Archive Collected Data: Archive via Utility",
+      "tactic": "Collection",
+      "nist_controls": ["SI-4", "AU-2", "CM-7", "AC-3"],
+      "rationale": "Monitoring detects archive tool usage on sensitive data; audit logging captures file operations; least functionality restricts archive utilities; access enforcement limits data access"
+    },
+    {
+      "attack_technique": "T1048",
+      "attack_name": "Exfiltration Over Alternative Protocol",
+      "tactic": "Exfiltration",
+      "nist_controls": ["SC-7", "SI-4", "AU-2", "AC-4"],
+      "rationale": "Boundary protection monitors and restricts outbound protocols; system monitoring detects anomalous transfers; audit logging captures network activity; information flow enforcement restricts data movement"
+    },
+    {
+      "attack_technique": "T1074.001",
+      "attack_name": "Data Staged: Local Data Staging",
+      "tactic": "Collection",
+      "nist_controls": ["SI-4", "AU-2", "AC-3", "CM-6"],
+      "rationale": "Monitoring detects suspicious file staging operations; audit logging captures file movement; access enforcement restricts write access to staging locations; configuration settings protect sensitive directories"
+    },
+    {
+      "attack_technique": "T1489",
+      "attack_name": "Service Stop",
+      "tactic": "Impact",
+      "nist_controls": ["AC-3", "AC-6", "CM-6", "SI-4", "CP-2"],
+      "rationale": "Access enforcement restricts service management; least privilege limits service control; configuration settings protect critical services; monitoring detects mass service stops; contingency planning ensures recovery"
+    },
+    {
+      "attack_technique": "T1486",
+      "attack_name": "Data Encrypted for Impact",
+      "tactic": "Impact",
+      "nist_controls": ["CP-2", "CP-9", "CP-10", "SI-3", "SI-4", "AC-6"],
+      "rationale": "Contingency planning and backups enable recovery; system recovery restores operations; malicious code protection detects ransomware; monitoring detects mass encryption; least privilege limits encryption capability"
+    },
+    {
+      "attack_technique": "T1190",
+      "attack_name": "Exploit Public-Facing Application",
+      "tactic": "Initial Access",
+      "nist_controls": ["RA-5", "SC-7", "SI-2", "SI-3", "SI-4", "SA-11"],
+      "rationale": "Vulnerability scanning identifies exploitable flaws; boundary protection restricts application exposure; flaw remediation patches vulnerabilities; developer testing validates security; monitoring detects exploitation attempts"
+    },
+    {
+      "attack_technique": "T1078",
+      "attack_name": "Valid Accounts",
+      "tactic": "Initial Access",
+      "nist_controls": ["AC-2", "AC-6", "IA-2", "IA-5", "AU-6", "SI-4"],
+      "rationale": "Account management tracks authorized accounts; least privilege limits account capabilities; MFA hardens authentication; authenticator management enforces credential hygiene; audit review detects anomalous use"
+    },
+    {
+      "attack_technique": "T1110",
+      "attack_name": "Brute Force",
+      "tactic": "Credential Access",
+      "nist_controls": ["AC-7", "IA-2", "IA-5", "SI-4", "AU-2"],
+      "rationale": "Unsuccessful logon attempts trigger lockout; MFA requires additional factors; authenticator management enforces password complexity; monitoring detects brute force patterns; audit logging captures failed authentications"
+    },
+    {
+      "attack_technique": "T1053",
+      "attack_name": "Scheduled Task/Job",
+      "tactic": "Execution",
+      "nist_controls": ["AC-3", "AC-6", "CM-7", "SI-4", "AU-2"],
+      "rationale": "Access enforcement restricts task creation; least privilege limits scheduling capabilities; least functionality disables unnecessary schedulers; monitoring detects suspicious task activity; audit logging captures task operations"
+    }
+  ]
+}

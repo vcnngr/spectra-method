@@ -1,0 +1,30 @@
+# SPECTRA Core Module Configuration
+# Security Protocol Engineering for Cyber Threat Response & Assessment
+# Version: 0.1.0
+# Date: 2026-04-04T12:00:00.000Z
+
+user_name: Vincenzo
+communication_language: English
+document_output_language: English
+output_folder: _spectra-output
+engagement_artifacts: "{project-root}/_spectra-output/engagements"
+report_artifacts: "{project-root}/_spectra-output/reports"
+evidence_artifacts: "{project-root}/_spectra-output/evidence"
+
+# Context Budget System — adapts step granularity to model capability
+context_budget:
+  auto_detect: true
+  default_profile: opus
+  profiles:
+    opus:
+      max_step_tokens: 8000
+      agents_per_war_room: 3
+      resume_distillate_every: 8
+    sonnet:
+      max_step_tokens: 5000
+      agents_per_war_room: 2
+      resume_distillate_every: 5
+    haiku:
+      max_step_tokens: 3000
+      agents_per_war_room: 2
+      resume_distillate_every: 3

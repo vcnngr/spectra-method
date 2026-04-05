@@ -1,0 +1,614 @@
+{
+  "framework": "NIST SP 800-53 Rev 5",
+  "version": "5.1.1",
+  "generated": "2026-04-05",
+  "note": "Expanded SPECTRA reference — all 20 control families with 2-4 high-value controls each",
+  "families": [
+    {
+      "id": "AC",
+      "name": "Access Control",
+      "controls": [
+        {
+          "id": "AC-2",
+          "name": "Account Management",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Define and document types of accounts allowed and specifically prohibited. Assign account managers. Require conditions for group and role membership. Specify authorized users, group and role membership, and access authorizations. Create, enable, modify, disable, and remove accounts in accordance with policy.",
+          "supplemental_guidance": "Account management includes the identification of account types, establishing conditions for group and role membership, specifying authorized users, and managing the lifecycle of accounts from creation to removal.",
+          "related_controls": ["AC-3", "AC-5", "AC-6", "IA-2", "IA-4", "IA-5", "IA-8", "MA-3", "MA-5", "PE-2", "PL-4", "PS-2", "PS-4", "PS-5", "PS-7", "SC-7", "SC-12", "SC-13", "SC-37"],
+          "enhancements": ["AC-2(1)", "AC-2(2)", "AC-2(3)", "AC-2(4)", "AC-2(5)", "AC-2(6)", "AC-2(7)", "AC-2(8)", "AC-2(9)", "AC-2(11)", "AC-2(12)", "AC-2(13)"]
+        },
+        {
+          "id": "AC-3",
+          "name": "Access Enforcement",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Enforce approved authorizations for logical access to information and system resources in accordance with applicable access control policies.",
+          "supplemental_guidance": "Access control policies control access between active entities or subjects and passive entities or objects in systems. Access enforcement mechanisms are employed at the application and service level to provide increased information security and privacy.",
+          "related_controls": ["AC-2", "AC-4", "AC-5", "AC-6", "AC-16", "AC-17", "AC-18", "AC-19", "AC-24", "AC-25", "CM-5", "CM-11", "IA-2", "IA-5", "MA-3", "MA-4", "MA-5", "PM-2", "PS-3", "SC-2", "SC-4"],
+          "enhancements": ["AC-3(2)", "AC-3(3)", "AC-3(4)", "AC-3(7)", "AC-3(8)", "AC-3(9)", "AC-3(10)", "AC-3(11)", "AC-3(12)", "AC-3(13)", "AC-3(14)", "AC-3(15)"]
+        },
+        {
+          "id": "AC-6",
+          "name": "Least Privilege",
+          "baseline": ["moderate", "high"],
+          "description": "Employ the principle of least privilege, allowing only authorized accesses for users and processes which are necessary to accomplish assigned organizational tasks.",
+          "supplemental_guidance": "Organizations employ least privilege for specific duties and systems. The principle of least privilege is also applied to system processes, ensuring that the processes have access to systems and operate at privilege levels no higher than necessary.",
+          "related_controls": ["AC-2", "AC-3", "AC-5", "AC-16", "CM-5", "CM-11", "PL-2", "PM-12", "SA-8", "SA-15", "SA-17", "SC-38"],
+          "enhancements": ["AC-6(1)", "AC-6(2)", "AC-6(3)", "AC-6(5)", "AC-6(7)", "AC-6(9)", "AC-6(10)"]
+        }
+      ]
+    },
+    {
+      "id": "AT",
+      "name": "Awareness and Training",
+      "controls": [
+        {
+          "id": "AT-1",
+          "name": "Policy and Procedures",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Develop, document, and disseminate to designated organizational personnel or roles an awareness and training policy that addresses purpose, scope, roles, responsibilities, management commitment, coordination among organizational entities, and compliance. Develop and document procedures to facilitate the implementation of the awareness and training policy and the associated awareness and training controls. Designate an official to manage the development, documentation, and dissemination of the awareness and training policy and procedures. Review and update the current awareness and training policy and procedures.",
+          "supplemental_guidance": "Awareness and training policy and procedures address the controls in the AT family that are implemented within systems and organizations. The risk management strategy is an important factor in establishing such policies and procedures.",
+          "related_controls": ["PM-9", "PS-8", "SI-12"],
+          "enhancements": []
+        },
+        {
+          "id": "AT-2",
+          "name": "Literacy Training and Awareness",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Provide security and privacy literacy training to system users including initial training when authorized, when required by system changes, and at least annually thereafter. The training addresses recognizing and reporting indicators of insider threat, social engineering, and phishing. Update literacy training and awareness content when there is a significant change in threat environment, or at least annually.",
+          "supplemental_guidance": "Organizations provide basic security and privacy literacy training as part of initial training for new users, when system functionality or configurations change, and on an ongoing basis thereafter. Literacy training is general training that covers broad topics such as recognizing social engineering and phishing.",
+          "related_controls": ["AC-3", "AC-17", "AC-22", "AT-3", "AT-4", "CP-3", "IA-4", "IR-2", "IR-7", "IR-9", "PL-4", "PM-13", "PM-21", "PS-7", "PT-2", "SA-8", "SA-16"],
+          "enhancements": ["AT-2(1)", "AT-2(2)", "AT-2(3)", "AT-2(4)", "AT-2(5)", "AT-2(6)"]
+        },
+        {
+          "id": "AT-3",
+          "name": "Role-Based Training",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Provide role-based security and privacy training to personnel with the following roles and responsibilities before authorizing access to the system or performing assigned duties, when required by system changes, and at least annually thereafter. Update role-based training content when there is a significant change in threat, technology, or applicable policy.",
+          "supplemental_guidance": "Organizations determine the content of training based on the assigned roles and responsibilities of individuals as well as the security and privacy requirements of organizations and the systems to which personnel have authorized access. Role-based training includes policies, procedures, tools, methods, and artifacts for security and privacy roles.",
+          "related_controls": ["AC-3", "AC-17", "AC-22", "AT-2", "AT-4", "CP-3", "IR-2", "IR-7", "IR-9", "IR-10", "PL-4", "PM-13", "PM-23", "PS-7", "PS-9", "SA-3", "SA-8", "SA-11", "SA-16", "SR-6"],
+          "enhancements": ["AT-3(1)", "AT-3(2)", "AT-3(3)", "AT-3(5)"]
+        }
+      ]
+    },
+    {
+      "id": "AU",
+      "name": "Audit and Accountability",
+      "controls": [
+        {
+          "id": "AU-2",
+          "name": "Event Logging",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Identify the types of events that the system is capable of logging in support of the audit function. Coordinate the event logging function with other organizational entities requiring audit-related information. Specify event types for logging within the system. Provide a rationale for why the event types selected for logging are deemed adequate.",
+          "supplemental_guidance": "An event is any observable occurrence in a system. The types of events that require logging are those events which are significant and relevant to the security and privacy of systems.",
+          "related_controls": ["AC-2", "AC-3", "AC-6", "AC-7", "AC-8", "AC-16", "AC-17", "AU-3", "AU-4", "AU-5", "AU-6", "AU-7", "AU-11", "AU-12", "CM-3", "CM-5", "CM-6", "CM-13", "IA-3", "MA-4", "MP-4", "PE-3", "PM-21", "PT-7", "RA-8", "SA-8", "SC-7", "SI-3", "SI-4", "SI-7", "SI-10", "SI-11"],
+          "enhancements": []
+        },
+        {
+          "id": "AU-6",
+          "name": "Audit Record Review, Analysis, and Reporting",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Review and analyze system audit records for indications of inappropriate or unusual activity and report findings to designated organizational personnel or roles. Adjust the level of audit record review, analysis, and reporting when there is a change in risk.",
+          "supplemental_guidance": "Audit record review, analysis, and reporting covers information security and privacy-related logging performed by organizations. Organizations integrate audit record review, analysis, and reporting processes with processes for incident investigation and response.",
+          "related_controls": ["AC-2", "AC-3", "AC-5", "AC-6", "AC-7", "AC-17", "AT-3", "AU-7", "AU-16", "CA-2", "CA-7", "CM-2", "CM-5", "CM-6", "CM-13", "IA-2", "IA-3", "IA-5", "IR-4", "IR-5", "IR-6", "MA-4", "PE-3", "PE-6", "PM-14", "RA-5", "SA-8", "SC-7", "SI-3", "SI-4", "SI-7"],
+          "enhancements": ["AU-6(1)", "AU-6(3)", "AU-6(4)", "AU-6(5)", "AU-6(6)", "AU-6(7)", "AU-6(8)", "AU-6(9)"]
+        },
+        {
+          "id": "AU-12",
+          "name": "Audit Record Generation",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Provide audit record generation capability for the event types the system is capable of auditing. Allow designated organizational personnel to select the event types that are to be logged by specific components. Generate audit records for the selected event types.",
+          "supplemental_guidance": "Audit records can be generated from many different system components. The event types specified in AU-2 are the event types for which audit logs are to be generated and are a subset of all events for which the system can generate audit records.",
+          "related_controls": ["AC-6", "AC-17", "AU-2", "AU-3", "AU-4", "AU-5", "AU-6", "AU-7", "AU-14", "CM-5", "MA-4", "MP-4", "PM-12", "SA-8", "SC-18", "SI-3", "SI-4", "SI-7", "SI-10"],
+          "enhancements": ["AU-12(1)", "AU-12(2)", "AU-12(3)", "AU-12(4)"]
+        }
+      ]
+    },
+    {
+      "id": "CA",
+      "name": "Assessment, Authorization, and Monitoring",
+      "controls": [
+        {
+          "id": "CA-2",
+          "name": "Control Assessments",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Select the appropriate assessor or assessment team for the type of assessment to be conducted. Develop a control assessment plan that describes the scope of the assessment including controls and control enhancements under assessment, assessment procedures to be used to determine control effectiveness, and the assessment environment, assessment team, and assessment roles and responsibilities. Ensure the control assessment plan is reviewed and approved by the authorizing official or designated representative prior to conducting the assessment. Assess the controls in the system and its environment of operation to determine the extent to which the controls are implemented correctly, operating as intended, and producing the desired outcome. Produce a control assessment report that documents the results of the assessment. Provide the results of the control assessment to designated individuals or roles.",
+          "supplemental_guidance": "Organizations ensure that control assessors possess the required skills and technical expertise to develop effective assessment plans and to conduct assessments of system-specific, hybrid, common, and program management controls.",
+          "related_controls": ["AC-20", "AU-6", "CA-5", "CA-6", "CA-7", "PM-9", "RA-2", "RA-3", "RA-5", "SA-11", "SC-38", "SI-4"],
+          "enhancements": ["CA-2(1)", "CA-2(2)", "CA-2(3)"]
+        },
+        {
+          "id": "CA-7",
+          "name": "Continuous Monitoring",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Develop a system-level continuous monitoring strategy and implement continuous monitoring in accordance with the organization-level continuous monitoring strategy. Establish metrics to be monitored, frequencies for monitoring and assessment, and ongoing control assessments in accordance with the continuous monitoring strategy. Implement a continuous monitoring program that includes ongoing assessments of control effectiveness, correlation and analysis of security and privacy-related information, and response actions to address results of analysis.",
+          "supplemental_guidance": "Continuous monitoring at the system level facilitates ongoing awareness of the system security and privacy posture to support organizational risk management decisions. Continuous monitoring strategies can be designed to verify that controls continue to be effective over time.",
+          "related_controls": ["AC-2", "AC-6", "AC-17", "AT-4", "AU-6", "AU-13", "CA-2", "CA-5", "CA-6", "CM-3", "CM-4", "IA-5", "IR-5", "PE-3", "PE-6", "PE-14", "PE-16", "PL-2", "PM-4", "PM-6", "PM-9", "PM-10", "PM-12", "PM-14", "PM-31", "RA-3", "RA-5", "RA-7", "RA-10", "SA-8", "SA-9", "SA-11", "SC-5", "SC-7", "SC-18", "SC-38", "SI-3", "SI-4", "SI-12", "SR-6"],
+          "enhancements": ["CA-7(1)", "CA-7(3)", "CA-7(4)"]
+        }
+      ]
+    },
+    {
+      "id": "CM",
+      "name": "Configuration Management",
+      "controls": [
+        {
+          "id": "CM-6",
+          "name": "Configuration Settings",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Establish and document configuration settings for components employed within the system that reflect the most restrictive mode consistent with operational requirements using security configuration checklists. Implement the configuration settings. Monitor and control changes to the configuration settings.",
+          "supplemental_guidance": "Configuration settings are the parameters that can be changed in the hardware, software, or firmware components of the system that affect the security and privacy posture of the system. Security-related parameters are those parameters impacting the security state of systems.",
+          "related_controls": ["AC-3", "AC-19", "AU-2", "AU-6", "CM-2", "CM-3", "CM-5", "CM-7", "CM-11", "CP-7", "CP-9", "IA-5", "PL-8", "PL-9", "RA-5", "SA-4", "SA-5", "SA-8", "SC-18", "SC-28", "SC-43", "SI-2", "SI-4", "SI-6"],
+          "enhancements": ["CM-6(1)", "CM-6(2)"]
+        },
+        {
+          "id": "CM-7",
+          "name": "Least Functionality",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Configure the system to provide only mission-essential capabilities. Prohibit or restrict the use of functions, ports, protocols, software, and/or services as defined in organizational policy.",
+          "supplemental_guidance": "Systems provide a wide variety of functions and services. Some of the functions and services routinely provided by default may not be necessary to support essential organizational missions, functions, or operations. Removing or disabling unnecessary functions reduces the attack surface.",
+          "related_controls": ["AC-3", "AC-4", "CM-2", "CM-5", "CM-6", "CM-11", "RA-5", "SA-4", "SA-5", "SA-8", "SA-9", "SC-2", "SC-7", "SI-4"],
+          "enhancements": ["CM-7(1)", "CM-7(2)", "CM-7(4)", "CM-7(5)", "CM-7(6)", "CM-7(7)", "CM-7(8)"]
+        },
+        {
+          "id": "CM-8",
+          "name": "System Component Inventory",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Develop and document an inventory of system components that accurately reflects the system, is at a level of granularity deemed necessary for tracking and reporting, and includes information deemed necessary to achieve effective system component accountability. Review and update the system component inventory.",
+          "supplemental_guidance": "Organizations may choose to implement centralized system component inventories that include components from all organizational systems. System component inventories also help organizations identify unauthorized software and hardware. System component inventory provides a baseline.",
+          "related_controls": ["CM-2", "CM-7", "CM-9", "CM-10", "CM-11", "CM-13", "CP-2", "CP-9", "MA-6", "PE-20", "PL-9", "PM-5", "SA-4", "SA-5", "SI-2", "SR-4"],
+          "enhancements": ["CM-8(1)", "CM-8(2)", "CM-8(3)", "CM-8(4)", "CM-8(7)", "CM-8(9)"]
+        }
+      ]
+    },
+    {
+      "id": "CP",
+      "name": "Contingency Planning",
+      "controls": [
+        {
+          "id": "CP-2",
+          "name": "Contingency Plan",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Develop a contingency plan for the system that identifies essential mission and business functions and associated contingency requirements, provides recovery objectives and restoration priorities, addresses contingency roles and responsibilities, addresses maintaining essential mission and business functions despite system disruption, compromise, or failure, addresses eventual full system restoration without deterioration of the controls originally planned and implemented, and is reviewed and approved by designated officials.",
+          "supplemental_guidance": "Contingency planning for systems is part of an overall program for achieving continuity of operations. Contingency planning addresses system restoration and implementation of alternative mission and business processes when systems are compromised or breached.",
+          "related_controls": ["CP-3", "CP-4", "CP-6", "CP-7", "CP-8", "CP-9", "CP-10", "CP-11", "CP-13", "IR-4", "IR-6", "IR-8", "IR-9", "MA-6", "MP-2", "MP-4", "MP-5", "PL-2", "PM-8", "PM-11", "SA-15", "SA-20", "SC-7", "SC-23", "SI-12"],
+          "enhancements": ["CP-2(1)", "CP-2(2)", "CP-2(3)", "CP-2(5)", "CP-2(6)", "CP-2(7)", "CP-2(8)"]
+        },
+        {
+          "id": "CP-9",
+          "name": "System Backup",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Conduct backups of user-level information, system-level information, and system documentation including security and privacy-related documentation contained in the system at a defined frequency consistent with recovery time and recovery point objectives. Protect the confidentiality, integrity, and availability of backup information.",
+          "supplemental_guidance": "System-level information includes system state information, operating system software, middleware, application software, and licenses. User-level information includes information other than system-level information. Mechanisms employed to protect the integrity of system backups include digital signatures and cryptographic hashes.",
+          "related_controls": ["CP-2", "CP-6", "CP-10", "MP-4", "MP-5", "SC-8", "SC-12", "SC-13", "SC-28", "SI-4", "SI-13"],
+          "enhancements": ["CP-9(1)", "CP-9(2)", "CP-9(3)", "CP-9(5)", "CP-9(6)", "CP-9(7)", "CP-9(8)"]
+        },
+        {
+          "id": "CP-10",
+          "name": "System Recovery and Reconstitution",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Provide for the recovery and reconstitution of the system to a known state within a defined time period consistent with recovery time and recovery point objectives after a disruption, compromise, or failure.",
+          "supplemental_guidance": "Recovery is executing system contingency plan activities to restore organizational mission and business functions. Reconstitution takes place following recovery and includes activities for returning systems to fully operational states.",
+          "related_controls": ["CP-2", "CP-4", "CP-6", "CP-7", "CP-9", "IR-4", "SA-8", "SC-24", "SI-13"],
+          "enhancements": ["CP-10(2)", "CP-10(4)"]
+        }
+      ]
+    },
+    {
+      "id": "IA",
+      "name": "Identification and Authentication",
+      "controls": [
+        {
+          "id": "IA-2",
+          "name": "Identification and Authentication (Organizational Users)",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Uniquely identify and authenticate organizational users and associate that unique identification with processes acting on behalf of those users.",
+          "supplemental_guidance": "Organizations can satisfy identification and authentication requirements by complying with the requirements in HSPD-12. Individual authentication is not required in group accounts where accountability is already assured through other mechanisms.",
+          "related_controls": ["AC-2", "AC-3", "AC-4", "AC-14", "AC-17", "AC-18", "AU-1", "AU-6", "IA-4", "IA-5", "IA-8", "MA-4", "MA-5", "PE-2", "PL-4", "SA-4", "SA-8"],
+          "enhancements": ["IA-2(1)", "IA-2(2)", "IA-2(5)", "IA-2(6)", "IA-2(8)", "IA-2(12)", "IA-2(13)"]
+        },
+        {
+          "id": "IA-4",
+          "name": "Identifier Management",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Manage system identifiers by receiving authorization from organizational personnel to assign identifiers, selecting and assigning identifiers that identify individuals, groups, roles, services, or devices, preventing reuse of identifiers for a defined time period, and disabling the identifier after a defined time period of inactivity.",
+          "supplemental_guidance": "Common device identifiers include Media Access Control (MAC) addresses, Internet Protocol (IP) addresses, or device-unique token identifiers. The management of individual identifiers is not applicable to shared system accounts.",
+          "related_controls": ["AC-5", "IA-2", "IA-3", "IA-5", "IA-8", "IA-9", "IA-12", "MA-4", "PE-2", "PE-3", "PE-4", "PL-4", "PM-12", "PS-3", "SC-37"],
+          "enhancements": ["IA-4(4)", "IA-4(5)", "IA-4(6)", "IA-4(8)", "IA-4(9)"]
+        },
+        {
+          "id": "IA-5",
+          "name": "Authenticator Management",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Manage system authenticators by verifying identity before distributing, establishing administrative procedures for lost/compromised authenticators, establishing and implementing initial authenticator content, establishing minimum and maximum lifetime restrictions, changing default authenticators prior to first use, and protecting authenticator content from unauthorized disclosure and modification.",
+          "supplemental_guidance": "Authenticators include passwords, cryptographic devices, biometrics, certificates, one-time password devices, and ID badges. Device authenticators include certificates and passwords.",
+          "related_controls": ["AC-3", "AC-6", "CM-6", "IA-2", "IA-4", "IA-7", "IA-8", "IA-9", "MA-4", "PE-2", "PL-4", "SC-12", "SC-13"],
+          "enhancements": ["IA-5(1)", "IA-5(2)", "IA-5(6)", "IA-5(7)", "IA-5(8)", "IA-5(9)", "IA-5(10)", "IA-5(13)", "IA-5(18)"]
+        }
+      ]
+    },
+    {
+      "id": "IR",
+      "name": "Incident Response",
+      "controls": [
+        {
+          "id": "IR-4",
+          "name": "Incident Handling",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Implement an incident handling capability for incidents that is consistent with the incident response plan and includes preparation, detection and analysis, containment, eradication, and recovery. Coordinate incident handling activities with contingency planning activities. Incorporate lessons learned from ongoing incident handling activities into procedures, training, and testing.",
+          "supplemental_guidance": "Organizations recognize that incident response capabilities are dependent on the capabilities of systems and the mission and business processes being supported by those systems. Incident handling includes the processes for categorizing incidents.",
+          "related_controls": ["AC-19", "AU-6", "AU-7", "CM-6", "CP-2", "CP-4", "IR-2", "IR-3", "IR-5", "IR-6", "IR-8", "PE-6", "PL-2", "PM-12", "SA-8", "SC-5", "SC-7", "SI-3", "SI-4", "SI-7"],
+          "enhancements": ["IR-4(1)", "IR-4(2)", "IR-4(3)", "IR-4(4)", "IR-4(5)", "IR-4(6)", "IR-4(7)", "IR-4(8)", "IR-4(9)", "IR-4(10)", "IR-4(11)", "IR-4(12)", "IR-4(13)", "IR-4(14)", "IR-4(15)"]
+        },
+        {
+          "id": "IR-5",
+          "name": "Incident Monitoring",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Track and document incidents on an ongoing basis.",
+          "supplemental_guidance": "Documenting incidents includes maintaining records about each incident, the status of the incident, and other pertinent information necessary for forensics as well as evaluating incident details, trends, and handling. Incident information can be obtained from a variety of sources.",
+          "related_controls": ["AU-6", "AU-7", "IR-4", "IR-6", "IR-8", "PE-6", "PM-5", "SC-5", "SC-7", "SI-3", "SI-4", "SI-7"],
+          "enhancements": ["IR-5(1)"]
+        },
+        {
+          "id": "IR-6",
+          "name": "Incident Reporting",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Require personnel to report suspected incidents to the organizational incident response capability within a defined time period. Report incident information to designated authorities.",
+          "supplemental_guidance": "The types of incidents reported, the content and timeliness of the reports, and the designated reporting authorities reflect applicable laws, executive orders, directives, regulations, policies, standards, and guidelines.",
+          "related_controls": ["CM-6", "CP-2", "IR-4", "IR-5", "IR-8", "IR-9"],
+          "enhancements": ["IR-6(1)", "IR-6(2)", "IR-6(3)"]
+        },
+        {
+          "id": "IR-8",
+          "name": "Incident Response Plan",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Develop an incident response plan that provides the organization with a roadmap for implementing its incident response capability. Describes the structure and organization of the incident response capability. Provides a high-level approach for how the incident response capability fits into the overall organization. Meets the unique requirements of the organization relating to mission, size, structure, and functions. Defines reportable incidents. Addresses the sharing of incident information. Is reviewed and approved by designated officials.",
+          "supplemental_guidance": "It is important that organizations develop and implement a coordinated approach to incident response. Organizational mission and business functions determine the structure of incident response capabilities.",
+          "related_controls": ["AC-19", "CP-2", "CP-4", "IR-4", "IR-7", "IR-9", "PE-6", "PL-2", "PM-12", "SA-15", "SI-12"],
+          "enhancements": ["IR-8(1)"]
+        }
+      ]
+    },
+    {
+      "id": "MA",
+      "name": "Maintenance",
+      "controls": [
+        {
+          "id": "MA-2",
+          "name": "Controlled Maintenance",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Schedule, document, and review records of maintenance, repair, and replacement on system components in accordance with manufacturer or vendor specifications and/or organizational requirements. Approve and monitor all maintenance activities, whether performed on site or remotely and whether the system or system components are serviced on site or removed to another location. Require that a designated official explicitly approve the removal of the system or system components from organizational facilities for off-site maintenance, repair, or replacement. Sanitize equipment to remove all information from associated media prior to removal from organizational facilities for off-site maintenance, repair, or replacement. Check all potentially impacted controls to verify that the controls are still functioning properly following maintenance, repair, or replacement actions. Include the date and time of maintenance, name of the individual performing the maintenance, name of escort, a description of the maintenance performed, and a list of equipment removed or replaced in organizational maintenance records.",
+          "supplemental_guidance": "Controlling system maintenance addresses the information security aspects of the system maintenance program and applies to all types of maintenance to system components conducted by local or nonlocal entities.",
+          "related_controls": ["CM-3", "CM-4", "CM-5", "CM-8", "MA-4", "MP-6", "PE-16", "SA-12", "SI-2"],
+          "enhancements": ["MA-2(2)"]
+        },
+        {
+          "id": "MA-4",
+          "name": "Nonlocal Maintenance",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Approve and monitor nonlocal maintenance and diagnostic activities. Allow the use of nonlocal maintenance and diagnostic tools only as consistent with organizational policy and as documented in the security plan for the system. Employ strong identification and authentication techniques in the establishment of nonlocal maintenance and diagnostic sessions. Maintain records for nonlocal maintenance and diagnostic activities. Terminate session and network connections when nonlocal maintenance is completed.",
+          "supplemental_guidance": "Nonlocal maintenance and diagnostic activities are conducted by individuals who communicate through either an external or internal network. Local maintenance and diagnostic activities are carried out by individuals who are physically present at the system and not communicating across a network connection.",
+          "related_controls": ["AC-2", "AC-3", "AC-6", "AC-17", "AU-2", "AU-3", "IA-2", "IA-4", "IA-5", "IA-8", "MA-2", "MA-5", "PL-2", "SC-7", "SC-10", "SC-17"],
+          "enhancements": ["MA-4(1)", "MA-4(3)", "MA-4(6)", "MA-4(7)"]
+        }
+      ]
+    },
+    {
+      "id": "MP",
+      "name": "Media Protection",
+      "controls": [
+        {
+          "id": "MP-2",
+          "name": "Media Access",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Restrict access to digital and non-digital media to authorized individuals using defined security controls.",
+          "supplemental_guidance": "System media includes digital and non-digital media. Digital media includes flash drives, diskettes, magnetic tapes, external or removable hard disk drives, compact discs, and digital versatile discs. Non-digital media includes paper and microfilm. Denying access to patient medical records in a community hospital unless the individuals seeking access to such records are authorized healthcare providers is an example of restricting access to non-digital media.",
+          "related_controls": ["AC-19", "AU-9", "CP-2", "CP-9", "CP-10", "MA-5", "MP-4", "MP-6", "PE-2", "PE-3", "SC-12", "SC-13", "SC-28", "SC-34", "SI-12"],
+          "enhancements": []
+        },
+        {
+          "id": "MP-6",
+          "name": "Media Sanitization",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Sanitize system media prior to disposal, release out of organizational control, or release for reuse using defined sanitization techniques and procedures. Employ sanitization mechanisms with the strength and integrity commensurate with the security category or classification of the information.",
+          "supplemental_guidance": "Media sanitization applies to digital and non-digital media subject to disposal or reuse, whether or not the media is considered removable. Examples include digital media in scanners, copiers, printers, notebook computers, workstations, network components, mobile devices, and non-digital media such as paper and microfilm.",
+          "related_controls": ["AC-3", "AC-7", "AU-11", "MA-2", "MA-3", "MA-4", "MA-5", "PM-22", "SI-12", "SI-18", "SI-19", "SR-11"],
+          "enhancements": ["MP-6(1)", "MP-6(2)", "MP-6(3)", "MP-6(7)", "MP-6(8)"]
+        }
+      ]
+    },
+    {
+      "id": "PE",
+      "name": "Physical and Environmental Protection",
+      "controls": [
+        {
+          "id": "PE-2",
+          "name": "Physical Access Authorizations",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Develop, approve, and maintain a list of individuals with authorized access to the facility where the system resides. Issue authorization credentials for facility access. Review the access list detailing authorized facility access by individuals at a defined frequency. Remove individuals from the facility access list when access is no longer required.",
+          "supplemental_guidance": "Physical access authorizations apply to employees and visitors. Individuals with permanent physical access authorization credentials are not considered visitors. Authorization credentials include ID badges, identification cards, and smart cards. Organizations determine the strength of authorization credentials needed consistent with applicable policies, directives, standards, regulations, and guidelines.",
+          "related_controls": ["AT-3", "AU-9", "IA-4", "MA-5", "MP-2", "PE-3", "PE-4", "PE-5", "PE-8", "PM-12", "PS-3", "PS-4", "PS-5", "PS-6"],
+          "enhancements": []
+        },
+        {
+          "id": "PE-3",
+          "name": "Physical Access Control",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Enforce physical access authorizations at defined entry and exit points to the facility where the system resides by verifying individual access authorizations before granting access. Control ingress and egress to the facility using physical access control systems, guards, or both. Maintain physical access audit logs for entry and exit points. Control access to areas within the facility officially designated as publicly accessible by employing physical access controls and/or escorts.",
+          "supplemental_guidance": "Physical access control applies to employees and visitors. Individuals with permanent physical access authorization credentials are not considered visitors. Physical access controls for publicly accessible areas may include physical access control logs or audit trails, guards, or physical access devices and barriers.",
+          "related_controls": ["AT-3", "AU-2", "AU-6", "AU-9", "AU-13", "CP-10", "IA-3", "IA-8", "MA-5", "MP-2", "MP-4", "PE-2", "PE-4", "PE-5", "PE-8", "PS-3", "RA-3", "SC-28", "SI-4", "SR-3"],
+          "enhancements": ["PE-3(1)", "PE-3(2)", "PE-3(3)", "PE-3(4)", "PE-3(5)"]
+        },
+        {
+          "id": "PE-6",
+          "name": "Monitoring Physical Access",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Monitor physical access to the facility where the system resides to detect and respond to physical security incidents. Review physical access logs at a defined frequency and upon occurrence of defined events or potential indications of events. Coordinate results of reviews and investigations with the organizational incident response capability.",
+          "supplemental_guidance": "Physical access monitoring applies to physical infrastructure areas such as server rooms, equipment closets, or other spaces that are designated as restricted or controlled areas. Monitoring physical access includes publicly accessible areas within organizational facilities.",
+          "related_controls": ["AU-2", "AU-6", "AU-9", "AU-12", "CA-7", "CP-10", "IR-4", "IR-8", "PE-2", "PE-3", "PE-8", "PE-14"],
+          "enhancements": ["PE-6(1)", "PE-6(2)", "PE-6(3)", "PE-6(4)"]
+        }
+      ]
+    },
+    {
+      "id": "PL",
+      "name": "Planning",
+      "controls": [
+        {
+          "id": "PL-1",
+          "name": "Policy and Procedures",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Develop, document, and disseminate to designated organizational personnel or roles a planning policy that addresses purpose, scope, roles, responsibilities, management commitment, coordination among organizational entities, and compliance. Develop and document procedures to facilitate the implementation of the planning policy and the associated planning controls. Review and update the current planning policy and procedures at a defined frequency.",
+          "supplemental_guidance": "Planning policy and procedures address the controls in the PL family that are implemented within systems and organizations. The risk management strategy is an important factor in establishing such policies and procedures.",
+          "related_controls": ["PM-9", "PS-8", "SI-12"],
+          "enhancements": []
+        },
+        {
+          "id": "PL-2",
+          "name": "System Security and Privacy Plans",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Develop security and privacy plans for the system that are consistent with the organization's enterprise architecture, define the constituent system components, describe the operational context of the system in terms of mission and business processes, identify the individuals that fulfill system roles and responsibilities, identify the information types processed, stored, and transmitted by the system, provide the security categorization of the system including supporting rationale, describe any specific threats to the system that are of concern to the organization, provide the results of a privacy risk assessment for systems processing personally identifiable information, describe the operational environment for the system and any dependencies on or connections to other systems, provide an overview of the security and privacy requirements for the system, identify any relevant control tailoring and supplementation, and describe the environment of operation for the system.",
+          "supplemental_guidance": "System security and privacy plans are scoped to the system and the system components within the defined authorization boundary and contain an overview of the security and privacy requirements for the system and the controls selected to satisfy the requirements.",
+          "related_controls": ["AC-2", "AC-6", "AC-14", "AC-17", "AC-20", "CA-2", "CA-3", "CA-7", "CM-9", "CM-13", "CP-2", "IR-8", "MA-4", "MA-5", "MP-2", "MP-4", "MP-5", "PL-7", "PL-8", "PL-10", "PL-11", "PM-1", "PM-7", "PM-8", "PM-9", "PM-10", "PM-11", "RA-3", "RA-8", "RA-9", "SA-5", "SA-17", "SA-22", "SI-12", "SR-2", "SR-4"],
+          "enhancements": []
+        }
+      ]
+    },
+    {
+      "id": "PM",
+      "name": "Program Management",
+      "controls": [
+        {
+          "id": "PM-1",
+          "name": "Information Security Program Plan",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Develop and disseminate an organization-wide information security program plan that provides an overview of the requirements for the security program and a description of the security program management controls and common controls in place or planned for meeting those requirements. Include the identification and assignment of roles, responsibilities, management commitment, coordination among organizational entities, and compliance. Reflect the coordination among organizational entities responsible for information security. Be approved by a senior official with responsibility and accountability for the risk being incurred to organizational operations, assets, individuals, other organizations, and the Nation.",
+          "supplemental_guidance": "An information security program plan is a formal document that provides an overview of the security requirements for an organization-wide information security program and describes the program management controls and common controls in place or planned.",
+          "related_controls": ["PL-2", "PM-8", "PM-18", "PM-23", "RA-3", "RA-9", "SI-12", "SR-1"],
+          "enhancements": []
+        },
+        {
+          "id": "PM-9",
+          "name": "Risk Management Strategy",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Develop a comprehensive strategy to manage security and privacy risk to organizational operations and assets, individuals, other organizations, and the Nation associated with the operation and use of organizational systems. Implement the risk management strategy consistently across the organization. Review and update the risk management strategy as required to address organizational changes.",
+          "supplemental_guidance": "An organization-wide risk management strategy includes an expression of the security and privacy risk tolerance for the organization, security and privacy risk mitigation strategies, acceptable risk assessment methodologies, a process for evaluating security and privacy risk across the organization with respect to the organization's risk tolerance, and approaches for monitoring risk over time.",
+          "related_controls": ["AC-1", "AT-1", "AU-1", "CA-1", "CA-2", "CA-5", "CA-6", "CA-7", "CM-1", "CP-1", "IA-1", "IR-1", "MA-1", "MP-1", "PE-1", "PL-1", "PL-2", "PM-2", "PM-8", "PM-18", "PM-28", "PM-30", "RA-1", "RA-2", "RA-3", "SA-1", "SA-4", "SC-1", "SC-38", "SI-1", "SI-12", "SR-1", "SR-2"],
+          "enhancements": []
+        }
+      ]
+    },
+    {
+      "id": "PS",
+      "name": "Personnel Security",
+      "controls": [
+        {
+          "id": "PS-3",
+          "name": "Personnel Screening",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Screen individuals prior to authorizing access to the system. Rescreen individuals in accordance with defined conditions requiring rescreening and, where rescreening is so indicated, the frequency of rescreening.",
+          "supplemental_guidance": "Personnel screening and rescreening activities reflect applicable laws, executive orders, directives, regulations, policies, standards, guidelines, and specific criteria established for the risk designations of assigned positions. Examples of personnel screening include background investigations and agency checks.",
+          "related_controls": ["AC-2", "IA-4", "MA-5", "PE-2", "PM-12", "PS-2", "PS-6", "PS-7", "SA-21"],
+          "enhancements": ["PS-3(1)", "PS-3(2)", "PS-3(3)", "PS-3(4)"]
+        },
+        {
+          "id": "PS-4",
+          "name": "Personnel Termination",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Upon termination of individual employment, disable system access within a defined time period. Terminate or revoke any authenticators and credentials associated with the individual. Conduct exit interviews that include a discussion of information security topics. Retrieve all security-related organizational system-related property. Retain access to organizational information and systems formerly controlled by the terminated individual. Notify defined personnel or roles within a defined time period.",
+          "supplemental_guidance": "System-related property includes hardware authentication tokens, system administration technical manuals, keys, identification cards, and building passes. Exit interviews ensure that terminated individuals understand the security constraints imposed by being former employees.",
+          "related_controls": ["AC-2", "IA-4", "PE-2", "PM-12", "PS-5", "PS-6", "PS-7"],
+          "enhancements": ["PS-4(2)"]
+        },
+        {
+          "id": "PS-6",
+          "name": "Access Agreements",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Develop and document access agreements for organizational systems. Review and update the access agreements at a defined frequency. Verify that individuals requiring access to organizational information and systems sign appropriate access agreements prior to being granted access and re-sign access agreements to maintain access when access agreements have been updated or at a defined frequency.",
+          "supplemental_guidance": "Access agreements include nondisclosure agreements, acceptable use agreements, rules of behavior, and conflict-of-interest agreements. Signed access agreements include an acknowledgement that individuals have read, understand, and agree to abide by the constraints associated with organizational systems.",
+          "related_controls": ["AC-17", "PE-2", "PL-4", "PS-2", "PS-3", "PS-4", "PS-8"],
+          "enhancements": ["PS-6(2)", "PS-6(3)"]
+        }
+      ]
+    },
+    {
+      "id": "PT",
+      "name": "PII Processing and Transparency",
+      "controls": [
+        {
+          "id": "PT-2",
+          "name": "Authority to Process Personally Identifiable Information",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Determine and document the legal authority that permits the collection, use, maintenance, and sharing of personally identifiable information (PII), either generally or in support of a specific program or system need. Specify in privacy notices the legal authority that permits the collection, use, maintenance, and sharing of PII. Describe the purpose(s) for which PII is collected, used, maintained, and shared in privacy notices.",
+          "supplemental_guidance": "The legal authority to process PII is established by federal laws, executive orders, directives, regulations, policies, standards, and guidelines. Organizations document and assess privacy risk for PII processing operations that are mandated by law.",
+          "related_controls": ["AC-3", "CM-13", "IR-9", "PM-9", "PM-25", "PT-1", "PT-3", "PT-5", "PT-6", "RA-3", "RA-8", "SI-12", "SI-18"],
+          "enhancements": ["PT-2(1)", "PT-2(2)"]
+        },
+        {
+          "id": "PT-3",
+          "name": "Personally Identifiable Information Processing Purposes",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Identify and document the purpose(s) for processing PII. Describe the purpose(s) in the public privacy notices and policies of the organization. Restrict the processing of PII to only that which is compatible with the identified purpose(s). Monitor changes in processing PII and implement defined mechanisms to ensure that any changes are made in accordance with defined requirements.",
+          "supplemental_guidance": "Purpose specification defines why PII is collected and the intended use. Compatible processing is consistent with the original stated purpose. New purposes for existing PII collections require updating public notices and assessing privacy risk.",
+          "related_controls": ["AC-3", "AT-3", "CM-13", "IR-9", "PM-9", "PM-25", "PT-2", "PT-5", "PT-6", "PT-7", "RA-8", "SC-43", "SI-12", "SI-18"],
+          "enhancements": ["PT-3(1)", "PT-3(2)"]
+        }
+      ]
+    },
+    {
+      "id": "RA",
+      "name": "Risk Assessment",
+      "controls": [
+        {
+          "id": "RA-3",
+          "name": "Risk Assessment",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Conduct a risk assessment to identify threats to and vulnerabilities in the system. Determine the likelihood and magnitude of harm from unauthorized access, use, disclosure, disruption, modification, or destruction of the system and its information. Determine the risk to organizational operations, assets, individuals, other organizations, and the Nation. Update risk assessment results on an ongoing basis.",
+          "supplemental_guidance": "Risk assessments consider threats, vulnerabilities, likelihood, and impact to organizational operations and assets, individuals, other organizations, and the Nation. Risk assessments also consider risks from external parties, supply chain, and insider threats.",
+          "related_controls": ["CA-2", "CA-6", "CA-7", "CM-3", "CM-4", "CM-13", "CP-6", "CP-7", "IA-8", "MA-5", "PE-3", "PE-8", "PE-18", "PL-2", "PL-10", "PL-11", "PM-8", "PM-9", "PM-28", "PT-2", "PT-7", "RA-2", "RA-5", "RA-7", "SA-8", "SA-9", "SC-38", "SI-12"],
+          "enhancements": ["RA-3(1)", "RA-3(2)", "RA-3(3)", "RA-3(4)"]
+        },
+        {
+          "id": "RA-5",
+          "name": "Vulnerability Monitoring and Scanning",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Monitor and scan for vulnerabilities in the system and hosted applications and when new vulnerabilities potentially affecting the system are identified and reported. Employ vulnerability monitoring tools and techniques that facilitate interoperability among tools. Analyze vulnerability scan reports and results. Remediate legitimate vulnerabilities in accordance with an organizational assessment of risk. Share information obtained from the vulnerability monitoring process and control assessments.",
+          "supplemental_guidance": "The use of automated vulnerability analysis tools that use standards for testing, enumerating, expressing, and reporting on discovered vulnerabilities and configurations can help ensure that system vulnerabilities are properly addressed.",
+          "related_controls": ["CA-2", "CA-7", "CA-8", "CM-2", "CM-4", "CM-6", "CM-8", "IA-8", "RA-2", "RA-3", "SA-11", "SA-15", "SC-38", "SI-2", "SI-3", "SI-4", "SI-7", "SR-6"],
+          "enhancements": ["RA-5(2)", "RA-5(3)", "RA-5(4)", "RA-5(5)", "RA-5(6)", "RA-5(8)", "RA-5(10)", "RA-5(11)"]
+        },
+        {
+          "id": "RA-7",
+          "name": "Risk Response",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Respond to findings from security and privacy assessments, monitoring, and audits in accordance with organizational risk tolerance.",
+          "supplemental_guidance": "Organizations have many options for responding to risk including mitigating risk by implementing new controls or strengthening existing controls, accepting risk with appropriate justification or rationale, sharing or transferring risk, or avoiding risk.",
+          "related_controls": ["CA-5", "IR-4", "PM-4", "PM-28", "RA-2", "RA-3", "SR-2"],
+          "enhancements": []
+        }
+      ]
+    },
+    {
+      "id": "SA",
+      "name": "System and Services Acquisition",
+      "controls": [
+        {
+          "id": "SA-4",
+          "name": "Acquisition Process",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Include security and privacy functional requirements, strength of mechanism requirements, security and privacy assurance requirements, controls needed to satisfy security and privacy requirements, security and privacy documentation requirements, requirements for protecting security and privacy documentation, description of the system development environment and environment in which the system is intended to operate, and acceptance criteria in the acquisition contract for the system, system component, or system service.",
+          "supplemental_guidance": "Security and privacy functional requirements are typically derived from the security categorization for the system and the security and privacy requirements identified through stakeholder interactions. The requirements are commensurate with the risk determination.",
+          "related_controls": ["CM-6", "CM-8", "PS-7", "SA-3", "SA-5", "SA-8", "SA-11", "SA-15", "SA-16", "SA-17", "SA-21", "SR-3", "SR-5"],
+          "enhancements": ["SA-4(1)", "SA-4(2)", "SA-4(5)", "SA-4(9)", "SA-4(10)"]
+        },
+        {
+          "id": "SA-8",
+          "name": "Security and Privacy Engineering Principles",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Apply systems security and privacy engineering principles in the specification, design, development, implementation, and modification of the system and system components.",
+          "supplemental_guidance": "Systems security and privacy engineering principles are closely related to and can be viewed as a generalization of systems security and privacy policy. Engineering principles help ensure that system security and privacy requirements are translated into the system and its components.",
+          "related_controls": ["AC-4", "AC-25", "CM-1", "CM-7", "PL-8", "PM-7", "RA-3", "RA-9", "SA-3", "SA-4", "SA-17", "SC-2", "SC-3", "SC-7", "SC-32", "SC-49", "SI-2"],
+          "enhancements": ["SA-8(1)", "SA-8(2)", "SA-8(3)", "SA-8(4)", "SA-8(5)", "SA-8(6)", "SA-8(7)", "SA-8(8)", "SA-8(9)", "SA-8(10)", "SA-8(11)", "SA-8(12)", "SA-8(13)", "SA-8(14)", "SA-8(15)", "SA-8(16)", "SA-8(17)", "SA-8(18)", "SA-8(19)", "SA-8(20)", "SA-8(21)", "SA-8(22)", "SA-8(23)", "SA-8(24)", "SA-8(25)", "SA-8(26)", "SA-8(27)", "SA-8(28)", "SA-8(29)", "SA-8(30)", "SA-8(31)", "SA-8(32)", "SA-8(33)"]
+        },
+        {
+          "id": "SA-11",
+          "name": "Developer Testing and Evaluation",
+          "baseline": ["moderate", "high"],
+          "description": "Require the developer of the system, system component, or system service to develop and implement a plan for ongoing security and privacy assessments. Perform a variety of testing and evaluation activities including unit testing, integration testing, system testing, regression testing, and security and privacy testing. Produce evidence of the execution of the assessment plan and the results of the testing and evaluation. Implement a verifiable flaw remediation process. Correct flaws identified during testing and evaluation.",
+          "supplemental_guidance": "Developmental testing and evaluation confirms that the required controls are implemented correctly, operating as intended, enforcing the desired security and privacy policy, and meeting established security and privacy requirements.",
+          "related_controls": ["AT-3", "CA-2", "CA-7", "CM-4", "RA-5", "RA-7", "SA-3", "SA-4", "SA-5", "SA-8", "SA-15", "SA-17", "SI-2", "SR-5", "SR-6", "SR-7"],
+          "enhancements": ["SA-11(1)", "SA-11(2)", "SA-11(3)", "SA-11(4)", "SA-11(5)", "SA-11(6)", "SA-11(7)", "SA-11(8)", "SA-11(9)"]
+        }
+      ]
+    },
+    {
+      "id": "SC",
+      "name": "System and Communications Protection",
+      "controls": [
+        {
+          "id": "SC-7",
+          "name": "Boundary Protection",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Monitor and control communications at the external managed interfaces to the system and at key internal managed interfaces within the system. Implement subnetworks for publicly accessible system components that are physically or logically separated from internal organizational networks. Connect to external networks or systems only through managed interfaces.",
+          "supplemental_guidance": "Managed interfaces include gateways, routers, firewalls, guards, network-based malicious code analysis, virtualization systems, or encrypted tunnels implemented within a security architecture.",
+          "related_controls": ["AC-4", "AC-17", "AC-18", "AC-19", "AC-20", "AU-13", "CA-3", "CM-2", "CM-7", "CM-10", "CP-8", "IR-4", "MA-4", "PE-4", "PL-8", "PM-7", "SA-8", "SA-17", "SC-5", "SC-8", "SC-20", "SC-21", "SC-22", "SC-32", "SC-35", "SC-43"],
+          "enhancements": ["SC-7(3)", "SC-7(4)", "SC-7(5)", "SC-7(7)", "SC-7(8)", "SC-7(9)", "SC-7(10)", "SC-7(11)", "SC-7(12)", "SC-7(13)", "SC-7(14)", "SC-7(15)", "SC-7(18)", "SC-7(21)", "SC-7(22)", "SC-7(24)", "SC-7(25)", "SC-7(26)", "SC-7(27)", "SC-7(28)", "SC-7(29)"]
+        },
+        {
+          "id": "SC-8",
+          "name": "Transmission Confidentiality and Integrity",
+          "baseline": ["moderate", "high"],
+          "description": "Protect the confidentiality and integrity of transmitted information.",
+          "supplemental_guidance": "Protecting the confidentiality and integrity of transmitted information applies to internal and external communications. Internal communications refer to transmissions between organizations and between interconnected systems. External communications include Internet-based communications.",
+          "related_controls": ["AC-17", "IA-3", "MA-4", "PE-4", "SC-7", "SC-12", "SC-13", "SC-16", "SC-20", "SC-23", "SC-28"],
+          "enhancements": ["SC-8(1)", "SC-8(2)", "SC-8(3)", "SC-8(4)", "SC-8(5)"]
+        },
+        {
+          "id": "SC-28",
+          "name": "Protection of Information at Rest",
+          "baseline": ["moderate", "high"],
+          "description": "Protect the confidentiality and integrity of information at rest.",
+          "supplemental_guidance": "Information at rest refers to the state of information when it is not in process or in transit and is located on system components such as storage devices, hardware, firmware, or memory. The focus of protecting information at rest is on the confidentiality and integrity of information.",
+          "related_controls": ["AC-3", "AC-19", "CM-3", "CM-6", "CP-9", "MP-4", "MP-5", "PE-3", "SC-8", "SC-12", "SC-13", "SI-7", "SI-16"],
+          "enhancements": ["SC-28(1)", "SC-28(2)", "SC-28(3)"]
+        }
+      ]
+    },
+    {
+      "id": "SI",
+      "name": "System and Information Integrity",
+      "controls": [
+        {
+          "id": "SI-2",
+          "name": "Flaw Remediation",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Identify, report, and correct system flaws. Test software and firmware updates related to flaw remediation for effectiveness and potential side effects before installation. Install security-relevant software and firmware updates within a defined time period of the release of the updates. Incorporate flaw remediation into the organizational configuration management process.",
+          "supplemental_guidance": "The need to remediate system flaws applies to all types of software and firmware. Organizations identify systems affected by software flaws, including potential vulnerabilities resulting from those flaws, and report this information to designated organizational personnel with information security and privacy responsibilities.",
+          "related_controls": ["CA-5", "CM-3", "CM-4", "CM-5", "CM-6", "IR-4", "MA-2", "RA-5", "RA-7", "SA-8", "SA-10", "SA-11", "SI-3", "SI-5", "SI-7", "SI-11"],
+          "enhancements": ["SI-2(2)", "SI-2(3)", "SI-2(4)", "SI-2(5)", "SI-2(6)"]
+        },
+        {
+          "id": "SI-3",
+          "name": "Malicious Code Protection",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Implement signature-based and non-signature-based malicious code protection mechanisms at system entry and exit points to detect and eradicate malicious code. Automatically update malicious code protection mechanisms. Configure malicious code protection mechanisms to perform periodic scans and real-time scans of files. Address the receipt of false positives and resulting potential impact.",
+          "supplemental_guidance": "System entry and exit points include firewalls, remote access servers, workstations, electronic mail servers, web servers, proxy servers, notebook computers, and mobile devices. Malicious code includes viruses, worms, Trojan horses, and spyware.",
+          "related_controls": ["AC-4", "AC-19", "CM-3", "CM-8", "IR-4", "MA-3", "MA-4", "PL-9", "RA-5", "SC-7", "SC-26", "SC-28", "SC-44", "SI-2", "SI-4", "SI-7", "SI-8", "SI-15"],
+          "enhancements": ["SI-3(1)", "SI-3(2)", "SI-3(4)", "SI-3(6)", "SI-3(8)", "SI-3(10)"]
+        },
+        {
+          "id": "SI-4",
+          "name": "System Monitoring",
+          "baseline": ["low", "moderate", "high"],
+          "description": "Monitor the system to detect attacks and indicators of potential attacks, unauthorized local/network/remote connections. Identify unauthorized use of the system. Invoke internal monitoring capabilities or deploy monitoring devices at strategic locations to track specific types of transactions. Protect information obtained from monitoring from unauthorized access, modification, and deletion. Heighten system monitoring activity whenever there is an indication of increased risk.",
+          "supplemental_guidance": "System monitoring includes external and internal monitoring. System monitoring capability is achieved through a variety of tools and techniques including intrusion detection and prevention systems, malicious code protection, audit record review, and network monitoring.",
+          "related_controls": ["AC-2", "AC-3", "AC-4", "AC-8", "AC-17", "AU-2", "AU-6", "AU-7", "AU-9", "AU-12", "AU-13", "AU-14", "CA-7", "CM-3", "CM-6", "CM-8", "CM-11", "IA-10", "IR-4", "MA-4", "PE-3", "PM-12", "RA-5", "RA-10", "SC-5", "SC-7", "SC-18", "SC-26", "SC-31", "SC-35", "SC-36", "SC-37", "SI-3"],
+          "enhancements": ["SI-4(1)", "SI-4(2)", "SI-4(3)", "SI-4(4)", "SI-4(5)", "SI-4(7)", "SI-4(9)", "SI-4(10)", "SI-4(11)", "SI-4(12)", "SI-4(13)", "SI-4(14)", "SI-4(16)", "SI-4(17)", "SI-4(18)", "SI-4(19)", "SI-4(20)", "SI-4(22)", "SI-4(23)", "SI-4(24)", "SI-4(25)"]
+        }
+      ]
+    },
+    {
+      "id": "SR",
+      "name": "Supply Chain Risk Management",
+      "controls": [
+        {
+          "id": "SR-3",
+          "name": "Supply Chain Controls and Processes",
+          "baseline": ["moderate", "high"],
+          "description": "Establish a process or processes to identify and address weaknesses or deficiencies in the supply chain elements and processes of the system, system component, or system service in a timely manner. Employ security controls and supply chain risk management processes for the system, system component, or system service.",
+          "supplemental_guidance": "Supply chain elements include organizations, entities, or tools employed for the research and development, design, manufacturing, acquisition, delivery, integration, operations, maintenance, and disposal of systems, system components, or system services. Supply chain processes include hardware, software, and firmware development processes.",
+          "related_controls": ["CA-2", "MA-2", "MA-6", "PE-3", "PL-8", "PM-30", "RA-3", "RA-7", "SA-4", "SA-5", "SA-8", "SA-9", "SA-10", "SA-15", "SC-7", "SC-29", "SC-30", "SC-38", "SI-7", "SR-1", "SR-2", "SR-4", "SR-5", "SR-6", "SR-9", "SR-11"],
+          "enhancements": ["SR-3(1)", "SR-3(2)", "SR-3(3)"]
+        },
+        {
+          "id": "SR-5",
+          "name": "Acquisition Strategies, Tools, and Methods",
+          "baseline": ["moderate", "high"],
+          "description": "Employ acquisition strategies, contract tools, and procurement methods that are consistent with organizational goals for reducing supply chain risks to the system, system component, or system service.",
+          "supplemental_guidance": "The use of acquisition and procurement processes by organizations early in the system development life cycle provides an important vehicle to protect the supply chain. Organizations use the acquisition and procurement processes to require supply chain entities to implement necessary controls to reduce the likelihood of unauthorized modifications at each stage in the supply chain.",
+          "related_controls": ["AT-3", "SA-2", "SA-3", "SA-4", "SA-5", "SA-8", "SA-9", "SA-10", "SA-15", "SR-6", "SR-9", "SR-10", "SR-11"],
+          "enhancements": ["SR-5(1)", "SR-5(2)"]
+        }
+      ]
+    }
+  ]
+}

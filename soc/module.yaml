@@ -1,0 +1,41 @@
+code: soc
+name: "SPECTRA Security Operations Center"
+description: "Defensive security module for detection engineering, threat hunting, and alert triage"
+module_version: 0.1.0
+default_selected: false
+
+header: "Security Operations Center Configuration"
+subheader: "Configure the defensive security module for detection engineering, threat hunting, and alert triage."
+
+soc_artifacts:
+  prompt: "Where should SOC engagement artifacts be stored?"
+  default: "{output_folder}/engagements/{engagement_id}/soc"
+  result: "{project-root}/{value}"
+
+soc_detection_rules:
+  prompt: "Where should detection rules be stored?"
+  default: "{output_folder}/engagements/{engagement_id}/soc/detection-rules"
+  result: "{project-root}/{value}"
+
+soc_hunt_reports:
+  prompt: "Where should threat hunt reports be stored?"
+  default: "{output_folder}/engagements/{engagement_id}/soc/hunt-reports"
+  result: "{project-root}/{value}"
+
+soc_triage_logs:
+  prompt: "Where should alert triage logs be stored?"
+  default: "{output_folder}/engagements/{engagement_id}/soc/triage"
+  result: "{project-root}/{value}"
+
+sigma_rules_ref:
+  prompt: "Path to Sigma rules framework reference?"
+  default: "_spectra/core/frameworks/sigma-rules"
+  result: "{project-root}/{value}"
+
+nist_ref:
+  prompt: "Path to NIST framework reference?"
+  default: "_spectra/core/frameworks/nist"
+  result: "{project-root}/{value}"
+
+directories:
+  - "{project-root}/{output_folder}/engagements"

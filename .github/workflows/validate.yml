@@ -1,0 +1,52 @@
+name: Validate SPECTRA
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Python dependencies
+        run: pip install pyyaml
+
+      - name: Run SPECTRA validator
+        run: python3 core/execution/validate-spectra.py --path . --strict
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Verify CLI
+        run: node cli/spectra-cli.js --help
+
+      - name: Verify spectra_init.py
+        run: |
+          python3 core/spectra-init/scripts/spectra_init.py load --project-root .
+          python3 core/spectra-init/scripts/spectra_init.py load --module rtk --project-root .
+
+      - name: Verify Python scripts syntax
+        run: |
+          python3 -m py_compile core/execution/scope-enforcer.py
+          python3 -m py_compile core/execution/evidence-logger.py
+          python3 -m py_compile core/spectra-init/scripts/spectra_init.py
+
+      - name: Verify framework data
+        run: |
+          python3 -c "import json; json.load(open('core/frameworks/mitre-attack/techniques.json'))"
+          python3 -c "import json; json.load(open('core/frameworks/nist/800-53-controls.json'))"
+          python3 -c "import json; json.load(open('core/frameworks/owasp/top10.json'))"
+          python3 -c "import json; json.load(open('core/frameworks/cis/controls-v8.json'))"
+          python3 -c "import yaml; yaml.safe_load(open('core/frameworks/sigma-rules/templates/detection-templates.yaml'))"

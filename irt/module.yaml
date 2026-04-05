@@ -1,0 +1,41 @@
+code: irt
+name: "SPECTRA Incident Response Team"
+description: "Incident response module for forensics, malware analysis, and threat intelligence"
+module_version: 0.1.0
+default_selected: false
+
+header: "Incident Response Team Configuration"
+subheader: "Configure the incident response module for forensics, malware analysis, and threat intelligence."
+
+irt_artifacts:
+  prompt: "Where should IRT engagement artifacts be stored?"
+  default: "{output_folder}/engagements/{engagement_id}/irt"
+  result: "{project-root}/{value}"
+
+irt_forensics:
+  prompt: "Where should forensic artifacts be stored?"
+  default: "{output_folder}/engagements/{engagement_id}/irt/forensics"
+  result: "{project-root}/{value}"
+
+irt_malware:
+  prompt: "Where should malware analysis artifacts be stored?"
+  default: "{output_folder}/engagements/{engagement_id}/irt/malware"
+  result: "{project-root}/{value}"
+
+irt_intel:
+  prompt: "Where should threat intelligence data be stored?"
+  default: "{output_folder}/engagements/{engagement_id}/irt/intel"
+  result: "{project-root}/{value}"
+
+irt_evidence_chain:
+  prompt: "Where should evidence chain artifacts be stored?"
+  default: "{output_folder}/engagements/{engagement_id}/irt/evidence"
+  result: "{project-root}/{value}"
+
+nist_ir_ref:
+  prompt: "Path to NIST incident response framework reference?"
+  default: "_spectra/core/frameworks/nist"
+  result: "{project-root}/{value}"
+
+directories:
+  - "{project-root}/{output_folder}/engagements"

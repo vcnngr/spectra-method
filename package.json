@@ -1,0 +1,50 @@
+{
+  "name": "spectra-method",
+  "version": "0.1.0",
+  "description": "SPECTRA -- Security Protocol Engineering for Cyber Threat Response & Assessment. Multi-agent cybersecurity framework.",
+  "type": "module",
+  "bin": {
+    "spectra": "./cli/spectra-cli.js"
+  },
+  "main": "./cli/spectra-cli.js",
+  "scripts": {
+    "validate": "python3 core/execution/validate-spectra.py --path .",
+    "test": "python3 core/execution/validate-spectra.py --path . --strict"
+  },
+  "keywords": [
+    "cybersecurity",
+    "red-team",
+    "blue-team",
+    "pentest",
+    "incident-response",
+    "ai-agents",
+    "claude",
+    "spectra"
+  ],
+  "author": "SPECTRA",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "commander": "^12.0.0",
+    "chalk": "^5.3.0",
+    "yaml": "^2.4.0"
+  },
+  "files": [
+    "cli/",
+    "core/",
+    "!core/execution/e2e-test-report.md",
+    "!core/execution/validate-spectra.py",
+    "!**/__pycache__/",
+    "!**/*.pyc",
+    "rtk/",
+    "soc/",
+    "irt/",
+    "grc/",
+    "_config/",
+    "SPECTRA.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ]
+}

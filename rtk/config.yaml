@@ -1,0 +1,18 @@
+# RTK Module Configuration — Red Team Kit
+# Version: 0.1.0
+# Date: 2026-04-04T12:00:00.000Z
+
+# Inherited from core
+user_name: Vincenzo
+communication_language: English
+document_output_language: English
+output_folder: _spectra-output
+
+# RTK-specific
+rtk_artifacts: "{project-root}/_spectra-output/engagements/{engagement_id}/rtk"
+rtk_recon_output: "{project-root}/_spectra-output/engagements/{engagement_id}/rtk/recon"
+rtk_exploit_output: "{project-root}/_spectra-output/engagements/{engagement_id}/rtk/exploits"
+rtk_reports: "{project-root}/_spectra-output/engagements/{engagement_id}/rtk/reports"
+
+# Frameworks reference
+attack_matrix: "{project-root}/_spectra/core/frameworks/mitre-attack"

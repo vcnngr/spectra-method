@@ -1,0 +1,1320 @@
+# SPECTRA v0.1.0 Sigma Rule Templates
+# Comprehensive detection rules for high-value ATT&CK techniques
+# Sigma specification: https://sigmahq.io/docs/guide/
+# Generated: 2026-04-05
+
+rules:
+  - title: "Suspicious PowerShell Execution"
+    id: "spectra-sigma-001"
+    status: "experimental"
+    description: "Detects suspicious PowerShell command-line patterns commonly used in attacks including encoded commands, download cradles, and reflection-based execution"
+    references:
+      - "https://attack.mitre.org/techniques/T1059/001/"
+    author: "SPECTRA"
+    date: "2026/04/05"
+    tags:
+      - "attack.execution"
+      - "attack.t1059.001"
+    logsource:
+      category: "process_creation"
+      product: "windows"
+    detection:
+      selection_img:
+        Image|endswith:
+          - "\\powershell.exe"
+          - "\\pwsh.exe"
+      selection_cli:
+        CommandLine|contains:
+          - "-EncodedCommand"
+          - "-enc "
+          - "IEX"
+          - "Invoke-Expression"
+          - "downloadstring"
+          - "Net.WebClient"
+          - "Start-BitsTransfer"
+          - "[System.Convert]::FromBase64String"
+          - "Invoke-WebRequest"
+          - "-WindowStyle Hidden"
+          - "bypass"
+          - "Reflection.Assembly"
+      condition: "selection_img and selection_cli"
+    falsepositives:
+      - "Legitimate administrative scripts using encoded commands"
+      - "Software deployment tools"
+    level: "high"
+
+  - title: "LSASS Memory Access"
+    id: "spectra-sigma-002"
+    status: "experimental"
+    description: "Detects process access to LSASS memory which is indicative of credential dumping via tools like Mimikatz, ProcDump, or direct API calls"
+    references:
+      - "https://attack.mitre.org/techniques/T1003/001/"
+    author: "SPECTRA"
+    date: "2026/04/05"
+    tags:
+      - "attack.credential_access"
+      - "attack.t1003.001"
+    logsource:
+      category: "process_access"
+      product: "windows"
+    detection:
+      selection:
+        TargetImage|endswith: "\\lsass.exe"
+        GrantedAccess|contains:
+          - "0x1010"
+          - "0x1038"
+          - "0x1410"
+          - "0x1438"
+          - "0x1F0FFF"
+          - "0x1F1FFF"
+          - "0x1FFFFF"
+      filter_system:
+        SourceImage|endswith:
+          - "\\wmiprvse.exe"
+          - "\\taskmgr.exe"
+          - "\\procexp64.exe"
+          - "\\procexp.exe"
+          - "\\svchost.exe"
+          - "\\csrss.exe"
+          - "\\wininit.exe"
+          - "\\MsMpEng.exe"
+      condition: "selection and not filter_system"
+    falsepositives:
+      - "Legitimate security tools performing memory scanning"
+      - "Antivirus products inspecting LSASS"
+    level: "critical"
+
+  - title: "Scheduled Task Creation via Command Line"
+    id: "spectra-sigma-003"
+    status: "experimental"
+    description: "Detects creation of scheduled tasks via schtasks.exe which may be used for persistence or lateral movement"
+    references:
+      - "https://attack.mitre.org/techniques/T1053/005/"
+    author: "SPECTRA"
+    date: "2026/04/05"
+    tags:
+      - "attack.persistence"
+      - "attack.execution"
+      - "attack.t1053.005"
+    logsource:
+      category: "process_creation"
+      product: "windows"
+    detection:
+      selection:
+        Image|endswith: "\\schtasks.exe"
+        CommandLine|contains: "/create"
+      filter_trusted:
+        CommandLine|contains:
+          - "\\Microsoft\\Windows\\WindowsUpdate"
+          - "\\Microsoft\\Windows\\SoftwareProtectionPlatform"
+      condition: "selection and not filter_trusted"
+    falsepositives:
+      - "Legitimate software installation creating scheduled tasks"
+      - "System administrators creating maintenance tasks"
+    level: "medium"
+
+  - title: "Registry Run Key Modification"
+    id: "spectra-sigma-004"
+    status: "experimental"
+    description: "Detects modification of Registry Run and RunOnce keys which are commonly used for persistence by malware and adversaries"
+    references:
+      - "https://attack.mitre.org/techniques/T1547/001/"
+    author: "SPECTRA"
+    date: "2026/04/05"
+    tags:
+      - "attack.persistence"
+      - "attack.t1547.001"
+    logsource:
+      category: "registry_set"
+      product: "windows"
+    detection:
+      selection:
+        TargetObject|contains:
+          - "\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run\\"
+          - "\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce\\"
+          - "\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Run\\"
+          - "\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\RunOnce\\"
+      filter_trusted:
+        Image|endswith:
+          - "\\msiexec.exe"
+          - "\\MsMpEng.exe"
+          - "\\MpCmdRun.exe"
+      condition: "selection and not filter_trusted"
+    falsepositives:
+      - "Legitimate software installations"
+      - "Group Policy updates"
+    level: "medium"
+
+  - title: "Suspicious WMIC Execution"
+    id: "spectra-sigma-005"
+    status: "experimental"
+    description: "Detects suspicious use of WMIC for process creation, remote execution, or reconnaissance commonly used by adversaries for living-off-the-land attacks"
+    references:
+      - "https://attack.mitre.org/techniques/T1047/"
+    author: "SPECTRA"
+    date: "2026/04/05"
+    tags:
+      - "attack.execution"
+      - "attack.t1047"
+    logsource:
+      category: "process_creation"
+      product: "windows"
+    detection:
+      selection:
+        Image|endswith: "\\wmic.exe"
+      selection_suspicious:
+        CommandLine|contains:
+          - "process call create"
+          - "/node:"
+          - "shadowcopy delete"
+          - "product get"
+          - "qfe get"
+          - "os get"
+          - "useraccount list"
+      condition: "selection and selection_suspicious"
+    falsepositives:
+      - "Legitimate system administration tasks"
+      - "Inventory and asset management tools"
+    level: "high"
+
+  - title: "PsExec Lateral Movement"
+    id: "spectra-sigma-006"
+    status: "experimental"
+    description: "Detects PsExec service installation and usage patterns associated with lateral movement via SMB and remote command execution"
+    references:
+      - "https://attack.mitre.org/techniques/T1021/002/"
+      - "https://attack.mitre.org/techniques/T1570/"
+    author: "SPECTRA"
+    date: "2026/04/05"
+    tags:
+      - "attack.lateral_movement"
+      - "attack.t1021.002"
+      - "attack.t1570"
+    logsource:
+      category: "process_creation"
+      product: "windows"
+    detection:
+      selection_psexec:
+        Image|endswith:
+          - "\\PsExec.exe"
+          - "\\PsExec64.exe"
+      selection_service:
+        Image|endswith: "\\PSEXESVC.exe"
+      selection_pipe:
+        ParentImage|endswith: "\\services.exe"
+        Image|endswith:
+          - "\\cmd.exe"
+          - "\\powershell.exe"
+          - "\\pwsh.exe"
+        User|contains: "NT AUTHORITY"
+      condition: "selection_psexec or selection_service or selection_pipe"
+    falsepositives:
+      - "Legitimate administrative use of PsExec"
+      - "IT management tools using PsExec for remote maintenance"
+    level: "high"
+
+  - title: "DNS Tunneling Activity"
+    id: "spectra-sigma-007"
+    status: "experimental"
+    description: "Detects indicators of DNS tunneling through unusually long DNS queries, high query volume to a single domain, or known DNS tunneling tool signatures"
+    references:
+      - "https://attack.mitre.org/techniques/T1071/004/"
+    author: "SPECTRA"
+    date: "2026/04/05"
+    tags:
+      - "attack.command_and_control"
+      - "attack.t1071.004"
+    logsource:
+      category: "dns_query"
+      product: "windows"
+    detection:
+      selection_long_query:
+        QueryName|re: "^.{50,}\\."
+      selection_known_tools:
+        QueryName|contains:
+          - ".dnscat."
+          - ".iodine."
+          - ".dns2tcp."
+      selection_txt:
+        QueryType: "TXT"
+        QueryName|re: "^[a-zA-Z0-9]{30,}\\."
+      condition: "selection_long_query or selection_known_tools or selection_txt"
+    falsepositives:
+      - "Legitimate services using long domain names"
+      - "CDN and cloud services with long hostnames"
+    level: "high"
+
+  - title: "Data Archive via 7zip or RAR"
+    id: "spectra-sigma-008"
+    status: "experimental"
+    description: "Detects usage of archive utilities like 7zip and WinRAR for compressing data, which is commonly performed before exfiltration"
+    references:
+      - "https://attack.mitre.org/techniques/T1560/001/"
+    author: "SPECTRA"
+    date: "2026/04/05"
+    tags:
+      - "attack.collection"
+      - "attack.t1560.001"
+    logsource:
+      category: "process_creation"
+      product: "windows"
+    detection:
+      selection_tools:
+        Image|endswith:
+          - "\\7z.exe"
+          - "\\7za.exe"
+          - "\\rar.exe"
+          - "\\WinRAR.exe"
+      selection_archive:
+        CommandLine|contains:
+          - " a "
+          - " a -"
+      selection_suspicious_paths:
+        CommandLine|contains:
+          - "\\Users\\"
+          - "\\Desktop\\"
+          - "\\Documents\\"
+          - "\\Downloads\\"
+          - "C:\\Temp\\"
+          - "\\ProgramData\\"
+      condition: "selection_tools and selection_archive and selection_suspicious_paths"
+    falsepositives:
+      - "Legitimate backup operations"
+      - "User archiving personal files"
+    level: "medium"
+
+  - title: "UAC Bypass Attempt"
+    id: "spectra-sigma-009"
+    status: "experimental"
+    description: "Detects common UAC bypass techniques including fodhelper, eventvwr, and computerdefaults abuse through registry manipulation and suspicious process chains"
+    references:
+      - "https://attack.mitre.org/techniques/T1548/002/"
+    author: "SPECTRA"
+    date: "2026/04/05"
+    tags:
+      - "attack.privilege_escalation"
+      - "attack.defense_evasion"
+      - "attack.t1548.002"
+    logsource:
+      category: "process_creation"
+      product: "windows"
+    detection:
+      selection_fodhelper:
+        ParentImage|endswith: "\\fodhelper.exe"
+        Image|endswith:
+          - "\\cmd.exe"
+          - "\\powershell.exe"
+          - "\\pwsh.exe"
+      selection_eventvwr:
+        ParentImage|endswith: "\\eventvwr.exe"
+        Image|endswith:
+          - "\\cmd.exe"
+          - "\\powershell.exe"
+          - "\\pwsh.exe"
+          - "\\mshta.exe"
+      selection_computerdefaults:
+        ParentImage|endswith: "\\computerdefaults.exe"
+        Image|endswith:
+          - "\\cmd.exe"
+          - "\\powershell.exe"
+          - "\\pwsh.exe"
+      selection_registry:
+        TargetObject|contains:
+          - "\\Software\\Classes\\ms-settings\\Shell\\Open\\command"
+          - "\\Software\\Classes\\mscfile\\Shell\\Open\\command"
+      condition: "selection_fodhelper or selection_eventvwr or selection_computerdefaults or selection_registry"
+    falsepositives:
+      - "Unlikely in normal operations"
+    level: "critical"
+
+  - title: "Service Stop Activity"
+    id: "spectra-sigma-010"
+    status: "experimental"
+    description: "Detects attempts to stop critical services including security tools, backup services, and databases which may indicate ransomware pre-encryption activity"
+    references:
+      - "https://attack.mitre.org/techniques/T1489/"
+    author: "SPECTRA"
+    date: "2026/04/05"
+    tags:
+      - "attack.impact"
+      - "attack.t1489"
+    logsource:
+      category: "process_creation"
+      product: "windows"
+    detection:
+      selection_net:
+        Image|endswith:
+          - "\\net.exe"
+          - "\\net1.exe"
+        CommandLine|contains: "stop"
+      selection_sc:
+        Image|endswith: "\\sc.exe"
+        CommandLine|contains: "stop"
+      selection_taskkill:
+        Image|endswith: "\\taskkill.exe"
+        CommandLine|contains:
+          - "/f /im"
+          - "/im "
+      selection_targets:
+        CommandLine|contains:
+          - "vss"
+          - "sql"
+          - "svc$"
+          - "memtas"
+          - "mepocs"
+          - "sophos"
+          - "backup"
+          - "GxVss"
+          - "GxBlr"
+          - "GxFWD"
+          - "GxCVD"
+          - "GxCIMgr"
+          - "veeam"
+          - "KAVFS"
+          - "mfefire"
+          - "wbengine"
+          - "MsDtsServer"
+          - "IISAdmin"
+          - "MSExchange"
+      condition: "(selection_net or selection_sc or selection_taskkill) and selection_targets"
+    falsepositives:
+      - "Legitimate service maintenance windows"
+      - "System administrators performing controlled service restarts"
+    level: "critical"
+
+  # === NEW RULES (11-35) ===
+
+  - title: "Mimikatz Activity Detection"
+    id: "spectra-sigma-011"
+    status: "experimental"
+    description: "Detects Mimikatz execution through process name, command-line arguments, and well-known module invocations for credential theft"
+    references:
+      - "https://attack.mitre.org/techniques/T1003/"
+    author: "SPECTRA"
+    date: "2026/04/05"
+    tags:
+      - "attack.credential_access"
+      - "attack.t1003"
+    logsource:
+      category: "process_creation"
+      product: "windows"
+    detection:
+      selection_binary:
+        Image|endswith:
+          - "\\mimikatz.exe"
+          - "\\mimilib.dll"
+      selection_cli:
+        CommandLine|contains:
+          - "sekurlsa::"
+          - "kerberos::"
+          - "crypto::"
+          - "lsadump::"
+          - "privilege::debug"
+          - "token::elevate"
+          - "vault::cred"
+          - "dpapi::"
+      selection_title:
+        CommandLine|contains:
+          - "mimikatz"
+          - "gentilkiwi"
+      condition: "selection_binary or selection_cli or selection_title"
+    falsepositives:
+      - "Authorized penetration testing"
+      - "Security tool evaluation"
+    level: "critical"
+
+  - title: "BloodHound/SharpHound Execution"
+    id: "spectra-sigma-012"
+    status: "experimental"
+    description: "Detects execution of BloodHound/SharpHound Active Directory reconnaissance tools used to map attack paths and identify privilege escalation opportunities"
+    references:
+      - "https://attack.mitre.org/techniques/T1087/"
+      - "https://attack.mitre.org/techniques/T1069/"
+    author: "SPECTRA"
+    date: "2026/04/05"
+    tags:
+      - "attack.discovery"
+      - "attack.t1087.002"
+      - "attack.t1069.002"
+    logsource:
+      category: "process_creation"
+      product: "windows"
+    detection:
+      selection_binary:
+        Image|endswith:
+          - "\\SharpHound.exe"
+          - "\\BloodHound.exe"
+      selection_cli:
+        CommandLine|contains:
+          - "Invoke-BloodHound"
+          - "SharpHound"
+          - "-CollectionMethod All"
+          - "-CollectionMethod Session"
+          - "-CollectionMethod LoggedOn"
+          - "Get-BloodHoundData"
+      selection_output:
+        CommandLine|contains:
+          - "_BloodHound.zip"
+          - "bloodhound.bin"
+      condition: "selection_binary or selection_cli or selection_output"
+    falsepositives:
+      - "Authorized Active Directory security assessments"
+      - "Purple team exercises"
+    level: "critical"
+
+  - title: "Certutil Download Cradle"
+    id: "spectra-sigma-013"
+    status: "experimental"
+    description: "Detects abuse of certutil.exe for downloading files from the internet or decoding Base64-encoded payloads, a common LOLBIN technique"
+    references:
+      - "https://attack.mitre.org/techniques/T1105/"
+      - "https://attack.mitre.org/techniques/T1140/"
+    author: "SPECTRA"
+    date: "2026/04/05"
+    tags:
+      - "attack.command_and_control"
+      - "attack.defense_evasion"
+      - "attack.t1105"
+      - "attack.t1140"
+    logsource:
+      category: "process_creation"
+      product: "windows"
+    detection:
+      selection:
+        Image|endswith: "\\certutil.exe"
+      selection_download:
+        CommandLine|contains:
+          - "-urlcache"
+          - "/urlcache"
+          - "-verifyctl"
+          - "/verifyctl"
+          - "URL"
+      selection_decode:
+        CommandLine|contains:
+          - "-decode"
+          - "/decode"
+          - "-decodehex"
+          - "/decodehex"
+          - "-encode"
+          - "/encode"
+      condition: "selection and (selection_download or selection_decode)"
+    falsepositives:
+      - "Legitimate certificate operations"
+      - "PKI administration tasks"
+    level: "high"
+
+  - title: "BITS Transfer Job Abuse"
+    id: "spectra-sigma-014"
+    status: "experimental"
+    description: "Detects use of Background Intelligent Transfer Service (BITS) for file download or persistence via bitsadmin.exe, a technique used to evade detection"
+    references:
+      - "https://attack.mitre.org/techniques/T1197/"
+    author: "SPECTRA"
+    date: "2026/04/05"
+    tags:
+      - "attack.defense_evasion"
+      - "attack.persistence"
+      - "attack.t1197"
+    logsource:
+      category: "process_creation"
+      product: "windows"
+    detection:
+      selection:
+        Image|endswith: "\\bitsadmin.exe"
+      selection_suspicious:
+        CommandLine|contains:
+          - "/transfer"
+          - "/create"
+          - "/addfile"
+          - "/setnotifycmdline"
+          - "/setnotifyflags"
+          - "/resume"
+          - "/SetCustomHeaders"
+      condition: "selection and selection_suspicious"
+    falsepositives:
+      - "Legitimate BITS transfers by SCCM or WSUS"
+      - "Windows Update related activities"
+    level: "medium"
+
+  - title: "WMI Process Creation"
+    id: "spectra-sigma-015"
+    status: "experimental"
+    description: "Detects process creation via Windows Management Instrumentation (WMI) indicating potential remote execution or lateral movement through WMI provider host"
+    references:
+      - "https://attack.mitre.org/techniques/T1047/"
+    author: "SPECTRA"
+    date: "2026/04/05"
+    tags:
+      - "attack.execution"
+      - "attack.t1047"
+    logsource:
+      category: "process_creation"
+      product: "windows"
+    detection:
+      selection:
+        ParentImage|endswith: "\\WmiPrvSE.exe"
+      filter_legitimate:
+        Image|endswith:
+          - "\\WerFault.exe"
+          - "\\WmiPrvSE.exe"
+          - "\\mofcomp.exe"
+          - "\\scrcons.exe"
+      condition: "selection and not filter_legitimate"
+    falsepositives:
+      - "WMI-based monitoring tools"
+      - "Legitimate WMI management scripts"
+    level: "high"
+
+  - title: "Rundll32 Suspicious Execution"
+    id: "spectra-sigma-016"
+    status: "experimental"
+    description: "Detects suspicious rundll32.exe execution patterns including execution from unusual paths, JavaScript/VBScript payloads, and known abuse patterns"
+    references:
+      - "https://attack.mitre.org/techniques/T1218/011/"
+    author: "SPECTRA"
+    date: "2026/04/05"
+    tags:
+      - "attack.defense_evasion"
+      - "attack.t1218.011"
+    logsource:
+      category: "process_creation"
+      product: "windows"
+    detection:
+      selection:
+        Image|endswith: "\\rundll32.exe"
+      selection_suspicious:
+        CommandLine|contains:
+          - "javascript:"
+          - "vbscript:"
+          - "shell32.dll,Control_RunDLL"
+          - "url.dll,FileProtocolHandler"
+          - "zipfldr.dll,RouteTheCall"
+          - "advpack.dll,LaunchINFSection"
+          - "advpack.dll,RegisterOCX"
+          - "ieadvpack.dll,LaunchINFSection"
+          - "shdocvw.dll,OpenURL"
+          - "pcwutl.dll,LaunchApplication"
+      selection_temp_paths:
+        CommandLine|contains:
+          - "\\Temp\\"
+          - "\\tmp\\"
+          - "\\AppData\\Local\\"
+          - "\\ProgramData\\"
+          - "\\Users\\Public\\"
+      condition: "selection and (selection_suspicious or selection_temp_paths)"
+    falsepositives:
+      - "Legitimate software using rundll32 for DLL execution"
+      - "Control Panel item execution"
+    level: "high"
+
+  - title: "Mshta Execution"
+    id: "spectra-sigma-017"
+    status: "experimental"
+    description: "Detects mshta.exe execution with suspicious command-line parameters including inline VBScript/JavaScript and remote HTA file loading for defense evasion"
+    references:
+      - "https://attack.mitre.org/techniques/T1218/005/"
+    author: "SPECTRA"
+    date: "2026/04/05"
+    tags:
+      - "attack.defense_evasion"
+      - "attack.execution"
+      - "attack.t1218.005"
+    logsource:
+      category: "process_creation"
+      product: "windows"
+    detection:
+      selection:
+        Image|endswith: "\\mshta.exe"
+      selection_inline:
+        CommandLine|contains:
+          - "vbscript:"
+          - "javascript:"
+          - "about:"
+          - ".hta"
+          - "GetObject"
+          - "script:"
+      selection_remote:
+        CommandLine|contains:
+          - "http://"
+          - "https://"
+          - "ftp://"
+          - "\\\\"
+      condition: "selection and (selection_inline or selection_remote)"
+    falsepositives:
+      - "Legitimate HTA applications"
+      - "Enterprise applications using HTA interfaces"
+    level: "high"
+
+  - title: "Regsvr32 AppLocker Bypass"
+    id: "spectra-sigma-018"
+    status: "experimental"
+    description: "Detects Regsvr32.exe abuse for AppLocker bypass and code execution, including Squiblydoo and Squiblytwo attack patterns using scriptlets and COM objects"
+    references:
+      - "https://attack.mitre.org/techniques/T1218/010/"
+    author: "SPECTRA"
+    date: "2026/04/05"
+    tags:
+      - "attack.defense_evasion"
+      - "attack.execution"
+      - "attack.t1218.010"
+    logsource:
+      category: "process_creation"
+      product: "windows"
+    detection:
+      selection:
+        Image|endswith: "\\regsvr32.exe"
+      selection_squiblydoo:
+        CommandLine|contains:
+          - "/i:http"
+          - "/i:ftp"
+          - "/i:\\\\"
+          - "scrobj.dll"
+      selection_suspicious:
+        CommandLine|contains:
+          - "/s /n /u /i:"
+          - "/s /u /i:"
+          - "script:"
+          - ".sct"
+      condition: "selection and (selection_squiblydoo or selection_suspicious)"
+    falsepositives:
+      - "Legitimate COM object registration"
+    level: "high"
+
+  - title: "CMSTP UAC Bypass"
+    id: "spectra-sigma-019"
+    status: "experimental"
+    description: "Detects abuse of CMSTP.exe (Connection Manager Profile Installer) for UAC bypass and arbitrary code execution through malicious INF files"
+    references:
+      - "https://attack.mitre.org/techniques/T1218/003/"
+    author: "SPECTRA"
+    date: "2026/04/05"
+    tags:
+      - "attack.defense_evasion"
+      - "attack.privilege_escalation"
+      - "attack.t1218.003"
+    logsource:
+      category: "process_creation"
+      product: "windows"
+    detection:
+      selection:
+        Image|endswith: "\\cmstp.exe"
+      selection_suspicious:
+        CommandLine|contains:
+          - "/s"
+          - "/ni"
+          - "/au"
+      filter_legitimate:
+        CommandLine|contains:
+          - "\\System32\\"
+          - "\\SysWOW64\\"
+      condition: "selection and selection_suspicious and not filter_legitimate"
+    falsepositives:
+      - "Legitimate VPN connection profile installations"
+    level: "high"
+
+  - title: "Suspicious Scheduled Task Creation with High Privilege"
+    id: "spectra-sigma-020"
+    status: "experimental"
+    description: "Detects creation of scheduled tasks with SYSTEM privileges or suspicious execution paths indicating persistence or privilege escalation"
+    references:
+      - "https://attack.mitre.org/techniques/T1053/005/"
+    author: "SPECTRA"
+    date: "2026/04/05"
+    tags:
+      - "attack.persistence"
+      - "attack.privilege_escalation"
+      - "attack.t1053.005"
+    logsource:
+      category: "process_creation"
+      product: "windows"
+    detection:
+      selection:
+        Image|endswith: "\\schtasks.exe"
+        CommandLine|contains: "/create"
+      selection_system:
+        CommandLine|contains:
+          - "/ru SYSTEM"
+          - "/ru \"SYSTEM\""
+          - "/ru NT AUTHORITY"
+          - "/ru \"NT AUTHORITY\\SYSTEM\""
+      selection_suspicious_path:
+        CommandLine|contains:
+          - "\\Temp\\"
+          - "\\tmp\\"
+          - "\\AppData\\"
+          - "\\ProgramData\\"
+          - "\\Users\\Public\\"
+          - "cmd.exe /c"
+          - "powershell"
+      condition: "selection and (selection_system or selection_suspicious_path)"
+    falsepositives:
+      - "Legitimate software installations requiring SYSTEM tasks"
+      - "Enterprise management agents"
+    level: "high"
+
+  - title: "SSH Tunneling Detection"
+    id: "spectra-sigma-021"
+    status: "experimental"
+    description: "Detects SSH port forwarding and tunneling activity that may indicate covert channel establishment for data exfiltration or pivoting"
+    references:
+      - "https://attack.mitre.org/techniques/T1572/"
+    author: "SPECTRA"
+    date: "2026/04/05"
+    tags:
+      - "attack.command_and_control"
+      - "attack.t1572"
+    logsource:
+      category: "process_creation"
+      product: "windows"
+    detection:
+      selection:
+        Image|endswith:
+          - "\\ssh.exe"
+          - "\\plink.exe"
+          - "\\putty.exe"
+      selection_tunnel:
+        CommandLine|contains:
+          - "-L "
+          - "-R "
+          - "-D "
+          - "-w "
+          - "-N -f"
+          - "ProxyCommand"
+          - "-o StrictHostKeyChecking=no"
+      condition: "selection and selection_tunnel"
+    falsepositives:
+      - "Legitimate SSH tunneling by system administrators"
+      - "Development environments using SSH port forwarding"
+    level: "medium"
+
+  - title: "NTLM Relay Attack Indicators"
+    id: "spectra-sigma-022"
+    status: "experimental"
+    description: "Detects indicators of NTLM relay attacks including suspicious SMB connections, NTLMRelayx execution, and Responder usage for credential interception"
+    references:
+      - "https://attack.mitre.org/techniques/T1557/001/"
+    author: "SPECTRA"
+    date: "2026/04/05"
+    tags:
+      - "attack.credential_access"
+      - "attack.t1557.001"
+    logsource:
+      category: "process_creation"
+      product: "windows"
+    detection:
+      selection_tools:
+        CommandLine|contains:
+          - "ntlmrelayx"
+          - "Responder.py"
+          - "Inveigh"
+          - "Invoke-Inveigh"
+          - "MultiRelay"
+          - "smbrelayx"
+      selection_impacket:
+        CommandLine|contains:
+          - "impacket"
+          - "secretsdump"
+      condition: "selection_tools or selection_impacket"
+    falsepositives:
+      - "Authorized penetration testing"
+      - "Network security assessment tools"
+    level: "critical"
+
+  - title: "Kerberoasting Activity"
+    id: "spectra-sigma-023"
+    status: "experimental"
+    description: "Detects Kerberoasting attacks targeting service account tickets through suspicious TGS requests, Rubeus, or Invoke-Kerberoast execution"
+    references:
+      - "https://attack.mitre.org/techniques/T1558/003/"
+    author: "SPECTRA"
+    date: "2026/04/05"
+    tags:
+      - "attack.credential_access"
+      - "attack.t1558.003"
+    logsource:
+      category: "process_creation"
+      product: "windows"
+    detection:
+      selection_tools:
+        CommandLine|contains:
+          - "Invoke-Kerberoast"
+          - "Rubeus"
+          - "kerberoast"
+          - "GetUserSPNs"
+          - "Get-DomainSPNTicket"
+      selection_rubeus:
+        CommandLine|contains:
+          - "rubeus.exe"
+          - "kerberoast /outfile"
+          - "asktgs"
+          - "tgtdeleg"
+      condition: "selection_tools or selection_rubeus"
+    falsepositives:
+      - "Authorized security assessments"
+      - "Service account auditing tools"
+    level: "critical"
+
+  - title: "DCSync Attack Detection"
+    id: "spectra-sigma-024"
+    status: "experimental"
+    description: "Detects DCSync attack indicators where an adversary uses Directory Replication Service to replicate domain controller data and extract credential material"
+    references:
+      - "https://attack.mitre.org/techniques/T1003/006/"
+    author: "SPECTRA"
+    date: "2026/04/05"
+    tags:
+      - "attack.credential_access"
+      - "attack.t1003.006"
+    logsource:
+      category: "process_creation"
+      product: "windows"
+    detection:
+      selection_mimikatz:
+        CommandLine|contains:
+          - "lsadump::dcsync"
+          - "lsadump::netsync"
+          - "lsadump::backupkeys"
+      selection_tools:
+        CommandLine|contains:
+          - "secretsdump"
+          - "-just-dc"
+          - "-just-dc-ntlm"
+          - "Invoke-DCSync"
+          - "Get-ADReplAccount"
+      condition: "selection_mimikatz or selection_tools"
+    falsepositives:
+      - "Legitimate domain controller replication"
+      - "Authorized Active Directory backup operations"
+    level: "critical"
+
+  - title: "Golden Ticket Usage"
+    id: "spectra-sigma-025"
+    status: "experimental"
+    description: "Detects indicators of Kerberos Golden Ticket creation or usage including suspicious TGT manipulation, krbtgt hash extraction, and ticket forging tool execution"
+    references:
+      - "https://attack.mitre.org/techniques/T1558/001/"
+    author: "SPECTRA"
+    date: "2026/04/05"
+    tags:
+      - "attack.credential_access"
+      - "attack.persistence"
+      - "attack.t1558.001"
+    logsource:
+      category: "process_creation"
+      product: "windows"
+    detection:
+      selection_mimikatz:
+        CommandLine|contains:
+          - "kerberos::golden"
+          - "kerberos::ptt"
+          - "lsadump::lsa /patch"
+          - "lsadump::trust /patch"
+      selection_tools:
+        CommandLine|contains:
+          - "ticketer.py"
+          - "golden_ticket"
+          - "Invoke-Mimikatz -Command '\"kerberos::golden"
+          - "Rubeus.exe ptt"
+          - "/krbtgt:"
+      condition: "selection_mimikatz or selection_tools"
+    falsepositives:
+      - "Authorized penetration testing targeting Kerberos"
+    level: "critical"
+
+  - title: "Pass-the-Hash Detection"
+    id: "spectra-sigma-026"
+    status: "experimental"
+    description: "Detects Pass-the-Hash attack indicators including suspicious NTLM authentication patterns, known PtH tool execution, and lateral movement using stolen hashes"
+    references:
+      - "https://attack.mitre.org/techniques/T1550/002/"
+    author: "SPECTRA"
+    date: "2026/04/05"
+    tags:
+      - "attack.lateral_movement"
+      - "attack.t1550.002"
+    logsource:
+      category: "process_creation"
+      product: "windows"
+    detection:
+      selection_tools:
+        CommandLine|contains:
+          - "sekurlsa::pth"
+          - "Invoke-WMIExec"
+          - "Invoke-SMBExec"
+          - "wmiexec.py"
+          - "smbexec.py"
+          - "atexec.py"
+          - "psexec.py"
+      selection_mimikatz_pth:
+        CommandLine|contains:
+          - "/user:"
+          - "/ntlm:"
+          - "/rc4:"
+          - "/domain:"
+      condition: "selection_tools or (selection_mimikatz_pth and selection_tools)"
+    falsepositives:
+      - "Authorized red team operations"
+      - "Penetration testing tools"
+    level: "critical"
+
+  - title: "Process Injection via CreateRemoteThread"
+    id: "spectra-sigma-027"
+    status: "experimental"
+    description: "Detects potential process injection through CreateRemoteThread API calls from suspicious source processes targeting common injection targets like explorer.exe and svchost.exe"
+    references:
+      - "https://attack.mitre.org/techniques/T1055/001/"
+    author: "SPECTRA"
+    date: "2026/04/05"
+    tags:
+      - "attack.defense_evasion"
+      - "attack.privilege_escalation"
+      - "attack.t1055.001"
+    logsource:
+      category: "create_remote_thread"
+      product: "windows"
+    detection:
+      selection:
+        TargetImage|endswith:
+          - "\\svchost.exe"
+          - "\\explorer.exe"
+          - "\\lsass.exe"
+          - "\\winlogon.exe"
+          - "\\csrss.exe"
+          - "\\services.exe"
+          - "\\spoolsv.exe"
+      filter_legitimate:
+        SourceImage|endswith:
+          - "\\csrss.exe"
+          - "\\lsass.exe"
+          - "\\services.exe"
+          - "\\svchost.exe"
+          - "\\wininit.exe"
+          - "\\MsMpEng.exe"
+          - "\\MpCmdRun.exe"
+      condition: "selection and not filter_legitimate"
+    falsepositives:
+      - "Legitimate software using thread injection for hooking"
+      - "Security products performing process inspection"
+    level: "high"
+
+  - title: "AMSI Bypass Attempt"
+    id: "spectra-sigma-028"
+    status: "experimental"
+    description: "Detects attempts to bypass the Antimalware Scan Interface (AMSI) through PowerShell reflection, memory patching, or known bypass techniques"
+    references:
+      - "https://attack.mitre.org/techniques/T1562/001/"
+    author: "SPECTRA"
+    date: "2026/04/05"
+    tags:
+      - "attack.defense_evasion"
+      - "attack.t1562.001"
+    logsource:
+      category: "process_creation"
+      product: "windows"
+    detection:
+      selection_img:
+        Image|endswith:
+          - "\\powershell.exe"
+          - "\\pwsh.exe"
+      selection_amsi:
+        CommandLine|contains:
+          - "AmsiInitFailed"
+          - "amsi.dll"
+          - "AmsiUtils"
+          - "amsiContext"
+          - "AmsiScanBuffer"
+          - "SetValue($null)"
+          - "[Ref].Assembly.GetType"
+          - "System.Management.Automation.AmsiUtils"
+      condition: "selection_img and selection_amsi"
+    falsepositives:
+      - "Security research and testing"
+      - "AMSI diagnostic scripts"
+    level: "critical"
+
+  - title: "ETW Tampering"
+    id: "spectra-sigma-029"
+    status: "experimental"
+    description: "Detects attempts to tamper with Event Tracing for Windows (ETW) by patching EtwEventWrite, disabling providers, or manipulating trace sessions to blind security monitoring"
+    references:
+      - "https://attack.mitre.org/techniques/T1562/006/"
+    author: "SPECTRA"
+    date: "2026/04/05"
+    tags:
+      - "attack.defense_evasion"
+      - "attack.t1562.006"
+    logsource:
+      category: "process_creation"
+      product: "windows"
+    detection:
+      selection_cli:
+        CommandLine|contains:
+          - "EtwEventWrite"
+          - "ntdll!EtwEventWrite"
+          - "logman stop"
+          - "logman delete"
+          - "Set-EtwTraceProvider"
+          - "Remove-EtwTraceProvider"
+      selection_ps:
+        Image|endswith:
+          - "\\powershell.exe"
+          - "\\pwsh.exe"
+        CommandLine|contains:
+          - "Reflection.Emit"
+          - "NtTraceEvent"
+          - "EtwpStopTrace"
+      condition: "selection_cli or selection_ps"
+    falsepositives:
+      - "Legitimate ETW management by administrators"
+      - "Performance monitoring configuration"
+    level: "high"
+
+  - title: "Suspicious WinRM Usage"
+    id: "spectra-sigma-030"
+    status: "experimental"
+    description: "Detects suspicious Windows Remote Management (WinRM) usage including remote PowerShell sessions and lateral movement through WinRM/WSMan protocol"
+    references:
+      - "https://attack.mitre.org/techniques/T1021/006/"
+    author: "SPECTRA"
+    date: "2026/04/05"
+    tags:
+      - "attack.lateral_movement"
+      - "attack.t1021.006"
+    logsource:
+      category: "process_creation"
+      product: "windows"
+    detection:
+      selection_winrm:
+        Image|endswith: "\\winrm.cmd"
+      selection_ps_remoting:
+        Image|endswith:
+          - "\\powershell.exe"
+          - "\\pwsh.exe"
+        CommandLine|contains:
+          - "Enter-PSSession"
+          - "Invoke-Command"
+          - "New-PSSession"
+          - "-ComputerName"
+          - "Enable-PSRemoting"
+          - "winrm quickconfig"
+      selection_wsmprovhost:
+        ParentImage|endswith: "\\wsmprovhost.exe"
+        Image|endswith:
+          - "\\cmd.exe"
+          - "\\powershell.exe"
+          - "\\pwsh.exe"
+      condition: "selection_winrm or selection_ps_remoting or selection_wsmprovhost"
+    falsepositives:
+      - "Legitimate remote administration via PowerShell remoting"
+      - "Configuration management tools using WinRM"
+    level: "medium"
+
+  - title: "Cobalt Strike Beacon Indicators"
+    id: "spectra-sigma-031"
+    status: "experimental"
+    description: "Detects Cobalt Strike Beacon execution patterns including named pipe creation, process injection targets, default configurations, and known command-line indicators"
+    references:
+      - "https://attack.mitre.org/techniques/T1071/001/"
+      - "https://attack.mitre.org/software/S0154/"
+    author: "SPECTRA"
+    date: "2026/04/05"
+    tags:
+      - "attack.command_and_control"
+      - "attack.t1071.001"
+    logsource:
+      category: "process_creation"
+      product: "windows"
+    detection:
+      selection_default_pipes:
+        CommandLine|contains:
+          - "\\MSSE-"
+          - "\\msagent_"
+          - "\\postex_"
+          - "\\status_"
+          - "\\postex_ssh_"
+      selection_spawn:
+        ParentImage|endswith: "\\rundll32.exe"
+        Image|endswith:
+          - "\\cmd.exe"
+          - "\\powershell.exe"
+          - "\\dllhost.exe"
+        CommandLine|contains:
+          - "net view"
+          - "whoami"
+          - "net localgroup"
+      selection_beacon_cli:
+        CommandLine|contains:
+          - "jump psexec"
+          - "jump psexec_psh"
+          - "jump winrm"
+          - "remote-exec"
+          - "beacon_inline_execute"
+      condition: "selection_default_pipes or selection_spawn or selection_beacon_cli"
+    falsepositives:
+      - "Named pipes with similar naming conventions in legitimate software"
+    level: "critical"
+
+  - title: "DNS Beaconing Pattern"
+    id: "spectra-sigma-032"
+    status: "experimental"
+    description: "Detects DNS-based command and control beaconing through periodic queries with encoded subdomains, suspicious TXT record lookups, and high-frequency queries to single domains"
+    references:
+      - "https://attack.mitre.org/techniques/T1071/004/"
+    author: "SPECTRA"
+    date: "2026/04/05"
+    tags:
+      - "attack.command_and_control"
+      - "attack.t1071.004"
+    logsource:
+      category: "dns_query"
+      product: "windows"
+    detection:
+      selection_encoded:
+        QueryName|re: "^[a-f0-9]{16,}\\."
+      selection_base64:
+        QueryName|re: "^[A-Za-z0-9+/]{20,}=*\\."
+      selection_null_type:
+        QueryType:
+          - "NULL"
+          - "CNAME"
+          - "MX"
+        QueryName|re: "^[a-zA-Z0-9]{15,}\\."
+      condition: "selection_encoded or selection_base64 or selection_null_type"
+    falsepositives:
+      - "DKIM and SPF record lookups"
+      - "Legitimate services using encoded DNS names"
+    level: "high"
+
+  - title: "Data Staging in Temp Directory"
+    id: "spectra-sigma-033"
+    status: "experimental"
+    description: "Detects suspicious file operations in temporary directories consistent with adversary data staging prior to exfiltration, including large file creation and archive operations"
+    references:
+      - "https://attack.mitre.org/techniques/T1074/001/"
+    author: "SPECTRA"
+    date: "2026/04/05"
+    tags:
+      - "attack.collection"
+      - "attack.t1074.001"
+    logsource:
+      category: "process_creation"
+      product: "windows"
+    detection:
+      selection_copy:
+        Image|endswith:
+          - "\\xcopy.exe"
+          - "\\robocopy.exe"
+          - "\\cmd.exe"
+        CommandLine|contains:
+          - "\\Temp\\"
+          - "\\tmp\\"
+          - "\\ProgramData\\"
+          - "\\Users\\Public\\"
+      selection_staging:
+        Image|endswith:
+          - "\\powershell.exe"
+          - "\\pwsh.exe"
+        CommandLine|contains:
+          - "Copy-Item"
+          - "Move-Item"
+          - "Get-ChildItem -Recurse"
+          - "Compress-Archive"
+        CommandLine|contains:
+          - "\\Temp\\"
+          - "\\tmp\\"
+          - "\\ProgramData\\"
+      condition: "selection_copy or selection_staging"
+    falsepositives:
+      - "Legitimate backup scripts"
+      - "Software update staging"
+      - "System maintenance operations"
+    level: "medium"
+
+  - title: "Large File Transfer Detection"
+    id: "spectra-sigma-034"
+    status: "experimental"
+    description: "Detects potential data exfiltration through large file transfers using common command-line tools, cloud upload utilities, and known exfiltration channels"
+    references:
+      - "https://attack.mitre.org/techniques/T1048/"
+    author: "SPECTRA"
+    date: "2026/04/05"
+    tags:
+      - "attack.exfiltration"
+      - "attack.t1048"
+    logsource:
+      category: "process_creation"
+      product: "windows"
+    detection:
+      selection_ftp:
+        Image|endswith:
+          - "\\ftp.exe"
+          - "\\sftp.exe"
+        CommandLine|contains:
+          - "put "
+          - "mput "
+          - "send "
+      selection_curl:
+        Image|endswith:
+          - "\\curl.exe"
+          - "\\wget.exe"
+        CommandLine|contains:
+          - "--upload-file"
+          - "-T "
+          - "--data-binary"
+          - "-X POST"
+          - "-X PUT"
+      selection_cloud:
+        CommandLine|contains:
+          - "rclone"
+          - "megacmd"
+          - "MEGAcmdShell"
+          - "azcopy"
+          - "aws s3 cp"
+          - "gsutil cp"
+      selection_scp:
+        Image|endswith: "\\scp.exe"
+      condition: "selection_ftp or selection_curl or selection_cloud or selection_scp"
+    falsepositives:
+      - "Legitimate file transfers and cloud backups"
+      - "DevOps deployment pipelines"
+      - "Authorized cloud sync tools"
+    level: "medium"
+
+  - title: "Windows Event Log Clearing"
+    id: "spectra-sigma-035"
+    status: "experimental"
+    description: "Detects attempts to clear Windows event logs using wevtutil, Clear-EventLog PowerShell cmdlet, or direct log file deletion to cover tracks"
+    references:
+      - "https://attack.mitre.org/techniques/T1070/001/"
+    author: "SPECTRA"
+    date: "2026/04/05"
+    tags:
+      - "attack.defense_evasion"
+      - "attack.t1070.001"
+    logsource:
+      category: "process_creation"
+      product: "windows"
+    detection:
+      selection_wevtutil:
+        Image|endswith: "\\wevtutil.exe"
+        CommandLine|contains:
+          - "cl "
+          - "clear-log"
+      selection_ps:
+        Image|endswith:
+          - "\\powershell.exe"
+          - "\\pwsh.exe"
+        CommandLine|contains:
+          - "Clear-EventLog"
+          - "Remove-EventLog"
+          - "Limit-EventLog"
+          - "[System.Diagnostics.Eventing.Reader.EventLogSession]::GlobalSession.ClearLog"
+      selection_fsutil:
+        Image|endswith: "\\fsutil.exe"
+        CommandLine|contains:
+          - "usn deletejournal"
+      condition: "selection_wevtutil or selection_ps or selection_fsutil"
+    falsepositives:
+      - "Legitimate log maintenance by administrators"
+      - "Automated log rotation scripts"
+    level: "critical"

@@ -1,0 +1,165 @@
+{
+  "framework": "OWASP Top 10",
+  "version": "2021",
+  "generated": "2026-04-05",
+  "note": "Complete OWASP Top 10 2021 for SPECTRA v0.1.0 web application security workflows",
+  "vulnerabilities": [
+    {
+      "id": "A01",
+      "name": "Broken Access Control",
+      "description": "Access control enforces policy such that users cannot act outside of their intended permissions. Failures typically lead to unauthorized information disclosure, modification, or destruction of data, or performing a business function outside the user's limits.",
+      "cwe_mapped": ["CWE-200", "CWE-284", "CWE-285", "CWE-352", "CWE-639", "CWE-862", "CWE-863", "CWE-22"],
+      "prevention": [
+        "Deny by default except for public resources",
+        "Implement access control mechanisms once and reuse throughout the application",
+        "Enforce record ownership rather than accepting that the user can CRUD any record",
+        "Disable web server directory listing and ensure file metadata and backup files are not present within web roots",
+        "Log access control failures and alert administrators when appropriate",
+        "Rate limit API and controller access to minimize harm from automated attack tooling",
+        "Invalidate stateful session identifiers on the server after logout; stateless JWT tokens should be short-lived"
+      ],
+      "severity": "critical"
+    },
+    {
+      "id": "A02",
+      "name": "Cryptographic Failures",
+      "description": "Failures related to cryptography which often lead to exposure of sensitive data. This includes use of weak or deprecated cryptographic algorithms, improper key management, lack of encryption for data in transit or at rest, and insufficient entropy.",
+      "cwe_mapped": ["CWE-259", "CWE-327", "CWE-331", "CWE-261", "CWE-326", "CWE-310"],
+      "prevention": [
+        "Classify data processed, stored, or transmitted by an application and identify which data is sensitive according to privacy laws or business needs",
+        "Do not store sensitive data unnecessarily; discard it as soon as possible or use PCI DSS compliant tokenization or truncation",
+        "Encrypt all sensitive data at rest using strong, current algorithms with proper key management",
+        "Encrypt all data in transit with secure protocols such as TLS with forward secrecy; enforce encryption using directives like HSTS",
+        "Disable caching for responses that contain sensitive data",
+        "Store passwords using strong adaptive and salted hashing functions with a work factor such as Argon2, scrypt, bcrypt, or PBKDF2",
+        "Ensure cryptographic randomness is used where appropriate and not seeded in a predictable way"
+      ],
+      "severity": "critical"
+    },
+    {
+      "id": "A03",
+      "name": "Injection",
+      "description": "Injection flaws occur when an application sends untrusted data to an interpreter as part of a command or query. Hostile data can trick the interpreter into executing unintended commands or accessing data without proper authorization. Includes SQL, NoSQL, OS command, ORM, LDAP, and EL/OGNL injection.",
+      "cwe_mapped": ["CWE-79", "CWE-89", "CWE-73", "CWE-77", "CWE-78", "CWE-917"],
+      "prevention": [
+        "Use a safe API which avoids using the interpreter entirely, provides a parameterized interface, or migrates to ORMs",
+        "Use positive server-side input validation; this is not a complete defense as many applications require special characters",
+        "For any residual dynamic queries, escape special characters using the specific escape syntax for that interpreter",
+        "Use LIMIT and other SQL controls within queries to prevent mass disclosure of records in case of SQL injection",
+        "Implement Content Security Policy (CSP) as a defense-in-depth mitigation against XSS",
+        "Use automated testing tools (SAST, DAST, IAST) in the CI/CD pipeline to detect injection flaws before deployment"
+      ],
+      "severity": "critical"
+    },
+    {
+      "id": "A04",
+      "name": "Insecure Design",
+      "description": "Insecure design is a broad category representing different weaknesses expressed as missing or ineffective control design. It refers to risks related to design and architectural flaws, calling for more use of threat modeling, secure design patterns, and reference architectures.",
+      "cwe_mapped": ["CWE-209", "CWE-256", "CWE-501", "CWE-522", "CWE-266", "CWE-269"],
+      "prevention": [
+        "Establish and use a secure development lifecycle with AppSec professionals to evaluate and design security and privacy-related controls",
+        "Establish and use a library of secure design patterns or paved road ready-to-use components",
+        "Use threat modeling for critical authentication, access control, business logic, and key flows",
+        "Integrate security language and controls into user stories",
+        "Integrate plausibility checks at each tier of the application from frontend to backend",
+        "Write unit and integration tests to validate that all critical flows are resistant to the threat model",
+        "Segregate tier layers on the system and network layers depending on exposure and protection needs"
+      ],
+      "severity": "high"
+    },
+    {
+      "id": "A05",
+      "name": "Security Misconfiguration",
+      "description": "The application might be vulnerable if it is missing appropriate security hardening across any part of the application stack, or has improperly configured permissions, unnecessary features enabled, default accounts and passwords, overly informative error handling, or insecure configuration in frameworks and libraries.",
+      "cwe_mapped": ["CWE-16", "CWE-611", "CWE-1004", "CWE-942"],
+      "prevention": [
+        "Implement a repeatable hardening process that makes it fast and easy to deploy another environment that is properly locked down",
+        "Use a minimal platform without unnecessary features, components, documentation, and samples; remove or do not install unused frameworks and features",
+        "Review and update configurations as part of the patch management process, with particular attention to cloud storage permissions",
+        "Implement a segmented application architecture that provides effective and secure separation between components or tenants",
+        "Send security directives to clients such as Security Headers",
+        "Implement an automated process to verify the effectiveness of configurations and settings in all environments",
+        "Disable XML external entity processing in all XML parsers"
+      ],
+      "severity": "high"
+    },
+    {
+      "id": "A06",
+      "name": "Vulnerable and Outdated Components",
+      "description": "Components such as libraries, frameworks, and other software modules run with the same privileges as the application. If a vulnerable component is exploited, it can cause serious data loss or server takeover. Applications and APIs using components with known vulnerabilities may undermine application defenses.",
+      "cwe_mapped": ["CWE-1104", "CWE-937"],
+      "prevention": [
+        "Remove unused dependencies, unnecessary features, components, files, and documentation",
+        "Continuously inventory the versions of both client-side and server-side components and their dependencies using tools like OWASP Dependency-Check, retire.js, or versions",
+        "Only obtain components from official sources over secure links and prefer signed packages to reduce the chance of including a modified or malicious component",
+        "Monitor for libraries and components that are unmaintained or do not create security patches for older versions",
+        "Implement a patch management process to update or replace components in a timely fashion",
+        "Use software composition analysis tools to automate monitoring and alerting of vulnerable components"
+      ],
+      "severity": "high"
+    },
+    {
+      "id": "A07",
+      "name": "Identification and Authentication Failures",
+      "description": "Confirmation of the user's identity, authentication, and session management is critical to protect against authentication-related attacks. Weaknesses include permitting brute force attacks, weak passwords, credential stuffing, missing MFA, exposing session identifiers in URLs, and improper session invalidation.",
+      "cwe_mapped": ["CWE-255", "CWE-259", "CWE-287", "CWE-288", "CWE-290", "CWE-294", "CWE-295", "CWE-297", "CWE-384", "CWE-613"],
+      "prevention": [
+        "Implement multi-factor authentication to prevent automated credential stuffing, brute force, and stolen credential reuse attacks",
+        "Do not ship or deploy with any default credentials, particularly for admin users",
+        "Implement weak password checks against a list of the top 10000 worst passwords",
+        "Align password length, complexity, and rotation policies with NIST 800-63b guidelines",
+        "Harden registration, credential recovery, and API pathways against account enumeration by using the same messages for all outcomes",
+        "Limit or increasingly delay failed login attempts but be careful not to create a denial of service scenario; log all failures and alert on credential stuffing or brute force",
+        "Use a server-side, secure, built-in session manager that generates a new random session ID with high entropy after login"
+      ],
+      "severity": "high"
+    },
+    {
+      "id": "A08",
+      "name": "Software and Data Integrity Failures",
+      "description": "Software and data integrity failures relate to code and infrastructure that does not protect against integrity violations. This includes using software from untrusted sources, insecure CI/CD pipelines, auto-update without integrity verification, and insecure deserialization.",
+      "cwe_mapped": ["CWE-345", "CWE-353", "CWE-426", "CWE-494", "CWE-502", "CWE-565", "CWE-784", "CWE-829"],
+      "prevention": [
+        "Use digital signatures or similar mechanisms to verify software or data is from the expected source and has not been altered",
+        "Ensure libraries and dependencies are consuming trusted repositories; consider hosting an internal known-good repository",
+        "Use a software supply chain security tool such as OWASP Dependency-Check to verify that components do not contain known vulnerabilities",
+        "Ensure there is a review process for code and configuration changes to minimize the chance that malicious code or configuration could be introduced",
+        "Ensure the CI/CD pipeline has proper segregation, configuration, and access control to ensure the integrity of code flowing through build and deploy processes",
+        "Do not send unsigned or unencrypted serialized data to untrusted clients without integrity checks or digital signatures"
+      ],
+      "severity": "high"
+    },
+    {
+      "id": "A09",
+      "name": "Security Logging and Monitoring Failures",
+      "description": "Without logging and monitoring, breaches cannot be detected. Insufficient logging, detection, monitoring, and active response occurs any time auditable events are not logged, warnings and errors generate inadequate log messages, logs are only stored locally, or alerting thresholds and response escalation processes are not in place.",
+      "cwe_mapped": ["CWE-117", "CWE-223", "CWE-532", "CWE-778"],
+      "prevention": [
+        "Ensure all login, access control, and server-side input validation failures are logged with sufficient user context to identify suspicious accounts",
+        "Ensure logs are generated in a format that log management solutions can easily consume",
+        "Ensure log data is encoded correctly to prevent injections or attacks on the logging or monitoring systems",
+        "Ensure high-value transactions have an audit trail with integrity controls to prevent tampering or deletion",
+        "Establish or adopt an incident response and recovery plan such as NIST 800-61r2 or later",
+        "Use or establish effective monitoring and alerting so suspicious activities are detected and responded to quickly",
+        "Implement centralized log management with tamper-evident storage and real-time alerting"
+      ],
+      "severity": "medium"
+    },
+    {
+      "id": "A10",
+      "name": "Server-Side Request Forgery (SSRF)",
+      "description": "SSRF flaws occur when a web application fetches a remote resource without validating the user-supplied URL. It allows an attacker to coerce the application to send a crafted request to an unexpected destination, even when protected by a firewall, VPN, or network ACL. SSRF can lead to internal service enumeration, data exfiltration, and in some cases remote code execution.",
+      "cwe_mapped": ["CWE-918"],
+      "prevention": [
+        "Segment remote resource access functionality in separate networks to reduce the impact of SSRF",
+        "Enforce deny by default firewall policies or network access control rules to block all but essential intranet traffic",
+        "Sanitize and validate all client-supplied input data, enforcing URL schema, port, and destination with a positive allow list",
+        "Do not send raw responses to clients; validate the response from the remote resource",
+        "Disable HTTP redirections to prevent SSRF filter bypass",
+        "Be aware of URL consistency to avoid attacks such as DNS rebinding and TOCTOU race conditions",
+        "Do not deploy other security relevant services (e.g., OpenID) on front systems that are exposed to SSRF"
+      ],
+      "severity": "high"
+    }
+  ]
+}

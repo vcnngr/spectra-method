@@ -1,0 +1,36 @@
+code: rtk
+name: "SPECTRA Red Team Kit"
+description: "Offensive security module for penetration testing and red team operations"
+module_version: 0.1.0
+default_selected: false
+
+header: "Red Team Kit Configuration"
+subheader: "Configure the offensive security module for penetration testing and red team operations."
+
+rtk_artifacts:
+  prompt: "Where should RTK engagement artifacts be stored?"
+  default: "{output_folder}/engagements/{engagement_id}/rtk"
+  result: "{project-root}/{value}"
+
+rtk_recon_output:
+  prompt: "Where should reconnaissance output be stored?"
+  default: "{output_folder}/engagements/{engagement_id}/rtk/recon"
+  result: "{project-root}/{value}"
+
+rtk_exploit_output:
+  prompt: "Where should exploit artifacts be stored?"
+  default: "{output_folder}/engagements/{engagement_id}/rtk/exploits"
+  result: "{project-root}/{value}"
+
+rtk_reports:
+  prompt: "Where should RTK reports be stored?"
+  default: "{output_folder}/engagements/{engagement_id}/rtk/reports"
+  result: "{project-root}/{value}"
+
+attack_matrix:
+  prompt: "Path to MITRE ATT&CK framework reference data?"
+  default: "_spectra/core/frameworks/mitre-attack"
+  result: "{project-root}/{value}"
+
+directories:
+  - "{project-root}/{output_folder}/engagements"
