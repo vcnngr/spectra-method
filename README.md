@@ -180,16 +180,21 @@ npx spectra-method install [options]
   --communication-language <lang>      Agent language (default: English)
   --document-output-language <lang>    Document language (default: English)
   --output-folder <path>               Output folder (default: _spectra-output)
+  --lazy                               Install core only; add modules later
   -y, --yes                            Accept all defaults
   -f, --force                          Force reinstall
 
 npx spectra-method validate            Verify installation
 npx spectra-method status              Show version and modules
 npx spectra-method update              Update (preserves configs)
+npx spectra-method modules list        Show installed/available modules
+npx spectra-method modules add rtk     Add modules after a lazy install
 
 npx spectra-method engagement validate -e engagement.yaml
 npx spectra-method engagement gate -e engagement.yaml -w spectra-external-recon --target-name example.com
 npx spectra-method engagement transition -e engagement.yaml -w spectra-external-recon --to in-progress
+
+npx spectra-method report generate -e engagement.yaml --type pentest
 ```
 
 ---

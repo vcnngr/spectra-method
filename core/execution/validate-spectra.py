@@ -34,7 +34,7 @@ except ImportError:
     print("Error: pyyaml required. Install with: pip install pyyaml", file=sys.stderr)
     sys.exit(2)
 
-VERSION = "0.2.0"
+VERSION = "0.3.0"
 MODULES = ("core", "rtk", "soc", "irt", "grc")
 
 AGENT_CSV_COLUMNS = [
@@ -807,6 +807,8 @@ def check_execution_scripts(spectra: Path, findings: Findings):
     required = {
         "scope-enforcer.py": "Scope enforcer script",
         "engagement-state.py": "Engagement state machine script",
+        "report-adapters.py": "Report adapters script",
+        "report-generator.py": "Structured report generator script",
         "evidence-logger.py": "Evidence logger script",
         "tools-registry.yaml": "Tools registry",
     }

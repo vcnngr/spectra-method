@@ -352,6 +352,47 @@ function parseSkillManifest(csvPath) {
 }
 
 /**
+ * Parse compact skill-index.json.
+ *
+ * @param {string} indexPath
+ * @returns {Array<{ canonicalId: string, name: string, description: string, module: string, path: string, installToSpectra: boolean }>}
+ */
+function parseSkillIndex(indexPath) {
+  if (!fs.existsSync(indexPath)) {
+    return [];
+  }
+
+  try {
+    const index = JSON.parse(fs.readFileSync(indexPath, 'utf-8'));
+    return (index.skills || []).map(s => ({
+      canonicalId: s.id || '',
+      name: s.n || '',
+      description: s.d || '',
+      module: s.m || '',
+      path: s.p || '',
+      installToSpectra: s.i === true,
+    }));
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Load skills from compact index, falling back to CSV for compatibility.
+ *
+ * @param {string} spectraDir
+ * @returns {Array<{ canonicalId: string, name: string, description: string, module: string, path: string, installToSpectra: boolean }>}
+ */
+function loadSkillEntries(spectraDir) {
+  const indexPath = path.join(spectraDir, '_config', 'skill-index.json');
+  const indexed = parseSkillIndex(indexPath);
+  if (indexed.length > 0) {
+    return indexed;
+  }
+  return parseSkillManifest(path.join(spectraDir, '_config', 'skill-manifest.csv'));
+}
+
+/**
  * Parse a single CSV line, handling quoted fields.
  *
  * @param {string} line
@@ -404,12 +445,11 @@ export function registerSkillsForIDE(projectRoot, ide, options = {}) {
   const requestedModules = options.modules || Object.keys(MODULE_DIRS);
   const result = { registered: 0, skipped: 0, errors: [] };
 
-  // Read skill manifest
-  const csvPath = path.join(spectraDir, '_config', 'skill-manifest.csv');
-  const skills = parseSkillManifest(csvPath);
+  // Read compact skill index, falling back to CSV.
+  const skills = loadSkillEntries(spectraDir);
 
   if (skills.length === 0) {
-    result.errors.push('skill-manifest.csv not found or empty');
+    result.errors.push('skill-index.json/skill-manifest.csv not found or empty');
     return result;
   }
 
@@ -711,6 +751,7 @@ export function writeManifest(spectraDir, metadata) {
       ...(metadata.communicationLanguage ? { communicationLanguage: metadata.communicationLanguage } : {}),
       ...(metadata.documentOutputLanguage ? { documentOutputLanguage: metadata.documentOutputLanguage } : {}),
       ...(metadata.previousVersion ? { previousVersion: metadata.previousVersion } : {}),
+      availableModules: Object.keys(MODULE_DIRS),
     },
     modules: metadata.modules.map(mod => {
       const displayNames = {

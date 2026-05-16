@@ -117,13 +117,18 @@ function smokeFullInstall() {
   assertEqual(coreConfig.user_name, 'CI', 'core config user_name');
   assertEqual(rtkConfig.user_name, 'CI', 'rtk config user_name');
   assertEqual(rtkConfig.communication_language, 'English', 'rtk config communication_language');
+  assertExists(path.join(target, '_spectra', '_config', 'skill-index.json'), 'compact skill index');
   assertExists(path.join(target, '_spectra', 'core', 'schemas', 'engagement.schema.json'), 'JSON schema');
   assertExists(path.join(target, '_spectra', 'core', 'schemas', 'engagement.schema.yaml'), 'YAML schema');
   assertExists(path.join(target, '_spectra', 'core', 'execution', 'engagement-state.py'), 'engagement state script');
+  assertExists(path.join(target, '_spectra', 'core', 'execution', 'report-generator.py'), 'report generator script');
   const engagement = writeSmokeEngagement(target);
   run('node', [cli, 'engagement', 'validate', '-d', target, '-e', engagement, '--strict']);
   run('node', [cli, 'engagement', 'gate', '-d', target, '-e', engagement, '--workflow', 'spectra-external-recon', '--target-name', 'example.com']);
   run('node', [cli, 'engagement', 'transition', '-d', target, '-e', engagement, '--workflow', 'spectra-external-recon', '--to', 'in-progress', '--agent', 'CI']);
+  const reportPath = path.join(target, '_spectra-output', 'reports', 'ENG-SMOKE-001', 'pentest-report.md');
+  run('node', [cli, 'report', 'generate', '-d', target, '-e', engagement, '--type', 'pentest', '--output', reportPath]);
+  assertExists(reportPath, 'structured report');
   fs.rmSync(target, { recursive: true, force: true });
 }
 
@@ -135,6 +140,17 @@ function smokePartialInstall() {
   fs.rmSync(target, { recursive: true, force: true });
 }
 
+function smokeLazyModuleAdd() {
+  const target = makeTempProject('spectra-lazy');
+  run('node', [cli, 'install', '-d', target, '--lazy', '--tools', 'claude-code', '-y', '--user-name', 'CI']);
+  run('node', [cli, 'modules', 'list', '-d', target]);
+  run('node', [cli, 'modules', 'add', 'rtk', '-d', target, '--tools', 'claude-code']);
+  run('node', [cli, 'validate', '-d', target, '--deep']);
+  assertExists(path.join(target, '_spectra', 'rtk', 'config.yaml'), 'lazy-loaded RTK config');
+  fs.rmSync(target, { recursive: true, force: true });
+}
+
 smokeFullInstall();
 smokePartialInstall();
+smokeLazyModuleAdd();
 console.log('SPECTRA smoke install tests passed.');

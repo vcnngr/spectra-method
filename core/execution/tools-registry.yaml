@@ -1,4 +1,4 @@
-# SPECTRA Tools Registry v0.1.0
+# SPECTRA Tools Registry v0.3.0
 # Maps available security tools by operational category.
 # Referenced by agents for tool selection and availability checking.
 #
@@ -7,7 +7,7 @@
 # Licenses: open_source | commercial | dual
 
 registry:
-  version: "0.1.0"
+  version: "0.3.0"
   last_updated: "2026-04-05"
 
   categories:

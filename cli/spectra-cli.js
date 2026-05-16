@@ -63,6 +63,20 @@ function getExecutionScript(targetRoot, scriptName) {
   return path.join(getSourcePath(), 'core', 'execution', scriptName);
 }
 
+function parseModuleList(value) {
+  if (!value) return [];
+  return value.split(',').map(m => m.trim().toLowerCase()).filter(Boolean);
+}
+
+function validateModules(modules) {
+  const invalidModules = modules.filter(m => !ALL_MODULES.includes(m));
+  if (invalidModules.length > 0) {
+    console.error(chalk.red(`\n  Unknown module(s): ${invalidModules.join(', ')}`));
+    console.error(chalk.gray(`  Available modules: ${ALL_MODULES.join(', ')}\n`));
+    process.exit(1);
+  }
+}
+
 // ---------------------------------------------------------------------------
 // CLI Definition
 // ---------------------------------------------------------------------------
@@ -81,6 +95,7 @@ program
   .option('-d, --directory <path>', 'Installation directory (default: current directory)')
   .option('-t, --target <path>', 'Alias for --directory (backwards compat)')
   .option('-m, --modules <modules>', 'Comma-separated module IDs (e.g., "rtk,soc")')
+  .option('--lazy', 'Install only core now; add modules later with "spectra modules add"')
   .option('--tools <tools>', 'Comma-separated IDE IDs (e.g., "claude-code,cursor"). Use "none" to skip.', 'claude-code')
   .option('--user-name <name>', 'Name for agents to use')
   .option('--communication-language <lang>', 'Language for agent communication', 'English')
@@ -107,17 +122,12 @@ program
     const spectraDir = `${targetRoot}/_spectra`;
 
     // Determine which modules to install
-    const requestedModules = options.modules
-      ? options.modules.split(',').map(m => m.trim().toLowerCase())
-      : ALL_MODULES;
+    const requestedModules = options.lazy
+      ? ['core']
+      : (options.modules ? parseModuleList(options.modules) : ALL_MODULES);
 
     // Validate module names
-    const invalidModules = requestedModules.filter(m => !ALL_MODULES.includes(m));
-    if (invalidModules.length > 0) {
-      console.error(chalk.red(`\n  Unknown module(s): ${invalidModules.join(', ')}`));
-      console.error(chalk.gray(`  Available modules: ${ALL_MODULES.join(', ')}`));
-      process.exit(1);
-    }
+    validateModules(requestedModules);
 
     // Ensure core is always included
     if (!requestedModules.includes('core')) {
@@ -380,6 +390,109 @@ program
     }
   });
 
+// --- modules ---------------------------------------------------------------
+program
+  .command('modules')
+  .description('List or lazily add SPECTRA modules')
+  .argument('<action>', 'list or add')
+  .argument('[modules]', 'Comma-separated modules for add, e.g. rtk,soc')
+  .option('-d, --directory <path>', 'Target project directory (default: cwd)')
+  .option('-t, --target <path>', 'Alias for --directory (backwards compat)')
+  .option('--tools <tools>', 'Comma-separated IDE IDs (e.g., "claude-code,cursor"). Use "none" to skip.', 'claude-code')
+  .action((action, modulesArg, options) => {
+    const targetDir = options.directory || options.target;
+    const targetRoot = detectProjectRoot(targetDir);
+    const spectraDir = `${targetRoot}/_spectra`;
+    const existing = checkExistingInstallation(spectraDir);
+    if (!existing.exists) {
+      console.error(chalk.red('\n  No SPECTRA installation found.'));
+      console.error(chalk.gray('  Run: npx spectra-method install --lazy\n'));
+      process.exit(1);
+    }
+
+    const manifest = readManifest(spectraDir) || {};
+    const installedModules = manifest.modules?.map(m => m.name) || ['core'];
+
+    if (action === 'list') {
+      console.log(chalk.white('\n  SPECTRA modules'));
+      console.log(chalk.gray('  ----------------------------------------'));
+      for (const mod of ALL_MODULES) {
+        const installed = installedModules.includes(mod);
+        const marker = installed ? chalk.green('installed') : chalk.gray('available');
+        const info = MODULE_INFO[mod];
+        console.log(`  ${info.icon}  ${mod.padEnd(6)} ${marker}`);
+      }
+      console.log();
+      return;
+    }
+
+    if (action !== 'add') {
+      console.error(chalk.red(`\n  Unknown modules action: ${action}`));
+      console.error(chalk.gray('  Valid actions: list, add\n'));
+      process.exit(1);
+    }
+
+    const requestedModules = parseModuleList(modulesArg);
+    if (requestedModules.length === 0) {
+      console.error(chalk.red('\n  No modules specified.'));
+      console.error(chalk.gray('  Run: npx spectra-method modules add rtk,soc\n'));
+      process.exit(1);
+    }
+    validateModules(requestedModules);
+
+    const newModules = requestedModules.filter(m => !installedModules.includes(m));
+    if (newModules.length === 0) {
+      console.log(chalk.green('\n  Requested modules already installed.\n'));
+      return;
+    }
+
+    const updatedModules = [...installedModules, ...newModules];
+    console.log(chalk.white('\n  Adding modules: ') + chalk.cyan(newModules.join(', ')));
+    const sourcePath = getSourcePath();
+    const copyResult = copyFrameworkFiles(sourcePath, spectraDir, { modules: newModules });
+    console.log(chalk.green(`  \u2713 Copied ${copyResult.fileCount} files`));
+
+    writeInitialConfig(spectraDir, {
+      modules: newModules,
+      outputFolder: manifest.installation?.outputFolder || '_spectra-output',
+      userName: manifest.installation?.userName,
+      communicationLanguage: manifest.installation?.communicationLanguage,
+      documentOutputLanguage: manifest.installation?.documentOutputLanguage,
+      useDefaults: true,
+    });
+
+    const toolsList = options.tools === 'none'
+      ? []
+      : options.tools.split(',').map(t => t.trim().toLowerCase());
+    const invalidIdes = toolsList.filter(t => !SUPPORTED_IDES.includes(t));
+    if (invalidIdes.length > 0) {
+      console.error(chalk.red(`\n  Unknown IDE(s): ${invalidIdes.join(', ')}`));
+      process.exit(1);
+    }
+
+    if (toolsList.length > 0) {
+      for (const ide of toolsList) {
+        const skillResult = registerSkillsForIDE(targetRoot, ide, {
+          modules: updatedModules,
+          spectraDir,
+        });
+        console.log(chalk.green(`  \u2713 Registered ${skillResult.registered} skills for ${ide}`));
+      }
+    }
+
+    writeManifest(spectraDir, {
+      version: getPackageVersion(),
+      modules: updatedModules,
+      ides: toolsList,
+      previousVersion: manifest.installation?.version,
+      outputFolder: manifest.installation?.outputFolder || '_spectra-output',
+      userName: manifest.installation?.userName,
+      communicationLanguage: manifest.installation?.communicationLanguage,
+      documentOutputLanguage: manifest.installation?.documentOutputLanguage,
+    });
+    console.log(chalk.green.bold('\n  Modules added.\n'));
+  });
+
 // --- engagement ------------------------------------------------------------
 program
   .command('engagement')
@@ -432,6 +545,34 @@ program
     if (options.force) args.push('--force');
     if (options.dryRun) args.push('--dry-run');
 
+    try {
+      execFileSync('python3', args, { stdio: 'inherit' });
+    } catch (error) {
+      process.exit(error.status || 1);
+    }
+  });
+
+// --- report ---------------------------------------------------------------
+program
+  .command('report')
+  .description('Generate a structured report from engagement adapters')
+  .argument('<action>', 'generate')
+  .option('-d, --directory <path>', 'Target project directory (default: cwd)')
+  .option('-t, --target <path>', 'Alias for --directory (backwards compat)')
+  .requiredOption('-e, --engagement <path>', 'Path to engagement.yaml')
+  .option('--type <type>', 'Report type: pentest, incident, compliance, executive, custom', 'pentest')
+  .option('-o, --output <path>', 'Output report path')
+  .action((action, options) => {
+    if (action !== 'generate') {
+      console.error(chalk.red(`\n  Unknown report action: ${action}`));
+      console.error(chalk.gray('  Valid actions: generate\n'));
+      process.exit(1);
+    }
+    const targetDir = options.directory || options.target;
+    const targetRoot = detectProjectRoot(targetDir);
+    const script = getExecutionScript(targetRoot, 'report-generator.py');
+    const args = [script, 'generate', '--engagement', options.engagement, '--type', options.type];
+    if (options.output) args.push('--output', options.output);
     try {
       execFileSync('python3', args, { stdio: 'inherit' });
     } catch (error) {

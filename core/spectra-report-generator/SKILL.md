@@ -11,6 +11,14 @@ The report IS the deliverable. An assessment without a report is just hacking �
 
 This skill is the standardized report generation engine that produces professional security deliverables from engagement data, findings, and evidence. It supports five report types — pentest, incident, compliance, executive brief, and custom — each with a consistent structure adapted to its audience and purpose.
 
+SPECTRA v0.3.0 includes a deterministic report runtime for mechanical assembly:
+
+```bash
+python3 {project-root}/_spectra/core/execution/report-generator.py generate --engagement "{engagement_yaml}" --type pentest --output "{output_report}"
+```
+
+The generator uses `report-adapters.py` to normalize engagement scope, workflow state, findings, evidence registry, and tool registry data before rendering the report. Use Chronicle (`spectra-agent-chronicle`) for narrative refinement after the structured report is generated.
+
 The report generator handles mechanical assembly: collecting findings, aggregating metrics, applying templates, enforcing structure. For narrative refinement and audience-specific tone adaptation, Chronicle (`spectra-agent-chronicle`) operates as the prose layer on top of this skill. Use this skill directly for fast, standardized output. Use Chronicle for polished deliverables.
 
 Every report produced by this skill follows the same principles: findings sorted by severity, evidence cross-referenced with integrity verification, remediation included for every finding, aggregate metrics calculated and presented, and YAML frontmatter embedded for metadata tracking.

@@ -1,0 +1,398 @@
+{
+  "version": 1,
+  "generated_from": "_config/skill-manifest.csv",
+  "count": 48,
+  "module_counts": {
+    "core": 12,
+    "rtk": 11,
+    "soc": 10,
+    "irt": 9,
+    "grc": 6
+  },
+  "skills": [
+    {
+      "id": "spectra-init",
+      "n": "spectra-init",
+      "d": "Initialize SPECTRA project configuration and load config variables. Use when any skill needs module-specific configuration values, or when setting up a new SPECTRA project.",
+      "m": "core",
+      "p": "_spectra/core/spectra-init/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-help",
+      "n": "spectra-help",
+      "d": "Analyzes current state and user query to answer SPECTRA questions or recommend the next skill(s) to use. Use when user asks for help, spectra help, what to do next, or what to start with.",
+      "m": "core",
+      "p": "_spectra/core/spectra-help/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-war-room",
+      "n": "spectra-war-room",
+      "d": "Multi-agent adversarial debate. Use when the user says \"war room\" or wants Red vs Blue discussion on a security topic.",
+      "m": "core",
+      "p": "_spectra/core/spectra-war-room/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-debrief",
+      "n": "spectra-debrief",
+      "d": "Post-engagement or post-exercise review and lessons learned. Use when the user says \"debrief\" or \"lessons learned\" or \"post-mortem\".",
+      "m": "core",
+      "p": "_spectra/core/spectra-debrief/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-new-engagement",
+      "n": "spectra-new-engagement",
+      "d": "Create a new security engagement with scope, rules of engagement, and authorization context. Use when starting a new pentest, assessment, or exercise.",
+      "m": "core",
+      "p": "_spectra/core/spectra-new-engagement/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-scope-check",
+      "n": "spectra-scope-check",
+      "d": "Verify that a target or action is within the current engagement scope. Use before any offensive action.",
+      "m": "core",
+      "p": "_spectra/core/spectra-scope-check/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-close-engagement",
+      "n": "spectra-close-engagement",
+      "d": "Close and archive a completed engagement with final reporting and evidence packaging.",
+      "m": "core",
+      "p": "_spectra/core/spectra-close-engagement/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-report-generator",
+      "n": "spectra-report-generator",
+      "d": "Generate standardized security reports — pentest, incident, compliance, executive brief.",
+      "m": "core",
+      "p": "_spectra/core/spectra-report-generator/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-evidence-chain",
+      "n": "spectra-evidence-chain",
+      "d": "Manage chain of custody for digital evidence. Track acquisition, storage, and transfer.",
+      "m": "core",
+      "p": "_spectra/core/spectra-evidence-chain/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-executive-brief",
+      "n": "spectra-executive-brief",
+      "d": "Generate C-level executive summary from engagement findings.",
+      "m": "core",
+      "p": "_spectra/core/spectra-executive-brief/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-agent-specter",
+      "n": "spectra-agent-specter",
+      "d": "CISO and Quick Ops Solo Analyst. Use when the user asks to talk to Specter or needs cross-domain rapid assessment.",
+      "m": "core",
+      "p": "_spectra/core/spectra-agent-specter/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-agent-chronicle",
+      "n": "spectra-agent-chronicle",
+      "d": "Security Documentation Specialist. Use when the user asks to talk to Chronicle or needs pentest reports, incident reports, executive briefs, or any security documentation.",
+      "m": "core",
+      "p": "_spectra/core/spectra-agent-chronicle/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-agent-red-lead",
+      "n": "spectra-agent-red-lead",
+      "d": "Red Team Lead. Use when the user asks to talk to Viper or requests red team coordination.",
+      "m": "rtk",
+      "p": "_spectra/rtk/agents/spectra-agent-red-lead/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-agent-recon",
+      "n": "spectra-agent-recon",
+      "d": "Recon and OSINT Specialist. Use when the user asks to talk to Ghost or needs reconnaissance.",
+      "m": "rtk",
+      "p": "_spectra/rtk/agents/spectra-agent-recon/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-agent-exploit",
+      "n": "spectra-agent-exploit",
+      "d": "Exploit Developer. Use when the user asks to talk to Razor or needs vulnerability exploitation.",
+      "m": "rtk",
+      "p": "_spectra/rtk/agents/spectra-agent-exploit/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-agent-operator",
+      "n": "spectra-agent-operator",
+      "d": "Attack Operator. Use when the user asks to talk to Phantom or needs post-exploitation operations.",
+      "m": "rtk",
+      "p": "_spectra/rtk/agents/spectra-agent-operator/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-agent-social-eng",
+      "n": "spectra-agent-social-eng",
+      "d": "Social Engineer. Use when the user asks to talk to Mirage or needs social engineering assessment.",
+      "m": "rtk",
+      "p": "_spectra/rtk/agents/spectra-agent-social-eng/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-agent-blade",
+      "n": "spectra-agent-blade",
+      "d": "Quick Pentester. Use when the user asks to talk to Blade or needs rapid vulnerability assessment.",
+      "m": "rtk",
+      "p": "_spectra/rtk/agents/spectra-agent-blade/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-external-recon",
+      "n": "spectra-external-recon",
+      "d": "Full external reconnaissance workflow. Use when the user says \"run external recon\" or \"start reconnaissance\".",
+      "m": "rtk",
+      "p": "_spectra/rtk/workflows/spectra-external-recon/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-initial-access",
+      "n": "spectra-initial-access",
+      "d": "Initial access planning and execution workflow. Use when the user says \"plan initial access\" or \"phishing campaign\".",
+      "m": "rtk",
+      "p": "_spectra/rtk/workflows/spectra-initial-access/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-privesc",
+      "n": "spectra-privesc",
+      "d": "Privilege escalation workflow. Use when the user says \"escalate privileges\" or \"privesc\".",
+      "m": "rtk",
+      "p": "_spectra/rtk/workflows/spectra-privesc/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-lateral-movement",
+      "n": "spectra-lateral-movement",
+      "d": "Lateral movement workflow. Use when the user says \"lateral movement\" or \"pivot\".",
+      "m": "rtk",
+      "p": "_spectra/rtk/workflows/spectra-lateral-movement/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-exfiltration",
+      "n": "spectra-exfiltration",
+      "d": "Data exfiltration workflow. Use when the user says \"exfiltrate\" or \"data extraction\".",
+      "m": "rtk",
+      "p": "_spectra/rtk/workflows/spectra-exfiltration/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-agent-soc-manager",
+      "n": "spectra-agent-soc-manager",
+      "d": "SOC Manager. Use when the user asks to talk to Commander or needs SOC operations coordination.",
+      "m": "soc",
+      "p": "_spectra/soc/agents/spectra-agent-soc-manager/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-agent-l1-triage",
+      "n": "spectra-agent-l1-triage",
+      "d": "L1 Triage Analyst. Use when the user asks to talk to Watchdog or needs alert triage.",
+      "m": "soc",
+      "p": "_spectra/soc/agents/spectra-agent-l1-triage/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-agent-l2-investigator",
+      "n": "spectra-agent-l2-investigator",
+      "d": "L2 Investigator. Use when the user asks to talk to Tracker or needs incident investigation.",
+      "m": "soc",
+      "p": "_spectra/soc/agents/spectra-agent-l2-investigator/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-agent-l3-hunter",
+      "n": "spectra-agent-l3-hunter",
+      "d": "L3 Threat Hunter. Use when the user asks to talk to Hawk or needs threat hunting.",
+      "m": "soc",
+      "p": "_spectra/soc/agents/spectra-agent-l3-hunter/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-agent-detection-eng",
+      "n": "spectra-agent-detection-eng",
+      "d": "Detection Engineer. Use when the user asks to talk to Sentinel or needs detection rule creation.",
+      "m": "soc",
+      "p": "_spectra/soc/agents/spectra-agent-detection-eng/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-agent-shield",
+      "n": "spectra-agent-shield",
+      "d": "Quick SOC Analyst. Use when the user asks to talk to Shield or needs rapid alert analysis.",
+      "m": "soc",
+      "p": "_spectra/soc/agents/spectra-agent-shield/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-alert-triage",
+      "n": "spectra-alert-triage",
+      "d": "Alert triage workflow. Use when the user says \"triage this alert\" or \"analyze this alert\".",
+      "m": "soc",
+      "p": "_spectra/soc/workflows/spectra-alert-triage/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-phishing-response",
+      "n": "spectra-phishing-response",
+      "d": "Phishing incident response workflow. Use when the user says \"phishing response\" or \"analyze this email\".",
+      "m": "soc",
+      "p": "_spectra/soc/workflows/spectra-phishing-response/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-threat-hunt",
+      "n": "spectra-threat-hunt",
+      "d": "Threat hunting workflow. Use when the user says \"start a hunt\" or \"hunt for threats\".",
+      "m": "soc",
+      "p": "_spectra/soc/workflows/spectra-threat-hunt/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-detection-lifecycle",
+      "n": "spectra-detection-lifecycle",
+      "d": "Detection rule lifecycle workflow. Use when the user says \"create detection rule\" or \"write sigma rule\".",
+      "m": "soc",
+      "p": "_spectra/soc/workflows/spectra-detection-lifecycle/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-agent-handler",
+      "n": "spectra-agent-handler",
+      "d": "Incident Handler. Use when the user asks to talk to Dispatch or needs incident coordination.",
+      "m": "irt",
+      "p": "_spectra/irt/agents/spectra-agent-handler/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-agent-forensics",
+      "n": "spectra-agent-forensics",
+      "d": "Forensic Analyst. Use when the user asks to talk to Trace or needs digital forensics.",
+      "m": "irt",
+      "p": "_spectra/irt/agents/spectra-agent-forensics/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-agent-malware",
+      "n": "spectra-agent-malware",
+      "d": "Malware Analyst. Use when the user asks to talk to Scalpel or needs malware analysis.",
+      "m": "irt",
+      "p": "_spectra/irt/agents/spectra-agent-malware/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-agent-threat-intel",
+      "n": "spectra-agent-threat-intel",
+      "d": "Threat Intelligence Analyst. Use when the user asks to talk to Oracle or needs threat intelligence.",
+      "m": "irt",
+      "p": "_spectra/irt/agents/spectra-agent-threat-intel/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-agent-surge",
+      "n": "spectra-agent-surge",
+      "d": "Quick Responder. Use when the user asks to talk to Surge or needs rapid incident response.",
+      "m": "irt",
+      "p": "_spectra/irt/agents/spectra-agent-surge/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-incident-handling",
+      "n": "spectra-incident-handling",
+      "d": "Full incident handling workflow following NIST 800-61. Use when the user says \"handle incident\" or \"incident response\".",
+      "m": "irt",
+      "p": "_spectra/irt/workflows/spectra-incident-handling/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-digital-forensics",
+      "n": "spectra-digital-forensics",
+      "d": "Digital forensics workflow. Use when the user says \"forensic analysis\" or \"analyze evidence\".",
+      "m": "irt",
+      "p": "_spectra/irt/workflows/spectra-digital-forensics/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-malware-analysis",
+      "n": "spectra-malware-analysis",
+      "d": "Malware analysis workflow. Use when the user says \"analyze malware\" or \"reverse engineer sample\".",
+      "m": "irt",
+      "p": "_spectra/irt/workflows/spectra-malware-analysis/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-threat-intel-workflow",
+      "n": "spectra-threat-intel-workflow",
+      "d": "Threat intelligence workflow. Use when the user says \"threat intel\" or \"analyze campaign\".",
+      "m": "irt",
+      "p": "_spectra/irt/workflows/spectra-threat-intel/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-agent-risk",
+      "n": "spectra-agent-risk",
+      "d": "Risk Analyst. Use when the user asks to talk to Arbiter or needs risk assessment.",
+      "m": "grc",
+      "p": "_spectra/grc/agents/spectra-agent-risk/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-agent-compliance",
+      "n": "spectra-agent-compliance",
+      "d": "Compliance Auditor. Use when the user asks to talk to Auditor or needs compliance assessment.",
+      "m": "grc",
+      "p": "_spectra/grc/agents/spectra-agent-compliance/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-agent-policy",
+      "n": "spectra-agent-policy",
+      "d": "Policy Author. Use when the user asks to talk to Scribe or needs policy documentation.",
+      "m": "grc",
+      "p": "_spectra/grc/agents/spectra-agent-policy/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-risk-assessment",
+      "n": "spectra-risk-assessment",
+      "d": "Risk assessment workflow following NIST 800-30/FAIR. Use when the user says \"assess risk\" or \"risk analysis\".",
+      "m": "grc",
+      "p": "_spectra/grc/workflows/spectra-risk-assessment/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-compliance-audit",
+      "n": "spectra-compliance-audit",
+      "d": "Compliance audit workflow. Use when the user says \"compliance audit\" or \"assess controls\".",
+      "m": "grc",
+      "p": "_spectra/grc/workflows/spectra-compliance-audit/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-policy-lifecycle",
+      "n": "spectra-policy-lifecycle",
+      "d": "Policy lifecycle workflow. Use when the user says \"create policy\" or \"draft policy\".",
+      "m": "grc",
+      "p": "_spectra/grc/workflows/spectra-policy-lifecycle/SKILL.md",
+      "i": true
+    }
+  ]
+}

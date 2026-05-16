@@ -1,5 +1,26 @@
 # SPECTRA Changelog
 
+## v0.3.0 (2026-05-16)
+
+### Added
+
+- Compact `_config/skill-index.json` generated from `skill-manifest.csv`.
+- `scripts/build-skill-index.mjs` for deterministic skill index rebuilds.
+- Lazy install mode: `spectra install --lazy` installs core only.
+- Lazy module loading commands: `spectra modules list` and `spectra modules add <modules>`.
+- Report adapter runtime in `core/execution/report-adapters.py`.
+- Structured report generator runtime in `core/execution/report-generator.py`.
+- CLI report bridge: `spectra report generate -e engagement.yaml --type pentest`.
+- Report pipeline regression tests and smoke coverage.
+
+### Changed
+
+- Skill registration now reads compact `skill-index.json` first and falls back to CSV.
+- Installer manifest now records `availableModules`.
+- Validator now checks report adapter and report generator scripts.
+- Report generator skill now documents the deterministic runtime path.
+- Version metadata updated to `0.3.0`.
+
 ## v0.2.0 (2026-05-16)
 
 ### Added
