@@ -170,7 +170,7 @@ spectra blue tail --session "<engagement_id>" --source auth=/var/log/auth.log --
 
 Supported source types: `auth`, `nginx_access`, `nginx_error`, `postfix`, `dovecot`, `fail2ban`, `suricata_eve`, `wazuh`, `zeek_conn`, `zeek_dns`, `zeek_http`.
 
-The adapter is read-only. It converts telemetry into Blue observations, detections, and mitigations that can be correlated against Red ledger events. `blue tail --once` uses a checkpoint file under the Blue Duel session folder and only processes newly appended log bytes.
+The adapter is read-only. It converts telemetry into Blue observations, detections, and mitigations that can be correlated against Red ledger events. `blue tail --once` uses a checkpoint file under the Blue Duel session folder and only processes newly appended log bytes. Partial trailing lines are emitted only after a newline arrives.
 
 ### Distributed Ledger Broker
 
@@ -184,7 +184,7 @@ spectra broker import --session "<engagement_id>" --role blue --bundle blue-bund
 spectra duel score --session "<engagement_id>" --output scorecard.md
 ```
 
-The broker writes signed JSON bundles with event payload SHA256 checksums and imports with deduplication. It is not a network service and does not modify remote hosts.
+The broker writes signed JSON bundles with event payload SHA256 checksums and imports with deduplication. Imports verify bundle and event schema versions and strip unknown event fields before writing the Referee ledger. It is not a network service and does not modify remote hosts.
 
 ---
 

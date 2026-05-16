@@ -210,9 +210,9 @@ Party Mode generates deterministic sub-agent plans for Red, Blue, IRT, GRC, coor
 
 Duel Mode separates Red, Blue, and Referee views for exercises run across different machines. Red and Blue write role-local JSONL ledgers; the Referee scorecard correlates Red actions with Blue detections or mitigations. Red OPSEC is modeled as noise and footprint constraints, while log deletion, audit tampering, destructive cleanup, and security-tool disabling are blocked by policy.
 
-Blue Live Adapter ingests defensive telemetry read-only into the Blue ledger. Supported source types: `auth`, `nginx_access`, `nginx_error`, `postfix`, `dovecot`, `fail2ban`, `suricata_eve`, `wazuh`, `zeek_conn`, `zeek_dns`, and `zeek_http`. `blue tail --once` reads only new bytes since the stored checkpoint, so repeated runs do not duplicate old detections.
+Blue Live Adapter ingests defensive telemetry read-only into the Blue ledger. Supported source types: `auth`, `nginx_access`, `nginx_error`, `postfix`, `dovecot`, `fail2ban`, `suricata_eve`, `wazuh`, `zeek_conn`, `zeek_dns`, and `zeek_http`. `blue tail --once` reads only new bytes since the stored checkpoint, so repeated runs do not duplicate old detections. Partial trailing log lines are held until a newline arrives, which prevents truncated detections.
 
-Red/Blue Broker supports separated machines without requiring shared filesystem access. Each side exports a signed JSON bundle from its local ledger; the Referee imports Red and Blue bundles, deduplicates events, then runs `duel score`. The broker is offline and file-based: it does not open sockets, deploy agents, or modify remote hosts.
+Red/Blue Broker supports separated machines without requiring shared filesystem access. Each side exports a signed JSON bundle from its local ledger; the Referee imports Red and Blue bundles, deduplicates events, then runs `duel score`. Imports verify the bundle checksum, event count, role/session, bundle schema, and event schema, then retain only known event fields. The broker is offline and file-based: it does not open sockets, deploy agents, or modify remote hosts.
 
 Development background:
 

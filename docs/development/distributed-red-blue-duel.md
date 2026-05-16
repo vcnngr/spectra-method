@@ -82,7 +82,7 @@ Party Mode v2 non esegue azioni. Produce contratti di lavoro per sub-agent: inpu
 
 Blue Live Adapter legge sorgenti difensive locali e normalizza eventi Blue. Le sorgenti supportate dal runtime corrente includono log tipo `auth`, `nginx_access`, `nginx_error`, `postfix`, `dovecot`, `fail2ban`, `suricata_eve`, `wazuh`, `zeek_conn`, `zeek_dns` e `zeek_http`.
 
-Blue Tail aggiunge checkpoint. Quando viene eseguito in modalita' tail, legge solo la parte nuova dei file gia' processati. Questo permette run ripetute senza duplicare detection vecchie.
+Blue Tail aggiunge checkpoint. Quando viene eseguito in modalita' tail, legge solo la parte nuova dei file gia' processati. Questo permette run ripetute senza duplicare detection vecchie. Le righe finali incomplete restano in sospeso fino all'arrivo di una newline, cosi' il ledger non contiene detection troncate.
 
 Vincolo importante: Blue Live e Blue Tail sono read-only. Non cancellano, ruotano, riscrivono o correggono log. Non applicano firewall rule, non riavviano servizi, non modificano host.
 
@@ -103,7 +103,7 @@ spectra broker import --session ENG-2026-001 --role blue --bundle blue-bundle.js
 spectra duel score --session ENG-2026-001 --output scorecard.md
 ```
 
-Ogni bundle contiene tipo, versione schema, sessione, ruolo, timestamp di export, eventi e checksum SHA256 del payload eventi. L'import verifica checksum, sessione, ruolo e campi minimi, poi deduplica eventi gia' presenti.
+Ogni bundle contiene tipo, versione schema bundle, versione schema evento, sessione, ruolo, timestamp di export, eventi e checksum SHA256 del payload eventi. L'import verifica checksum, event count, sessione, ruolo, schema bundle, schema evento e campi minimi. I campi evento non riconosciuti vengono scartati prima di scrivere il ledger, poi gli eventi gia' presenti vengono deduplicati.
 
 Il broker non apre socket, non esegue listener, non installa agenti remoti e non controlla host. E' un meccanismo esplicito di scambio file, adatto a Red e Blue realmente separati.
 

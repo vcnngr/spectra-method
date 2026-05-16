@@ -768,6 +768,8 @@ program
       const checkpoint = options.checkpoint
         || path.join(outputRoot, options.session, 'blue', 'blue-tail.checkpoint.json');
       args.push('--checkpoint', checkpoint);
+    } else if (options.checkpoint) {
+      console.error(chalk.yellow('  Warning: --checkpoint is only used by blue tail; ignoring for blue ingest.'));
     }
     try {
       execFileSync('python3', args, { stdio: 'inherit' });

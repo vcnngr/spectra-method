@@ -20,6 +20,8 @@ from typing import Any
 ROLES = {"red", "blue", "referee"}
 BUNDLE_TYPE = "spectra-duel-ledger"
 SCHEMA_VERSION = "0.1"
+EVENT_SCHEMA_VERSION = "0.1"
+IMPORT_MARKER_HASH_LENGTH = 24
 EVENT_KEYS = {
     "id",
     "session_id",
@@ -126,6 +128,7 @@ def export_bundle(output_root: Path, session_id: str, role: str, bundle_path: Pa
 
     bundle = {
         "schema_version": SCHEMA_VERSION,
+        "event_schema_version": EVENT_SCHEMA_VERSION,
         "bundle_type": BUNDLE_TYPE,
         "session_id": session_id,
         "role": role,
@@ -158,6 +161,9 @@ def load_bundle(bundle_path: Path) -> dict[str, Any]:
         raise ValueError(f"invalid bundle_type: {bundle.get('bundle_type')}")
     if bundle.get("schema_version") != SCHEMA_VERSION:
         raise ValueError(f"unsupported schema_version: {bundle.get('schema_version')}")
+    event_schema = bundle.get("event_schema_version", EVENT_SCHEMA_VERSION)
+    if event_schema != EVENT_SCHEMA_VERSION:
+        raise ValueError(f"unsupported event_schema_version: {event_schema}")
     events = bundle.get("events")
     if not isinstance(events, list):
         raise ValueError("invalid bundle: events must be a list")
@@ -189,7 +195,8 @@ def import_bundle(output_root: Path, session_id: str, role: str, bundle_path: Pa
 
     imports_dir = output_root / session_id / "imports"
     imports_dir.mkdir(parents=True, exist_ok=True)
-    marker = imports_dir / f"{role}-{bundle['events_sha256'][:12]}-{bundle_path.name}"
+    marker_hash = bundle["events_sha256"][:IMPORT_MARKER_HASH_LENGTH]
+    marker = imports_dir / f"{role}-{marker_hash}-{bundle_path.name}"
     marker.write_text(json.dumps(bundle, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
     return {
