@@ -117,6 +117,7 @@ When the user asks for Party Mode, sub-agents, parallel agents, or multi-LLM exe
 spectra party plan \
   --topic "<topic>" \
   --mode adversarial \
+  --lanes red,blue,irt,grc,core \
   --agents-per-team 1 \
   --format json \
   --output _spectra-output/party/party-plan.json
@@ -124,9 +125,10 @@ spectra party plan \
 
 Use the plan to decide which sub-agents to spawn or simulate. The planner output includes:
 
-- selected Red, Blue, and Purple agents
+- selected Red, Blue, IRT, GRC, coordinator, and scribe-capable agents
 - model profile class for each lane
-- task contracts and expected outputs
+- input contracts, output contracts, done criteria, and expected outputs
+- quality gates, spawn manifest, and merge contract
 - scope and authorization safety gates
 - round order for debate, arbitration, and action register
 

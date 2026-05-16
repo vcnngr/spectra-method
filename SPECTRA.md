@@ -20,7 +20,7 @@ _spectra/
 ## Key Patterns
 
 1. **Engagement Framework** — Every operation requires an engagement.yaml with scope, RoE, authorization. This context propagates to all agents.
-2. **War Room / Duel Mode** — Enhanced Party Mode with Disagreement Protocol (Red vs Blue adversarial), deterministic sub-agent planning, model-profile routing, separated Red/Blue ledgers, offline ledger broker, and referee scoring.
+2. **War Room / Duel Mode** — Enhanced Party Mode with Disagreement Protocol (Red vs Blue adversarial), deterministic Party Mode v2 sub-agent planning, lane contracts, model-profile routing, separated Red/Blue ledgers, offline ledger broker, and referee scoring.
 3. **Context Budget System** — Adapts step granularity to model (Opus/Sonnet/Haiku).
 4. **Deterministic Engagement State Machine** — engagement-state.py gates RTK workflows, tracks workflow_state, and mirrors progress into kill_chain.
 5. **Agent Autonomy** — Agents HARD BLOCK destructive payloads only (ransomware, wipers). Everything else: WARN + COMPLY. The operator decides.
@@ -68,7 +68,7 @@ _spectra/
 **ALL 16 WORKFLOWS COMPLETE. ALL 4 MODULES COMPLETE.**
 
 ### To be completed:
-- v0.3.1 distributed Duel work complete. Future targets: authenticated broker bundles, richer SIEM/API adapters, Party Mode v2 task contracts, and timeline-first scorecards.
+- v0.3.1 distributed Duel work complete. Current development target: Party Mode v2 task contracts. Future targets: authenticated broker bundles, richer SIEM/API adapters, and timeline-first scorecards.
 
 ## How to Continue Development
 

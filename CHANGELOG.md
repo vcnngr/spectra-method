@@ -2,7 +2,11 @@
 
 ## Unreleased
 
-No unreleased changes.
+### Added
+
+- Party Mode v2 plan schema with explicit Red, Blue, IRT, GRC, core/coordinator, and scribe lanes.
+- Sub-agent input contracts, output contracts, done criteria, quality gates, spawn manifest, and merge contract.
+- CLI lane override: `spectra party plan --lanes red,blue,irt,grc,core`.
 
 ## v0.3.1 (2026-05-16)
 

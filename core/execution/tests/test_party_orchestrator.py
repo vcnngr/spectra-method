@@ -70,6 +70,38 @@ class PartyOrchestratorTests(unittest.TestCase):
         modules = {agent["module"] for agent in plan["sub_agents"]}
         self.assertEqual(modules, {"core"})
 
+    def test_party_v2_emits_lane_contracts_and_quality_gates(self):
+        plan = party_orchestrator.build_plan(
+            topic="distributed red blue incident readiness",
+            mode="purple",
+            agents_per_team=1,
+            lanes=["red", "blue", "irt", "grc", "core"],
+        )
+        self.assertEqual(plan["schema_version"], "0.2")
+        lanes = {agent["lane"] for agent in plan["sub_agents"]}
+        self.assertIn("red", lanes)
+        self.assertIn("blue", lanes)
+        self.assertIn("irt", lanes)
+        self.assertIn("grc", lanes)
+        self.assertIn("coordinator", lanes)
+        self.assertTrue(plan["quality_gates"])
+        for agent in plan["sub_agents"]:
+            self.assertIn("input_contract", agent)
+            self.assertIn("output_contract", agent)
+            self.assertIn("required_json_keys", agent["output_contract"])
+            self.assertIn("done_criteria", agent["task_contract"])
+        self.assertEqual(len(plan["spawn_manifest"]), len(plan["sub_agents"]))
+
+    def test_lane_override_limits_spawn_manifest(self):
+        plan = party_orchestrator.build_plan(
+            topic="telemetry detection review",
+            mode="collaborative",
+            agents_per_team=1,
+            lanes=["blue", "irt"],
+        )
+        lanes = {item["lane"] for item in plan["spawn_manifest"]}
+        self.assertEqual(lanes, {"blue", "irt"})
+
 
 if __name__ == "__main__":
     unittest.main()

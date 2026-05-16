@@ -603,6 +603,7 @@ program
   .requiredOption('--topic <topic>', 'Discussion or task topic')
   .option('--mode <mode>', 'adversarial, collaborative, purple, or incident', 'adversarial')
   .option('--agents-per-team <count>', 'Number of agents per required team', '1')
+  .option('--lanes <lanes>', 'Comma-separated lanes to require, e.g. red,blue,irt,grc,core')
   .option('--format <format>', 'json or markdown', 'json')
   .option('-o, --output <path>', 'Output plan path')
   .action((action, options) => {
@@ -639,6 +640,7 @@ program
       config,
     ];
     if (modules) args.push('--modules', modules);
+    if (options.lanes) args.push('--lanes', options.lanes);
     if (options.output) args.push('--output', options.output);
     try {
       execFileSync('python3', args, { stdio: 'inherit' });

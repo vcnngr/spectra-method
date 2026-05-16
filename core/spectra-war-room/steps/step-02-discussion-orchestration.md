@@ -85,9 +85,9 @@ Select 2-3 most relevant agents based on analysis:
 
 If the user requests Party Mode, sub-agent generation, parallel analysis, or multi-LLM execution:
 
-1. Run or simulate `spectra party plan --topic "<user topic>" --mode <current mode> --format json`
+1. Run or simulate `spectra party plan --topic "<user topic>" --mode <current mode> --lanes red,blue,irt,grc,core --format json`
 2. Use the generated `sub_agents` list as the primary selection source
-3. Preserve each sub-agent `task_contract`, `model_routing`, and expected output list
+3. Preserve each sub-agent `input_contract`, `output_contract`, `task_contract`, `model_routing`, and expected output list
 4. Do not start offensive execution from the plan; require engagement gate and scope check first
 5. Use Specter as coordinator when available and Chronicle as scribe when reporting is requested
 
@@ -96,7 +96,9 @@ If the user requests Party Mode, sub-agent generation, parallel analysis, or mul
 - Coordinator: load context, enforce gates, split work, merge outputs
 - Red lane: attack-path analysis and feasibility within scope
 - Blue lane: detection, telemetry, control, and response analysis
-- Purple lane: risk arbitration, evidence needs, decision register
+- IRT lane: timeline, containment, forensics, and evidence readiness
+- GRC lane: risk, policy, compliance, and accountability mapping
+- Purple/coordinator lane: risk arbitration, evidence needs, decision register
 - Scribe lane: report, action register, and handoff package
 
 **Adversarial Mode Selection Logic:**

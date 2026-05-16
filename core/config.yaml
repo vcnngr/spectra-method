@@ -61,6 +61,12 @@ party_mode:
   agents_per_team: 1
   spawn_policy: plan_only
   require_scope_before_spawn: true
+  schema_version: "0.2"
+  default_lanes: [red, blue, core]
+  full_lanes: [red, blue, irt, grc, core]
+  require_input_contract: true
+  require_output_contract: true
+  require_quality_gates: true
   artifact_folder: "{project-root}/_spectra-output/party"
 
 duel_mode:

@@ -33,6 +33,14 @@ TEAM_BY_MODULE = {
     "core": "purple",
 }
 
+LANE_BY_MODULE = {
+    "rtk": "red",
+    "soc": "blue",
+    "irt": "irt",
+    "grc": "grc",
+    "core": "core",
+}
+
 DEFAULT_MODEL_PROFILES = {
     "coordinator": {
         "class": "balanced-reasoning",
@@ -58,6 +66,16 @@ DEFAULT_MODEL_PROFILES = {
         "class": "long-context-writing",
         "latency": "medium",
         "use_for": "reporting, decision log, action register",
+    },
+    "irt": {
+        "class": "deep-forensics",
+        "latency": "medium",
+        "use_for": "timeline, containment, forensics, incident handoff",
+    },
+    "grc": {
+        "class": "policy-risk",
+        "latency": "medium",
+        "use_for": "risk translation, compliance impact, decision accountability",
     },
 }
 
@@ -105,6 +123,46 @@ TASK_BY_TEAM = {
     },
 }
 
+TASK_BY_LANE = {
+    "coordinator": {
+        "objective": "Control rounds, enforce gates, resolve conflicts, and produce the final synthesis.",
+        "required_sections": ["scope", "assumptions", "conflicts", "decision_register", "next_actions"],
+        "json_keys": ["lane", "findings", "conflicts", "decisions", "blockers", "next_actions"],
+    },
+    "red": {
+        "objective": "Find attacker-view gaps and plausible attack paths within scope.",
+        "required_sections": ["attack_hypotheses", "scope_constraints", "expected_telemetry", "risks", "questions_for_blue"],
+        "json_keys": ["lane", "attack_paths", "assumptions", "telemetry_expectations", "blocked_actions", "questions"],
+    },
+    "blue": {
+        "objective": "Map telemetry, controls, detection logic, response paths, and blind spots.",
+        "required_sections": ["telemetry_map", "detections", "control_coverage", "misses", "mitigations"],
+        "json_keys": ["lane", "coverage_map", "detections", "control_gaps", "queries_needed", "response_actions"],
+    },
+    "irt": {
+        "objective": "Assess incident response readiness, timeline needs, containment, and evidence quality.",
+        "required_sections": ["timeline", "containment_options", "evidence_needed", "forensics_questions", "handoff"],
+        "json_keys": ["lane", "timeline", "containment", "evidence", "forensic_tasks", "handoff"],
+    },
+    "grc": {
+        "objective": "Translate technical disagreement into risk, policy, compliance, and accountable decisions.",
+        "required_sections": ["risk_statement", "policy_impact", "control_mapping", "acceptance_decisions", "owners"],
+        "json_keys": ["lane", "risks", "controls", "compliance_impact", "decision_owners", "exceptions"],
+    },
+    "scribe": {
+        "objective": "Produce final record, action register, and report-ready handoff package.",
+        "required_sections": ["summary", "decisions", "evidence", "actions", "follow_up"],
+        "json_keys": ["lane", "summary", "decisions", "evidence", "action_register", "follow_up"],
+    },
+}
+
+MODE_LANES = {
+    "adversarial": ["red", "blue", "core"],
+    "collaborative": ["red", "blue", "irt", "grc", "core"],
+    "purple": ["red", "blue", "irt", "grc", "core"],
+    "incident": ["blue", "irt", "grc", "core"],
+}
+
 SAFETY_CONTRACT = {
     "requires_engagement_scope": True,
     "requires_authorization": True,
@@ -119,6 +177,34 @@ SAFETY_CONTRACT = {
         "rules of engagement confirmation",
     ],
 }
+
+QUALITY_GATES = [
+    {
+        "id": "scope-bound",
+        "requirement": "Every lane must cite engagement scope and RoE constraints before recommendations.",
+        "failure_action": "block execution and request scope clarification",
+    },
+    {
+        "id": "evidence-backed",
+        "requirement": "Every finding must include evidence, assumption, or explicit unknown marker.",
+        "failure_action": "return to lane owner for correction",
+    },
+    {
+        "id": "blue-actionable",
+        "requirement": "Blue/IRT outputs must include detection, containment, or validation next action.",
+        "failure_action": "mark as incomplete in action register",
+    },
+    {
+        "id": "red-non-destructive",
+        "requirement": "Red output may model footprint and noise, but must not include destructive or anti-forensic instructions.",
+        "failure_action": "hard block and rewrite as measurable OPSEC constraint",
+    },
+    {
+        "id": "merge-ready",
+        "requirement": "Each sub-agent must return required markdown sections and machine-readable JSON summary keys.",
+        "failure_action": "do not merge into final scorecard/report",
+    },
+]
 
 
 @dataclass
@@ -135,6 +221,14 @@ class Agent:
     @property
     def team(self) -> str:
         return TEAM_BY_MODULE.get(self.module, "purple")
+
+    @property
+    def lane(self) -> str:
+        if self.name == "spectra-agent-chronicle":
+            return "scribe"
+        if self.name == "spectra-agent-specter":
+            return "coordinator"
+        return LANE_BY_MODULE.get(self.module, "core")
 
     @property
     def searchable(self) -> str:
@@ -219,6 +313,17 @@ def score_agent(agent: Agent, terms: list[str], preferred_team: str | None = Non
     return score
 
 
+def score_agent_for_lane(agent: Agent, terms: list[str], lane: str) -> int:
+    score = score_agent(agent, terms)
+    if agent.lane == lane:
+        score += 6
+    if lane == "core" and agent.name == "spectra-agent-specter":
+        score += 8
+    if lane == "scribe" and agent.name == "spectra-agent-chronicle":
+        score += 8
+    return score
+
+
 def select_agents(agents: list[Agent], topic: str, mode: str, agents_per_team: int) -> list[Agent]:
     terms = topic_terms(topic)
     by_team = {
@@ -261,8 +366,45 @@ def select_agents(agents: list[Agent], topic: str, mode: str, agents_per_team: i
     return unique
 
 
+def select_agents_by_lanes(
+    agents: list[Agent],
+    topic: str,
+    mode: str,
+    agents_per_lane: int,
+    lanes: list[str] | None = None,
+) -> list[Agent]:
+    terms = topic_terms(topic)
+    requested_lanes = lanes or MODE_LANES.get(mode, MODE_LANES["adversarial"])
+    selected: list[Agent] = []
+
+    for lane in requested_lanes:
+        if lane == "core":
+            lane_pool = [a for a in agents if a.lane in {"coordinator", "scribe", "core"}]
+        else:
+            lane_pool = [a for a in agents if a.lane == lane]
+        ranked = sorted(lane_pool, key=lambda a: score_agent_for_lane(a, terms, lane), reverse=True)
+        selected.extend(ranked[:agents_per_lane])
+
+    if "core" in requested_lanes:
+        specter = next((a for a in agents if a.name == "spectra-agent-specter"), None)
+        if specter:
+            selected.insert(0, specter)
+        if mode in {"collaborative", "purple", "incident"}:
+            chronicle = next((a for a in agents if a.name == "spectra-agent-chronicle"), None)
+            if chronicle:
+                selected.append(chronicle)
+
+    seen: set[str] = set()
+    unique: list[Agent] = []
+    for agent in selected:
+        if agent.name not in seen:
+            unique.append(agent)
+            seen.add(agent.name)
+    return unique
+
+
 def model_profile_for(agent: Agent, profiles: dict[str, Any]) -> dict[str, Any]:
-    key = agent.team
+    key = agent.lane
     if agent.name == "spectra-agent-chronicle":
         key = "scribe"
     if agent.name == "spectra-agent-specter":
@@ -270,23 +412,90 @@ def model_profile_for(agent: Agent, profiles: dict[str, Any]) -> dict[str, Any]:
     return {"profile": key, **profiles.get(key, {})}
 
 
+def build_input_contract(topic: str, lane: str) -> dict[str, Any]:
+    return {
+        "topic": topic,
+        "required_context": [
+            "engagement_id",
+            "authorization_status",
+            "scope.in_scope",
+            "scope.out_of_scope",
+            "rules_of_engagement",
+        ],
+        "optional_context": [
+            "prior_findings",
+            "available_telemetry",
+            "evidence_index",
+            "tool_registry",
+            "duel_session_id",
+        ],
+        "lane_visibility": {
+            "red": "shared scope, RoE, own Red assumptions, allowed telemetry expectations",
+            "blue": "shared scope, telemetry inventory, controls, detections, response options",
+            "irt": "incident timeline, containment constraints, evidence inventory",
+            "grc": "risk appetite, control framework, policy/compliance constraints",
+            "coordinator": "all lane outputs and shared engagement context",
+            "scribe": "final approved lane outputs and evidence references",
+        }.get(lane, "shared engagement context and lane outputs"),
+    }
+
+
+def build_output_contract(lane: str) -> dict[str, Any]:
+    task = TASK_BY_LANE.get(lane, TASK_BY_LANE["coordinator"])
+    return {
+        "format": "markdown_with_json_summary",
+        "required_markdown_sections": task["required_sections"],
+        "required_json_keys": task["json_keys"],
+        "quality_checks": [
+            "cite scope or RoE impact",
+            "separate fact from assumption",
+            "mark unknowns explicitly",
+            "list blockers",
+            "list next actions with owner lane",
+        ],
+    }
+
+
+def build_done_criteria(lane: str) -> list[str]:
+    base = [
+        "required output sections are present",
+        "required JSON summary keys are present",
+        "scope and RoE impact are explicit",
+        "blockers are explicit or empty",
+    ]
+    lane_specific = {
+        "red": ["expected telemetry/footprint is stated", "unsafe actions are rewritten as constraints"],
+        "blue": ["detections or validation queries are actionable", "control gaps map to a target or technique"],
+        "irt": ["containment/evidence steps are actionable", "timeline unknowns are explicit"],
+        "grc": ["risk owners and acceptance/exception decisions are explicit"],
+        "coordinator": ["conflicts are resolved or escalated", "merge decision is recorded"],
+        "scribe": ["action register is report-ready"],
+    }
+    return base + lane_specific.get(lane, [])
+
+
 def build_sub_agent(agent: Agent, topic: str, profiles: dict[str, Any], index: int) -> dict[str, Any]:
-    task = TASK_BY_TEAM[agent.team]
+    lane = agent.lane
+    task = TASK_BY_LANE.get(lane, TASK_BY_TEAM[agent.team])
     return {
         "id": f"subagent-{index:02d}-{agent.display_name.lower().replace(' ', '-')}",
         "source_agent": agent.name,
         "display_name": agent.display_name,
         "title": agent.title,
         "team": agent.team,
+        "lane": lane,
         "module": agent.module,
         "model_routing": model_profile_for(agent, profiles),
+        "input_contract": build_input_contract(topic, lane),
+        "output_contract": build_output_contract(lane),
         "task_contract": {
             "topic": topic,
             "objective": task["objective"],
             "stay_in_role": True,
             "respect_scope": True,
-            "outputs": task["default_outputs"],
+            "outputs": task.get("default_outputs", task.get("json_keys", [])),
             "handoff_format": "markdown+json-summary",
+            "done_criteria": build_done_criteria(lane),
         },
         "prompt_contract": [
             f"Act as {agent.display_name}, {agent.title}.",
@@ -304,6 +513,7 @@ def build_plan(
     config_path: Path | None = None,
     agents_per_team: int = 1,
     modules: list[str] | None = None,
+    lanes: list[str] | None = None,
 ) -> dict[str, Any]:
     manifest = manifest_path or default_manifest_path()
     agents = load_agents(manifest)
@@ -311,17 +521,21 @@ def build_plan(
         allowed_modules = set(modules)
         agents = [agent for agent in agents if agent.module in allowed_modules]
     profiles = load_model_profiles(config_path)
-    selected = select_agents(agents, topic, mode, agents_per_team)
+    selected = select_agents_by_lanes(agents, topic, mode, agents_per_team, lanes)
+    if not selected:
+        selected = select_agents(agents, topic, mode, agents_per_team)
     sub_agents = [
         build_sub_agent(agent, topic, profiles, index)
         for index, agent in enumerate(selected, start=1)
     ]
     return {
-        "schema_version": "0.1",
+        "schema_version": "0.2",
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "topic": topic,
         "mode": mode,
+        "requested_lanes": lanes or MODE_LANES.get(mode, MODE_LANES["adversarial"]),
         "safety_contract": SAFETY_CONTRACT,
+        "quality_gates": QUALITY_GATES,
         "coordinator": {
             "model_routing": profiles["coordinator"],
             "responsibilities": [
@@ -337,6 +551,29 @@ def build_plan(
             {"id": rid, "objective": objective}
             for rid, objective in MODE_ROUNDS.get(mode, MODE_ROUNDS["adversarial"])
         ],
+        "spawn_manifest": [
+            {
+                "id": agent["id"],
+                "lane": agent["lane"],
+                "agent": agent["display_name"],
+                "model_profile": agent["model_routing"].get("profile"),
+                "requires": agent["input_contract"]["required_context"],
+                "must_return": agent["output_contract"]["required_json_keys"],
+            }
+            for agent in sub_agents
+        ],
+        "merge_contract": {
+            "coordinator": "Specter",
+            "scribe": "Chronicle",
+            "conflict_policy": "record dissent, cite evidence, choose safest scoped next action",
+            "final_outputs": [
+                "decision_register",
+                "detection_gap_backlog",
+                "risk_acceptance_items",
+                "evidence_requests",
+                "next_workflows",
+            ],
+        },
         "execution_notes": [
             "Spawn sub-agents only after engagement scope is loaded.",
             "Give each sub-agent the same engagement ID and artifact root.",
@@ -351,18 +588,23 @@ def render_markdown(plan: dict[str, Any]) -> str:
         "",
         f"Topic: {plan['topic']}",
         f"Generated: {plan['generated_at']}",
+        f"Schema: {plan.get('schema_version', '0.1')}",
         "",
         "## Safety Gates",
     ]
     for block in plan["safety_contract"]["hard_blocks"]:
         lines.append(f"- Hard block: {block}")
+    lines.extend(["", "## Quality Gates"])
+    for gate in plan.get("quality_gates", []):
+        lines.append(f"- {gate['id']}: {gate['requirement']}")
     lines.extend(["", "## Sub-Agents"])
     for agent in plan["sub_agents"]:
         routing = agent["model_routing"]
         lines.extend([
-            f"- {agent['display_name']} ({agent['team']}, {agent['title']})",
+            f"- {agent['display_name']} ({agent.get('lane', agent['team'])}, {agent['title']})",
             f"  - Model profile: {routing.get('profile')} / {routing.get('class')}",
             f"  - Objective: {agent['task_contract']['objective']}",
+            f"  - Required JSON: {', '.join(agent.get('output_contract', {}).get('required_json_keys', []))}",
         ])
     lines.extend(["", "## Rounds"])
     for round_item in plan["rounds"]:
@@ -382,6 +624,7 @@ def main(argv: list[str] | None = None) -> int:
     plan_cmd.add_argument("--manifest", type=Path, default=None)
     plan_cmd.add_argument("--config", type=Path, default=None)
     plan_cmd.add_argument("--modules", default="", help="Comma-separated installed modules to allow")
+    plan_cmd.add_argument("--lanes", default="", help="Comma-separated lanes to require, e.g. red,blue,irt,grc,core")
     plan_cmd.add_argument("--format", choices=("json", "markdown"), default="json")
     plan_cmd.add_argument("--output", type=Path, default=None)
 
@@ -394,6 +637,7 @@ def main(argv: list[str] | None = None) -> int:
             config_path=args.config,
             agents_per_team=max(1, args.agents_per_team),
             modules=[m.strip() for m in args.modules.split(",") if m.strip()],
+            lanes=[l.strip() for l in args.lanes.split(",") if l.strip()],
         )
         content = json.dumps(plan, indent=2) if args.format == "json" else render_markdown(plan)
         if args.output:

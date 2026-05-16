@@ -197,6 +197,7 @@ npx spectra-method engagement transition -e engagement.yaml -w spectra-external-
 
 npx spectra-method report generate -e engagement.yaml --type pentest
 npx spectra-method party plan --topic "lateral movement detection gap review" --mode adversarial
+npx spectra-method party plan --topic "distributed duel readiness" --mode purple --lanes red,blue,irt,grc,core
 npx spectra-method duel init --session ENG-2026-001 --role red
 npx spectra-method duel score --session ENG-2026-001
 npx spectra-method blue ingest --session ENG-2026-001 --source auth=/var/log/auth.log
@@ -205,7 +206,7 @@ npx spectra-method broker export --session ENG-2026-001 --role red --bundle red-
 npx spectra-method broker import --session ENG-2026-001 --role red --bundle red-bundle.json
 ```
 
-Party Mode generates deterministic sub-agent plans for Red, Blue, Purple, and scribe lanes. The plan includes task contracts, model profile classes, safety gates, and debate rounds. It is plan-first: RTK execution still requires engagement state and scope checks before any offensive workflow action.
+Party Mode generates deterministic sub-agent plans for Red, Blue, IRT, GRC, coordinator, and scribe lanes. The plan includes input contracts, output contracts, done criteria, model profile classes, quality gates, safety gates, spawn manifest, merge contract, and debate rounds. It is plan-first: RTK execution still requires engagement state and scope checks before any offensive workflow action.
 
 Duel Mode separates Red, Blue, and Referee views for exercises run across different machines. Red and Blue write role-local JSONL ledgers; the Referee scorecard correlates Red actions with Blue detections or mitigations. Red OPSEC is modeled as noise and footprint constraints, while log deletion, audit tampering, destructive cleanup, and security-tool disabling are blocked by policy.
 

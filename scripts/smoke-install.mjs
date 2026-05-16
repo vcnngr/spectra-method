@@ -134,8 +134,12 @@ function smokeFullInstall() {
   run('node', [cli, 'report', 'generate', '-d', target, '-e', engagement, '--type', 'pentest', '--output', reportPath]);
   assertExists(reportPath, 'structured report');
   const partyPath = path.join(target, '_spectra-output', 'party', 'party-plan.json');
-  run('node', [cli, 'party', 'plan', '-d', target, '--topic', 'lateral movement detection gap review', '--output', partyPath]);
+  run('node', [cli, 'party', 'plan', '-d', target, '--topic', 'lateral movement detection gap review', '--mode', 'purple', '--lanes', 'red,blue,irt,grc,core', '--output', partyPath]);
   assertExists(partyPath, 'party plan');
+  const partyPlan = JSON.parse(fs.readFileSync(partyPath, 'utf-8'));
+  assertEqual(partyPlan.schema_version, '0.2', 'party plan schema_version');
+  assertEqual(Boolean(partyPlan.spawn_manifest?.length), true, 'party plan spawn manifest');
+  assertEqual(Boolean(partyPlan.quality_gates?.length), true, 'party plan quality gates');
   run('node', [cli, 'duel', 'init', '-d', target, '--session', 'ENG-SMOKE-001', '--role', 'red', '-e', engagement]);
   run('node', [cli, 'duel', 'init', '-d', target, '--session', 'ENG-SMOKE-001', '--role', 'blue', '-e', engagement]);
   run('node', [cli, 'duel', 'record', '-d', target, '--session', 'ENG-SMOKE-001', '--role', 'red', '--event-type', 'action', '--summary', 'Low-and-slow auth test within noise budget.', '--target-name', 'example.com', '--technique', 'T1110.001']);

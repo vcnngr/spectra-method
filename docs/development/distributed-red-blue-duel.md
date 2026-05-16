@@ -62,13 +62,21 @@ Il formato ledger-only rende la separazione semplice da ispezionare: ogni evento
 
 1. Creare o verificare un engagement autorizzato.
 2. Inizializzare sessione Duel per Red, Blue e Referee con lo stesso `session_id`.
-3. Far registrare a Red attivita' pianificate o osservate entro RoE.
-4. Far registrare a Blue osservazioni, detection, mitigazioni e miss.
-5. Usare Blue Live/Blue Tail, se utile, per ingest read-only di log difensivi.
-6. Esportare i ledger locali con Red/Blue Broker quando i ruoli girano su macchine diverse.
-7. Importare i bundle nel workspace Referee.
-8. Far produrre al Referee correlazioni e scorecard.
-9. Trasferire risultati verso report, backlog di detection, piano di mitigazione o follow-up IRT/GRC.
+3. Generare un piano Party Mode v2 con lane esplicite quando il lavoro richiede piu' prospettive:
+
+```bash
+spectra party plan --topic "distributed duel readiness" --mode purple --lanes red,blue,irt,grc,core
+```
+
+4. Far registrare a Red attivita' pianificate o osservate entro RoE.
+5. Far registrare a Blue osservazioni, detection, mitigazioni e miss.
+6. Usare Blue Live/Blue Tail, se utile, per ingest read-only di log difensivi.
+7. Esportare i ledger locali con Red/Blue Broker quando i ruoli girano su macchine diverse.
+8. Importare i bundle nel workspace Referee.
+9. Far produrre al Referee correlazioni e scorecard.
+10. Trasferire risultati verso report, backlog di detection, piano di mitigazione o follow-up IRT/GRC.
+
+Party Mode v2 non esegue azioni. Produce contratti di lavoro per sub-agent: input richiesti, output obbligatori, criteri di completamento, quality gate e merge contract. Questo rende esplicito cosa deve consegnare ogni lane prima che il Referee o Chronicle producano sintesi e report.
 
 ## Blue Live e Blue Tail
 
