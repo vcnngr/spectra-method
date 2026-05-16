@@ -49,7 +49,7 @@ Read `DEV-GUIDE.md` (in the development branch) for exact file formats, patterns
 ## Adding New Agents
 
 1. Create `{module}/agents/spectra-agent-{name}/SKILL.md`
-2. Create `{module}/agents/spectra-agent-{name}/bmad-skill-manifest.yaml`
+2. Create `{module}/agents/spectra-agent-{name}/spectra-skill-manifest.yaml`
 3. Add entry to `_config/agent-manifest.csv`
 4. Add entry to `_config/skill-manifest.csv`
 5. Run validator

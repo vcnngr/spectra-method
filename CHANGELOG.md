@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## v0.4.0 (2026-05-16)
+
 ### Added
 
 - Party Mode v2 plan schema with explicit Red, Blue, IRT, GRC, core/coordinator, and scribe lanes.
@@ -14,6 +16,12 @@
   - Signal, Telemetry Engineer for log-source coverage, parser quality, SIEM readiness, and Blue Live source validation.
   - Stratus, Cloud Security Specialist for AWS, Azure, GCP, Kubernetes, SaaS logs, cloud forensics, and cloud incident response.
   - Counsel, Privacy/Breach Governance Specialist for privacy impact, breach governance, legal hold, and regulatory exposure.
+
+### Changed
+
+- Renamed legacy `bmad-skill-manifest.yaml` files to `spectra-skill-manifest.yaml`.
+- Validator now requires `spectra-skill-manifest.yaml` and reports legacy BMAD manifest names as warnings.
+- Version metadata updated to `0.4.0`.
 
 ## v0.3.1 (2026-05-16)
 

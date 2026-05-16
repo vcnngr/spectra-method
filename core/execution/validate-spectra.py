@@ -34,7 +34,7 @@ except ImportError:
     print("Error: pyyaml required. Install with: pip install pyyaml", file=sys.stderr)
     sys.exit(2)
 
-VERSION = "0.3.1"
+VERSION = "0.4.0"
 MODULES = ("core", "rtk", "soc", "irt", "grc")
 
 AGENT_CSV_COLUMNS = [
@@ -168,14 +168,15 @@ class Findings:
 # Tier 1 — Critical Structural Checks
 # ---------------------------------------------------------------------------
 def check_file_existence_agents(spectra: Path, agent_rows: list[dict], findings: Findings):
-    """Check SKILL.md and bmad-skill-manifest.yaml for every agent."""
+    """Check SKILL.md and spectra-skill-manifest.yaml for every agent."""
     for row in agent_rows:
         p = row.get("path", "").strip()
         if not p:
             continue
         agent_dir = resolve_declared_dir(spectra, p)
         skill_path = agent_dir / "SKILL.md"
-        manifest_path = agent_dir / "bmad-skill-manifest.yaml"
+        manifest_path = agent_dir / "spectra-skill-manifest.yaml"
+        legacy_manifest_path = agent_dir / "bmad-skill-manifest.yaml"
         rel = p
 
         if skill_path.is_file():
@@ -187,10 +188,14 @@ def check_file_existence_agents(spectra: Path, agent_rows: list[dict], findings:
 
         if manifest_path.is_file():
             findings.passed()
+        elif legacy_manifest_path.is_file():
+            findings.add("FILE-002", "warning", "file_existence", rel,
+                         "Legacy bmad-skill-manifest.yaml found; rename to spectra-skill-manifest.yaml",
+                         f"Rename {rel}/bmad-skill-manifest.yaml to {rel}/spectra-skill-manifest.yaml")
         else:
             findings.add("FILE-002", "critical", "file_existence", rel,
-                         f"Missing bmad-skill-manifest.yaml in agent directory",
-                         f"Create bmad-skill-manifest.yaml at {rel}/bmad-skill-manifest.yaml")
+                         "Missing spectra-skill-manifest.yaml in agent directory",
+                         f"Create spectra-skill-manifest.yaml at {rel}/spectra-skill-manifest.yaml")
 
 
 def check_file_existence_skills(spectra: Path, skill_rows: list[dict], findings: Findings):
