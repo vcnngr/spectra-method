@@ -1,13 +1,13 @@
 {
   "version": 1,
   "generated_from": "_config/skill-manifest.csv",
-  "count": 54,
+  "count": 60,
   "module_counts": {
-    "core": 13,
-    "rtk": 12,
-    "soc": 12,
-    "irt": 10,
-    "grc": 7
+    "core": 14,
+    "rtk": 13,
+    "soc": 14,
+    "irt": 11,
+    "grc": 8
   },
   "skills": [
     {
@@ -440,6 +440,54 @@
       "d": "Privacy and Breach Governance Specialist. Use when the user asks to talk to Counsel or needs privacy impact, breach notification, legal hold, regulatory exposure, or data governance analysis. Not a substitute for qualified legal counsel.",
       "m": "grc",
       "p": "_spectra/grc/agents/spectra-agent-privacy/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-appsec-assessment",
+      "n": "spectra-appsec-assessment",
+      "d": "Application and API security assessment workflow. Use for authorized AppSec/API review, authentication and authorization testing plans, business-logic review, and remediation-ready evidence.",
+      "m": "rtk",
+      "p": "_spectra/rtk/workflows/spectra-appsec-assessment/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-identity-detection-review",
+      "n": "spectra-identity-detection-review",
+      "d": "Identity detection and control review workflow. Use for AD, Entra ID, Okta, IAM, OAuth, session, MFA, and privilege-path defensive coverage analysis.",
+      "m": "soc",
+      "p": "_spectra/soc/workflows/spectra-identity-detection-review/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-telemetry-readiness",
+      "n": "spectra-telemetry-readiness",
+      "d": "Telemetry readiness workflow. Use for log-source coverage, parsing quality, field normalization, retention, SIEM pipeline readiness, and Blue Live source validation.",
+      "m": "soc",
+      "p": "_spectra/soc/workflows/spectra-telemetry-readiness/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-cloud-incident-response",
+      "n": "spectra-cloud-incident-response",
+      "d": "Cloud incident response workflow. Use for AWS, Azure, GCP, Kubernetes, and SaaS incident triage, blast-radius analysis, containment planning, evidence, and recovery.",
+      "m": "irt",
+      "p": "_spectra/irt/workflows/spectra-cloud-incident-response/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-privacy-breach-assessment",
+      "n": "spectra-privacy-breach-assessment",
+      "d": "Privacy and breach governance workflow. Use for data exposure assessment, legal hold readiness, notification clock tracking, regulatory impact, and evidence-backed governance decisions. Not legal advice.",
+      "m": "grc",
+      "p": "_spectra/grc/workflows/spectra-privacy-breach-assessment/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-duel-adjudication",
+      "n": "spectra-duel-adjudication",
+      "d": "Duel adjudication workflow. Use for Red/Blue ledger correlation, Referee scorecards, fairness review, detection latency, mitigation credit, and evidence-backed exercise outcomes.",
+      "m": "core",
+      "p": "_spectra/core/spectra-duel-adjudication/SKILL.md",
       "i": true
     }
   ]

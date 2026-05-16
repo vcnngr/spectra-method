@@ -50,11 +50,11 @@ ${chalk.gray('  "Attack. Defend. Evolve."')}
 const ALL_MODULES = ['core', 'rtk', 'soc', 'irt', 'grc'];
 
 const MODULE_INFO = {
-  core: { icon: '\u26A1', name: 'Core Framework', agents: 3, skills: 10 },
-  rtk:  { icon: '\uD83D\uDD34', name: 'Red Team Kit', agents: 7, workflows: 5 },
-  soc:  { icon: '\uD83D\uDD35', name: 'Security Operations Center', agents: 8, workflows: 4 },
-  irt:  { icon: '\uD83D\uDFE0', name: 'Incident Response Team', agents: 6, workflows: 4 },
-  grc:  { icon: '\u26AA', name: 'Governance, Risk & Compliance', agents: 4, workflows: 3 },
+  core: { icon: '\u26A1', name: 'Core Framework', agents: 3, skills: 11 },
+  rtk:  { icon: '\uD83D\uDD34', name: 'Red Team Kit', agents: 7, workflows: 6 },
+  soc:  { icon: '\uD83D\uDD35', name: 'Security Operations Center', agents: 8, workflows: 6 },
+  irt:  { icon: '\uD83D\uDFE0', name: 'Incident Response Team', agents: 6, workflows: 5 },
+  grc:  { icon: '\u26AA', name: 'Governance, Risk & Compliance', agents: 4, workflows: 4 },
 };
 
 const SUPPORTED_IDES = ['claude-code', 'cursor'];

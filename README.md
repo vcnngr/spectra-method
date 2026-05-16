@@ -2,7 +2,7 @@
   <img src="https://img.shields.io/npm/v/spectra-method.svg?style=flat-square&color=red" alt="npm version">
   <img src="https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square" alt="License: MIT">
   <img src="https://img.shields.io/badge/agents-28-blue?style=flat-square" alt="28 agents">
-  <img src="https://img.shields.io/badge/workflows-16-orange?style=flat-square" alt="16 workflows">
+  <img src="https://img.shields.io/badge/workflows-22-orange?style=flat-square" alt="22 workflows">
   <img src="https://img.shields.io/badge/lines-80K%2B-green?style=flat-square" alt="80K+ lines">
 </p>
 
@@ -17,7 +17,7 @@
 </p>
 
 <p align="center">
-  28 AI agents. 16 structured workflows. 80,000+ lines of operational security knowledge.<br>
+  28 AI agents. 22 structured workflows. 80,000+ lines of operational security knowledge.<br>
   A complete cybersecurity team — instantly available in your AI IDE.
 </p>
 
@@ -37,11 +37,11 @@ npx spectra-method install --tools claude-code -y
 
 | Module | | Agents | Workflows | Focus |
 |--------|---|--------|-----------|-------|
-| **RTK** | :red_circle: | 7 | 5 | Red Team — recon, exploitation, AppSec/API, lateral movement, exfiltration |
-| **SOC** | :large_blue_circle: | 8 | 4 | Security Operations — triage, hunting, telemetry, identity, detection engineering |
-| **IRT** | :orange_circle: | 6 | 4 | Incident Response — forensics, malware analysis, cloud security, threat intel |
-| **GRC** | :white_circle: | 4 | 3 | Governance, Risk & Compliance — risk, audit, policy, privacy |
-| **Core** | :zap: | 3 | 10 skills | Engagement framework, War Room, reporting, Duel adjudication |
+| **RTK** | :red_circle: | 7 | 6 | Red Team — recon, exploitation, AppSec/API, lateral movement, exfiltration |
+| **SOC** | :large_blue_circle: | 8 | 6 | Security Operations — triage, hunting, telemetry, identity, detection engineering |
+| **IRT** | :orange_circle: | 6 | 5 | Incident Response — forensics, malware analysis, cloud security, threat intel |
+| **GRC** | :white_circle: | 4 | 4 | Governance, Risk & Compliance — risk, audit, policy, privacy |
+| **Core** | :zap: | 3 | 11 skills | Engagement framework, War Room, reporting, Duel adjudication |
 
 ---
 
@@ -124,7 +124,7 @@ npx spectra-method party plan --topic "lateral movement detection gap review"
 
 ## Workflows
 
-### RTK :red_circle: Kill Chain (50 steps)
+### RTK :red_circle: Kill Chain & AppSec (57 steps)
 
 | Workflow | Steps | Coverage |
 |----------|-------|----------|
@@ -133,8 +133,9 @@ npx spectra-method party plan --topic "lateral movement detection gap review"
 | `spectra-privesc` | 10 | Windows/Linux/AD/Cloud escalation |
 | `spectra-lateral-movement` | 10 | PsExec, WMI, Kerberos, cloud pivoting |
 | `spectra-exfiltration` | 10 | HTTP, DNS tunnel, steganography, DLP evasion |
+| `spectra-appsec-assessment` | 7 | Application/API auth, authz, business logic, remediation evidence |
 
-### SOC :large_blue_circle: Detection & Response (30 steps)
+### SOC :large_blue_circle: Detection & Response (44 steps)
 
 | Workflow | Steps | Coverage |
 |----------|-------|----------|
@@ -142,8 +143,10 @@ npx spectra-method party plan --topic "lateral movement detection gap review"
 | `spectra-detection-lifecycle` | 7 | ATT&CK mapping, Sigma/YARA authoring |
 | `spectra-phishing-response` | 8 | Header/payload analysis, IOC extraction |
 | `spectra-threat-hunt` | 8 | Hypothesis-driven hunting, finding validation |
+| `spectra-identity-detection-review` | 7 | AD, Entra ID, Okta, IAM, OAuth, session and privilege-path coverage |
+| `spectra-telemetry-readiness` | 7 | Log-source coverage, parsing quality, retention, Blue Live readiness |
 
-### IRT :orange_circle: Investigation (38 steps)
+### IRT :orange_circle: Investigation (45 steps)
 
 | Workflow | Steps | Coverage |
 |----------|-------|----------|
@@ -151,14 +154,22 @@ npx spectra-method party plan --topic "lateral movement detection gap review"
 | `spectra-digital-forensics` | 10 | Disk, memory, network, cloud forensics |
 | `spectra-malware-analysis` | 10 | Static, dynamic, sandbox, reverse engineering |
 | `spectra-threat-intel-workflow` | 8 | Diamond Model, ATT&CK, STIX 2.1 |
+| `spectra-cloud-incident-response` | 7 | Cloud incident triage, blast radius, evidence, containment planning |
 
-### GRC :white_circle: Governance (21 steps)
+### GRC :white_circle: Governance (28 steps)
 
 | Workflow | Steps | Coverage |
 |----------|-------|----------|
 | `spectra-risk-assessment` | 7 | NIST 800-30/FAIR, Crown Jewels Analysis |
 | `spectra-compliance-audit` | 7 | 8 frameworks, gap analysis, remediation |
 | `spectra-policy-lifecycle` | 7 | Drafting, review, enforcement, exceptions |
+| `spectra-privacy-breach-assessment` | 7 | Data exposure, legal hold, notification clock, governance decisions |
+
+### Core :zap: Orchestration (7 steps)
+
+| Workflow | Steps | Coverage |
+|----------|-------|----------|
+| `spectra-duel-adjudication` | 7 | Red/Blue ledger correlation, scoring, fairness, evidence quality |
 
 ---
 
@@ -231,7 +242,7 @@ Development background:
 
 ```
 project/
-├── .claude/skills/       54 skills as slash commands
+├── .claude/skills/       60 skills as slash commands
 ├── _spectra/             Framework: agents, workflows, configs
 │   ├── core/             Engagement framework, skills, scripts
 │   ├── rtk/              Red Team Kit

@@ -1,7 +1,7 @@
 code: soc
 name: "SPECTRA Security Operations Center"
 description: "Defensive security module for detection engineering, threat hunting, and alert triage"
-module_version: 0.3.0
+module_version: 0.5.0
 default_selected: false
 
 header: "Security Operations Center Configuration"
@@ -25,6 +25,16 @@ soc_hunt_reports:
 soc_triage_logs:
   prompt: "Where should alert triage logs be stored?"
   default: "{output_folder}/engagements/{engagement_id}/soc/triage"
+  result: "{project-root}/{value}"
+
+soc_identity_reviews:
+  prompt: "Where should identity detection reviews be stored?"
+  default: "{output_folder}/engagements/{engagement_id}/soc/identity"
+  result: "{project-root}/{value}"
+
+soc_telemetry_reports:
+  prompt: "Where should telemetry readiness reports be stored?"
+  default: "{output_folder}/engagements/{engagement_id}/soc/telemetry"
   result: "{project-root}/{value}"
 
 sigma_rules_ref:

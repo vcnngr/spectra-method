@@ -1,7 +1,7 @@
 code: irt
 name: "SPECTRA Incident Response Team"
 description: "Incident response module for forensics, malware analysis, and threat intelligence"
-module_version: 0.3.0
+module_version: 0.5.0
 default_selected: false
 
 header: "Incident Response Team Configuration"
@@ -30,6 +30,11 @@ irt_intel:
 irt_evidence_chain:
   prompt: "Where should evidence chain artifacts be stored?"
   default: "{output_folder}/engagements/{engagement_id}/irt/evidence"
+  result: "{project-root}/{value}"
+
+irt_cloud_ir:
+  prompt: "Where should cloud incident response artifacts be stored?"
+  default: "{output_folder}/engagements/{engagement_id}/irt/cloud-ir"
   result: "{project-root}/{value}"
 
 nist_ir_ref:

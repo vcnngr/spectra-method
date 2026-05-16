@@ -1,5 +1,5 @@
 # IRT Module Configuration — Incident Response Team
-# Version: 0.3.0
+# Version: 0.5.0
 # Date: 2026-04-04T12:00:00.000Z
 
 user_name: Vincenzo
@@ -12,5 +12,6 @@ irt_forensics: "{project-root}/_spectra-output/engagements/{engagement_id}/irt/f
 irt_malware: "{project-root}/_spectra-output/engagements/{engagement_id}/irt/malware"
 irt_intel: "{project-root}/_spectra-output/engagements/{engagement_id}/irt/intel"
 irt_evidence_chain: "{project-root}/_spectra-output/engagements/{engagement_id}/irt/evidence"
+irt_cloud_ir: "{project-root}/_spectra-output/engagements/{engagement_id}/irt/cloud-ir"
 
 nist_ir_ref: "{project-root}/_spectra/core/frameworks/nist"

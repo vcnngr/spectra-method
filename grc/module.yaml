@@ -1,7 +1,7 @@
 code: grc
 name: "SPECTRA Governance, Risk & Compliance"
 description: "GRC module for risk management, compliance reporting, and policy governance"
-module_version: 0.3.0
+module_version: 0.5.0
 default_selected: false
 
 header: "Governance, Risk & Compliance Configuration"
@@ -25,6 +25,11 @@ grc_compliance_reports:
 grc_policies:
   prompt: "Where should policy documents be stored?"
   default: "{output_folder}/engagements/{engagement_id}/grc/policies"
+  result: "{project-root}/{value}"
+
+grc_privacy_reports:
+  prompt: "Where should privacy and breach governance reports be stored?"
+  default: "{output_folder}/engagements/{engagement_id}/grc/privacy"
   result: "{project-root}/{value}"
 
 nist_controls_ref:

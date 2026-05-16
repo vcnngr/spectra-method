@@ -1,5 +1,5 @@
 # SOC Module Configuration — Security Operations Center
-# Version: 0.3.0
+# Version: 0.5.0
 # Date: 2026-04-04T12:00:00.000Z
 
 user_name: Vincenzo
@@ -11,6 +11,8 @@ soc_artifacts: "{project-root}/_spectra-output/engagements/{engagement_id}/soc"
 soc_detection_rules: "{project-root}/_spectra-output/engagements/{engagement_id}/soc/detection-rules"
 soc_hunt_reports: "{project-root}/_spectra-output/engagements/{engagement_id}/soc/hunt-reports"
 soc_triage_logs: "{project-root}/_spectra-output/engagements/{engagement_id}/soc/triage"
+soc_identity_reviews: "{project-root}/_spectra-output/engagements/{engagement_id}/soc/identity"
+soc_telemetry_reports: "{project-root}/_spectra-output/engagements/{engagement_id}/soc/telemetry"
 
 sigma_rules_ref: "{project-root}/_spectra/core/frameworks/sigma-rules"
 nist_ref: "{project-root}/_spectra/core/frameworks/nist"

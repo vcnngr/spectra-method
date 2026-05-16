@@ -1,7 +1,7 @@
 code: rtk
 name: "SPECTRA Red Team Kit"
 description: "Offensive security module for penetration testing and red team operations"
-module_version: 0.3.0
+module_version: 0.5.0
 default_selected: false
 
 header: "Red Team Kit Configuration"
@@ -25,6 +25,11 @@ rtk_exploit_output:
 rtk_reports:
   prompt: "Where should RTK reports be stored?"
   default: "{output_folder}/engagements/{engagement_id}/rtk/reports"
+  result: "{project-root}/{value}"
+
+rtk_appsec_output:
+  prompt: "Where should AppSec assessment artifacts be stored?"
+  default: "{output_folder}/engagements/{engagement_id}/rtk/appsec"
   result: "{project-root}/{value}"
 
 attack_matrix:

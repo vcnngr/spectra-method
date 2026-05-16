@@ -39,8 +39,14 @@ evidence_artifacts:
   default: "{output_folder}/evidence"
   result: "{project-root}/{value}"
 
+core_duel_reports:
+  prompt: "Where should Duel adjudication reports be stored?"
+  default: "{output_folder}/duel/reports"
+  result: "{project-root}/{value}"
+
 directories:
   - "{project-root}/{output_folder}"
   - "{project-root}/{output_folder}/engagements"
   - "{project-root}/{output_folder}/reports"
   - "{project-root}/{output_folder}/evidence"
+  - "{project-root}/{output_folder}/duel/reports"

@@ -2,6 +2,25 @@
 
 ## Unreleased
 
+## v0.5.0 (2026-05-16)
+
+### Added
+
+- Six workflow brains for the agents introduced in v0.4.0:
+  - `spectra-appsec-assessment` for Forge: AppSec/API assessment, auth/session review, authorization, business logic, input/API risk, remediation, and handoff.
+  - `spectra-identity-detection-review` for Keystone: identity privilege maps, MFA/session review, OAuth and persistence surfaces, detection coverage, and response readiness.
+  - `spectra-telemetry-readiness` for Signal: source coverage, parser/schema quality, retention/integrity, Blue Live fit, and detection gap mapping.
+  - `spectra-cloud-incident-response` for Stratus: cloud incident intake, evidence preservation, blast radius, containment planning, recovery, governance gates, and reporting.
+  - `spectra-privacy-breach-assessment` for Counsel: data exposure, jurisdiction/clock map, legal hold, notification decision support, and governance remediation.
+  - `spectra-duel-adjudication` for Referee: ledger integrity, timeline correlation, scoring, fairness review, gap analysis, and final scorecard.
+
+### Changed
+
+- Workflow coverage increased from 16 to 22 structured workflows.
+- Skill registration increased from 54 to 60 skills.
+- README workflow tables updated for RTK, SOC, IRT, GRC, and Core orchestration.
+- Version metadata updated to `0.5.0`.
+
 ## v0.4.0 (2026-05-16)
 
 ### Added
