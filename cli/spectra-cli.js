@@ -5,7 +5,7 @@
  * Usage:
  *   npx spectra-method install                              Install SPECTRA into current project
  *   npx spectra-method install --modules rtk,soc            Install specific modules only
- *   npx spectra-method install -d ./my-proj --tools claude-code -y  Full options
+ *   npx spectra-method install -d ./my-proj --tools claude-code,codex -y  Full options
  *   npx spectra-method validate                             Run project validation
  *   npx spectra-method status                               Show installation status
  *   npx spectra-method party plan --topic "..."             Generate Party Mode sub-agent plan
@@ -57,7 +57,7 @@ const MODULE_INFO = {
   grc:  { icon: '\u26AA', name: 'Governance, Risk & Compliance', agents: 4, workflows: 4 },
 };
 
-const SUPPORTED_IDES = ['claude-code', 'cursor'];
+const SUPPORTED_IDES = ['claude-code', 'codex', 'cursor'];
 
 function getExecutionScript(targetRoot, scriptName) {
   const installedPath = path.join(targetRoot, '_spectra', 'core', 'execution', scriptName);
@@ -109,7 +109,7 @@ program
   .option('-t, --target <path>', 'Alias for --directory (backwards compat)')
   .option('-m, --modules <modules>', 'Comma-separated module IDs (e.g., "rtk,soc")')
   .option('--lazy', 'Install only core now; add modules later with "spectra modules add"')
-  .option('--tools <tools>', 'Comma-separated IDE IDs (e.g., "claude-code,cursor"). Use "none" to skip.', 'claude-code')
+  .option('--tools <tools>', 'Comma-separated IDE IDs (e.g., "claude-code,codex"). Use "none" to skip.', 'claude-code')
   .option('--user-name <name>', 'Name for agents to use')
   .option('--communication-language <lang>', 'Language for agent communication', 'English')
   .option('--document-output-language <lang>', 'Language for document output', 'English')
@@ -242,7 +242,12 @@ program
           modules: requestedModules,
           spectraDir,
         });
-        console.log(chalk.green(`  \u2713 ${skillResult.registered} skills registered in .claude/skills/`));
+        const label = ide === 'codex'
+          ? '.codex/spectra/ + AGENTS.md'
+          : ide === 'claude-code'
+            ? '.claude/skills/'
+            : `.${ide}/skills/`;
+        console.log(chalk.green(`  \u2713 ${skillResult.registered} skills registered for ${ide} in ${label}`));
       }
     } else {
       console.log(chalk.gray('  [5/6] Skipping skill registration (--tools none)'));
@@ -357,14 +362,26 @@ program
     }
 
     // Check skill registration
+    const installedIdes = manifest?.ides || [];
     const skillsDir = `${targetRoot}/.claude/skills`;
     if (fs.existsSync(skillsDir)) {
       const skillDirs = fs.readdirSync(skillsDir).filter(d =>
         d.startsWith('spectra-') && fs.statSync(`${skillsDir}/${d}`).isDirectory()
       );
       console.log(chalk.green(`  \u2713 ${skillDirs.length} skills registered in .claude/skills/`));
-    } else {
+    } else if (installedIdes.includes('claude-code') || installedIdes.length === 0) {
       console.log(chalk.yellow('  \u26A0 No .claude/skills/ directory (run install with --tools claude-code)'));
+    }
+
+    if (installedIdes.includes('codex')) {
+      const codexIndex = `${targetRoot}/.codex/spectra/skill-index.json`;
+      const codexAgents = `${targetRoot}/AGENTS.md`;
+      if (fs.existsSync(codexIndex) && fs.existsSync(codexAgents)) {
+        const codexSkills = JSON.parse(fs.readFileSync(codexIndex, 'utf-8')).skills || [];
+        console.log(chalk.green(`  \u2713 ${codexSkills.length} skills indexed for Codex in .codex/spectra/`));
+      } else {
+        console.log(chalk.yellow('  \u26A0 Codex adapter incomplete (run install with --tools codex)'));
+      }
     }
 
     // Check output directory
@@ -411,7 +428,7 @@ program
   .argument('[modules]', 'Comma-separated modules for add, e.g. rtk,soc')
   .option('-d, --directory <path>', 'Target project directory (default: cwd)')
   .option('-t, --target <path>', 'Alias for --directory (backwards compat)')
-  .option('--tools <tools>', 'Comma-separated IDE IDs (e.g., "claude-code,cursor"). Use "none" to skip.', 'claude-code')
+  .option('--tools <tools>', 'Comma-separated IDE IDs (e.g., "claude-code,codex"). Use "none" to skip.', 'claude-code')
   .action((action, modulesArg, options) => {
     const targetDir = options.directory || options.target;
     const targetRoot = detectProjectRoot(targetDir);
@@ -893,6 +910,14 @@ program
       console.log(chalk.gray('  ----------------------------------------'));
       console.log(`  ${skillDirs.length} SPECTRA skills registered in .claude/skills/`);
     }
+    const codexIndex = `${targetRoot}/.codex/spectra/skill-index.json`;
+    if (fs.existsSync(codexIndex)) {
+      const codexSkills = JSON.parse(fs.readFileSync(codexIndex, 'utf-8')).skills || [];
+      console.log(chalk.white('\n  Codex'));
+      console.log(chalk.gray('  ----------------------------------------'));
+      console.log(`  ${codexSkills.length} SPECTRA skills indexed in .codex/spectra/`);
+      console.log('  AGENTS.md SPECTRA adapter block present');
+    }
 
     console.log();
   });
@@ -903,7 +928,7 @@ program
   .description('Update SPECTRA to latest version')
   .option('-d, --directory <path>', 'Target project directory (default: cwd)')
   .option('-t, --target <path>', 'Alias for --directory (backwards compat)')
-  .option('--tools <tools>', 'Comma-separated IDE IDs (e.g., "claude-code,cursor"). Use "none" to skip.', 'claude-code')
+  .option('--tools <tools>', 'Comma-separated IDE IDs (e.g., "claude-code,codex"). Use "none" to skip.', 'claude-code')
   .action(async (options) => {
     console.log(BANNER);
 
@@ -938,6 +963,12 @@ program
     const toolsList = options.tools === 'none'
       ? []
       : options.tools.split(',').map(t => t.trim().toLowerCase());
+    const invalidIdes = toolsList.filter(t => !SUPPORTED_IDES.includes(t));
+    if (invalidIdes.length > 0) {
+      console.error(chalk.red(`\n  Unknown IDE(s): ${invalidIdes.join(', ')}`));
+      console.error(chalk.gray(`  Supported IDEs: ${SUPPORTED_IDES.join(', ')}, or "none" to skip`));
+      process.exit(1);
+    }
 
     // Step 1: Backup configs
     console.log(chalk.gray('  [1/4] Backing up user configurations...'));

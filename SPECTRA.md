@@ -27,7 +27,7 @@ _spectra/
 6. **Persona Carrythrough** — The persona stays active when invoking sub-skills.
 7. **Step-File Architecture** — JIT loading, "read fully and follow", append-only, frontmatter state.
 
-## Current Status (v0.5.0) — WORKFLOW EXPANSION READY
+## Current Status (v0.6.0) — CODEX ADAPTER READY
 
 ### Complete and operational:
 - All 28 agents with SKILL.md + spectra-skill-manifest.yaml
@@ -45,8 +45,9 @@ _spectra/
 - Lazy module loading: `spectra install --lazy`, `spectra modules list`, `spectra modules add <modules>`
 - Validation framework: validate-spectra.py (1,866 checks across 4 severity tiers — 0 failures, 0 warnings)
 - CLI installer: npx spectra-method install/validate/status/update/modules/report plus `spectra engagement validate|status|gate|transition`
+- IDE adapters: Claude Code slash-command skills plus Codex repo-native `AGENTS.md` and `.codex/spectra/skill-index.json`
 - E2E integration testing: 8/8 tests passed (config loading, scripts, framework data, workflow continuity, cross-refs, manifests, CLI, validator)
-- Distribution: package.json (spectra-method@0.5.0), README.md, LICENSE (MIT), CHANGELOG.md, .npmignore
+- Distribution: package.json (spectra-method@0.6.0), README.md, LICENSE (MIT), CHANGELOG.md, .npmignore
 - RTK: spectra-external-recon (10 steps, ~3,289 lines — flagship workflow)
 - RTK: spectra-initial-access (10 steps, ~3,852 lines — full kill chain from recon to foothold)
 - SOC: spectra-alert-triage (7 steps, ~2,687 lines — first Blue Team workflow, includes Purple Team bridge)
@@ -74,7 +75,7 @@ _spectra/
 **ALL 22 WORKFLOWS COMPLETE. ALL 4 MODULES + CORE ADJUDICATION COMPLETE.**
 
 ### To be completed:
-- v0.5.0 workflow expansion prepared. Current development target: validate, review, and release the six new workflow brains for Forge, Keystone, Signal, Stratus, Counsel, and Referee. Future targets: authenticated broker bundles, richer SIEM/API adapters, workflow-specific report generators, and scenario packs.
+- Future targets: authenticated broker bundles, richer SIEM/API adapters, workflow-specific report generators, Codex-native skill packaging if Codex exposes a stable project-local skill registry, and scenario packs.
 
 ## How to Continue Development
 
@@ -85,7 +86,7 @@ _spectra/
 5. ~~**ALL 5 CORE SKILLS COMPLETE.**~~ DONE. report-generator, evidence-chain, scope-check, close-engagement, executive-brief
 6. ~~**Execution scripts**~~ DONE. spectra_init.py, scope-enforcer.py, evidence-logger.py, tools-registry.yaml + module.yaml configs
 7. ~~**Framework reference data**~~ DONE. ATT&CK (14 tactics, 98 techniques), NIST 800-53 (20 families, 54 controls), Sigma (35 rules), OWASP Top 10, CIS Controls v8 (18 controls, 72 safeguards), cross-mapping (40 technique mappings)
-8. **v0.5.0 WORKFLOW EXPANSION READY.** Six new workflow brains added for AppSec, identity, telemetry, cloud IR, privacy/breach governance, and Duel adjudication; installer should register 60 skills after validation.
+8. **v0.6.0 CODEX ADAPTER READY.** Installer supports `--tools codex` and writes AGENTS.md plus `.codex/spectra/` routing metadata.
 9. **Always run validator before committing**: python3 core/execution/validate-spectra.py --path _spectra/
 10. Use spectra-external-recon, spectra-risk-assessment, or spectra-digital-forensics as reference for quality and depth
 

@@ -72,6 +72,9 @@ const OUTPUT_SUBDIRS = [
   'duel',
 ];
 
+const CODEX_AGENTS_BEGIN = '<!-- SPECTRA-CODEX-ADAPTER:BEGIN -->';
+const CODEX_AGENTS_END = '<!-- SPECTRA-CODEX-ADAPTER:END -->';
+
 // ---------------------------------------------------------------------------
 // Project Root Detection
 // ---------------------------------------------------------------------------
@@ -428,11 +431,11 @@ function parseCSVLine(line) {
 }
 
 /**
- * Register SPECTRA skills for a specific IDE by creating symlinks
- * in the IDE's skill discovery directory.
+ * Register SPECTRA skills for a specific IDE.
  *
  * For Claude Code: creates symlinks in {projectRoot}/.claude/skills/{canonicalId}/
  * pointing to the actual skill directory in _spectra/.
+ * For Codex: writes AGENTS.md guidance plus a compact .codex/spectra skill index.
  *
  * Symlinks preserve relative references (./workflow.md, ./steps-c/, ./scripts/)
  * that skills use internally.
@@ -459,6 +462,10 @@ export function registerSkillsForIDE(projectRoot, ide, options = {}) {
   const filteredSkills = skills.filter(s =>
     s.installToSpectra && requestedModules.includes(s.module)
   );
+
+  if (ide === 'codex') {
+    return writeCodexAdapter(projectRoot, filteredSkills, requestedModules, spectraDir);
+  }
 
   // Determine target directory based on IDE
   let skillsTargetDir;
@@ -528,6 +535,125 @@ export function registerSkillsForIDE(projectRoot, ide, options = {}) {
   }
 
   return result;
+}
+
+/**
+ * Write Codex-native project context for SPECTRA.
+ *
+ * Codex does not consume Claude Code slash-command symlinks. The adapter keeps
+ * operational parity by creating a repo-native AGENTS.md block and a compact
+ * machine-readable index under .codex/spectra/.
+ *
+ * @param {string} projectRoot
+ * @param {Array<{ canonicalId: string, name: string, description: string, module: string, path: string, installToSpectra: boolean }>} skills
+ * @param {string[]} requestedModules
+ * @param {string} spectraDir
+ * @returns {{ registered: number, skipped: number, errors: string[] }}
+ */
+function writeCodexAdapter(projectRoot, skills, requestedModules, spectraDir) {
+  const result = { registered: 0, skipped: 0, errors: [] };
+  const codexDir = path.join(projectRoot, '.codex', 'spectra');
+
+  try {
+    fs.mkdirSync(codexDir, { recursive: true });
+
+    const skillIndex = {
+      schema_version: '0.1',
+      adapter: 'codex',
+      source: '_spectra/_config/skill-index.json',
+      modules: requestedModules,
+      skills: skills.map(skill => ({
+        id: skill.canonicalId,
+        name: skill.name,
+        description: skill.description,
+        module: skill.module,
+        path: skill.path,
+      })),
+    };
+
+    fs.writeFileSync(
+      path.join(codexDir, 'skill-index.json'),
+      `${JSON.stringify(skillIndex, null, 2)}\n`,
+      'utf-8'
+    );
+
+    fs.writeFileSync(
+      path.join(codexDir, 'instructions.md'),
+      buildCodexInstructions(skillIndex),
+      'utf-8'
+    );
+
+    upsertCodexAgentsBlock(projectRoot, skillIndex, spectraDir);
+    result.registered = skills.length;
+  } catch (err) {
+    result.errors.push(`Failed to write Codex adapter: ${err.message}`);
+  }
+
+  return result;
+}
+
+function buildCodexInstructions(skillIndex) {
+  return `# SPECTRA Codex Adapter
+
+Use this directory as Codex-local routing metadata for SPECTRA.
+
+- Skill index: \`.codex/spectra/skill-index.json\`
+- Framework root: \`_spectra/\`
+- Agent/workflow source files: referenced by each \`path\` field
+- Installed modules: ${skillIndex.modules.join(', ')}
+- Registered skills: ${skillIndex.skills.length}
+
+Codex operating model:
+
+1. Read \`AGENTS.md\` first.
+2. Use \`.codex/spectra/skill-index.json\` to locate the requested SPECTRA agent, workflow, or core skill.
+3. Open only the matching \`SKILL.md\` and directly referenced files needed for the task.
+4. Use deterministic scripts in \`_spectra/core/execution/\` when validation, scoring, reporting, or telemetry ingestion is required.
+5. Preserve the SPECTRA safety boundary and Rules of Engagement before any Red Team workflow.
+`;
+}
+
+function upsertCodexAgentsBlock(projectRoot, skillIndex, spectraDir) {
+  const agentsPath = path.join(projectRoot, 'AGENTS.md');
+  const existing = fs.existsSync(agentsPath)
+    ? fs.readFileSync(agentsPath, 'utf-8')
+    : `# AGENTS.md instructions for ${projectRoot}\n\n`;
+  const block = buildCodexAgentsBlock(skillIndex, path.relative(projectRoot, spectraDir) || '_spectra');
+  const managed = `${CODEX_AGENTS_BEGIN}\n${block}\n${CODEX_AGENTS_END}`;
+  const pattern = new RegExp(`${escapeRegExp(CODEX_AGENTS_BEGIN)}[\\s\\S]*?${escapeRegExp(CODEX_AGENTS_END)}`);
+
+  const updated = pattern.test(existing)
+    ? existing.replace(pattern, managed)
+    : `${existing.trimEnd()}\n\n${managed}\n`;
+
+  fs.writeFileSync(agentsPath, updated, 'utf-8');
+}
+
+function buildCodexAgentsBlock(skillIndex, spectraRelativePath) {
+  const moduleList = skillIndex.modules.map(m => `\`${m}\``).join(', ');
+  return `# SPECTRA Codex Adapter
+
+SPECTRA is installed in \`${spectraRelativePath}\`.
+
+Use SPECTRA as a repo-native multi-agent cybersecurity framework:
+
+- Find agents, workflows, and core skills in \`.codex/spectra/skill-index.json\`.
+- Open the matching \`SKILL.md\` under \`${spectraRelativePath}\` before acting.
+- Prefer deterministic scripts in \`${spectraRelativePath}/core/execution/\` for validation, reporting, Duel Mode, broker exchange, Blue telemetry ingestion, and engagement gates.
+- Treat Claude Code slash-command names such as \`/spectra-help\` as skill IDs such as \`spectra-help\` when working in Codex.
+
+Installed SPECTRA modules: ${moduleList}
+
+Safety boundary:
+
+- SPECTRA supports authorized Red/Blue exercises, incident response, detection engineering, and GRC work.
+- Red Team work requires scope, Rules of Engagement, timing/noise budget, and evidence-backed outputs.
+- Do not implement or document log deletion, audit tampering, destructive cleanup, unauthorized persistence, EDR/SIEM disabling, or instructions to hide compromise from defenders.
+`;
+}
+
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 /**

@@ -34,7 +34,7 @@ except ImportError:
     print("Error: pyyaml required. Install with: pip install pyyaml", file=sys.stderr)
     sys.exit(2)
 
-VERSION = "0.5.0"
+VERSION = "0.6.0"
 MODULES = ("core", "rtk", "soc", "irt", "grc")
 
 AGENT_CSV_COLUMNS = [

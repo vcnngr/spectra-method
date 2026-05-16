@@ -2,6 +2,23 @@
 
 ## Unreleased
 
+## v0.6.0 (2026-05-16)
+
+### Added
+
+- Codex IDE adapter via `spectra install --tools codex`.
+- Generated project `AGENTS.md` managed block for Codex repo-native SPECTRA routing.
+- Generated `.codex/spectra/skill-index.json` and `.codex/spectra/instructions.md`.
+- `_config/ides/codex.yaml` to document Codex install behavior alongside Claude Code.
+- Smoke coverage for combined Claude Code + Codex installs and Codex lazy module add.
+
+### Changed
+
+- CLI `--tools` validation now accepts `codex` in addition to `claude-code`.
+- Install/status/validate output now reports Codex adapter state.
+- README now documents Claude Code slash-command usage and Codex repo-native usage.
+- Version metadata updated to `0.6.0`.
+
 ## v0.5.0 (2026-05-16)
 
 ### Added

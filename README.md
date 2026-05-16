@@ -30,7 +30,7 @@ SPECTRA is a **multi-agent operating system for cybersecurity operations**. Not 
 When **Viper** (Red Team Lead) and **Commander** (SOC Manager) look at the same target, they see different things. Put them in a **War Room** together, and they *clash* — producing insights neither would reach alone.
 
 ```bash
-npx spectra-method install --tools claude-code -y
+npx spectra-method install --tools claude-code,codex -y
 ```
 
 ## Modules
@@ -50,16 +50,20 @@ npx spectra-method install --tools claude-code -y
 ```bash
 # Full install
 npx spectra-method install \
-  --tools claude-code \
+  --tools claude-code,codex \
   --user-name "YourName" \
   --communication-language "English" \
   -y
 
-# Then in your AI IDE:
+# Then in Claude Code:
 /spectra-help                    # See what's available
 /spectra-new-engagement          # Create a scoped engagement
 /spectra-agent-red-lead          # Talk to Viper
 /spectra-war-room                # Launch Red vs Blue debate
+
+# In Codex:
+# Ask Codex to use spectra-help, spectra-new-engagement, spectra-agent-red-lead,
+# or spectra-war-room. The installer writes AGENTS.md plus .codex/spectra/.
 npx spectra-method party plan --topic "lateral movement detection gap review"
 ```
 
@@ -193,7 +197,7 @@ npx spectra-method install [options]
 
   -d, --directory <path>               Target directory (default: ".")
   -m, --modules <modules>              Module IDs: rtk,soc,irt,grc
-  --tools <tools>                      IDE: claude-code (default)
+  --tools <tools>                      IDEs: claude-code, codex (default: claude-code)
   --user-name <name>                   Name for agents
   --communication-language <lang>      Agent language (default: English)
   --document-output-language <lang>    Document language (default: English)
@@ -242,7 +246,9 @@ Development background:
 
 ```
 project/
-├── .claude/skills/       60 skills as slash commands
+├── .claude/skills/       60 skills as Claude Code slash commands
+├── .codex/spectra/       Codex skill index and routing instructions
+├── AGENTS.md             Codex repo-native SPECTRA adapter block
 ├── _spectra/             Framework: agents, workflows, configs
 │   ├── core/             Engagement framework, skills, scripts
 │   ├── rtk/              Red Team Kit
@@ -262,7 +268,7 @@ project/
 
 ## Requirements
 
-- **AI IDE**: Claude Code, Cursor, or compatible
+- **AI IDE**: Claude Code, Codex, Cursor, or compatible
 - **Python**: 3.10+
 - **Node.js**: 18+
 

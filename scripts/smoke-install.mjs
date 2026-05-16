@@ -41,6 +41,14 @@ function assertExists(filePath, message) {
   }
 }
 
+function assertFileIncludes(filePath, expected, message) {
+  assertExists(filePath, message);
+  const content = fs.readFileSync(filePath, 'utf-8');
+  if (!content.includes(expected)) {
+    throw new Error(`${message}: expected ${filePath} to include ${expected}`);
+  }
+}
+
 function makeTempProject(name) {
   return fs.mkdtempSync(path.join(os.tmpdir(), `${name}-`));
 }
@@ -98,7 +106,7 @@ kill_chain: {}
 
 function smokeFullInstall() {
   const target = makeTempProject('spectra-full');
-  run('node', [cli, 'install', '-d', target, '--tools', 'claude-code', '-y', '--user-name', 'CI']);
+  run('node', [cli, 'install', '-d', target, '--tools', 'claude-code,codex', '-y', '--user-name', 'CI']);
   run('node', [cli, 'validate', '-d', target, '--deep']);
   const coreConfig = runJson('python3', [
     path.join(target, '_spectra', 'core', 'spectra-init', 'scripts', 'spectra_init.py'),
@@ -118,6 +126,9 @@ function smokeFullInstall() {
   assertEqual(rtkConfig.user_name, 'CI', 'rtk config user_name');
   assertEqual(rtkConfig.communication_language, 'English', 'rtk config communication_language');
   assertExists(path.join(target, '_spectra', '_config', 'skill-index.json'), 'compact skill index');
+  assertExists(path.join(target, '.codex', 'spectra', 'skill-index.json'), 'Codex skill index');
+  assertExists(path.join(target, '.codex', 'spectra', 'instructions.md'), 'Codex instructions');
+  assertFileIncludes(path.join(target, 'AGENTS.md'), 'SPECTRA Codex Adapter', 'Codex AGENTS.md adapter block');
   assertExists(path.join(target, '_spectra', 'core', 'schemas', 'engagement.schema.json'), 'JSON schema');
   assertExists(path.join(target, '_spectra', 'core', 'schemas', 'engagement.schema.yaml'), 'YAML schema');
   assertExists(path.join(target, '_spectra', 'core', 'execution', 'engagement-state.py'), 'engagement state script');
@@ -173,11 +184,12 @@ function smokePartialInstall() {
 
 function smokeLazyModuleAdd() {
   const target = makeTempProject('spectra-lazy');
-  run('node', [cli, 'install', '-d', target, '--lazy', '--tools', 'claude-code', '-y', '--user-name', 'CI']);
+  run('node', [cli, 'install', '-d', target, '--lazy', '--tools', 'codex', '-y', '--user-name', 'CI']);
   run('node', [cli, 'modules', 'list', '-d', target]);
-  run('node', [cli, 'modules', 'add', 'rtk', '-d', target, '--tools', 'claude-code']);
+  run('node', [cli, 'modules', 'add', 'rtk', '-d', target, '--tools', 'codex']);
   run('node', [cli, 'validate', '-d', target, '--deep']);
   assertExists(path.join(target, '_spectra', 'rtk', 'config.yaml'), 'lazy-loaded RTK config');
+  assertFileIncludes(path.join(target, 'AGENTS.md'), '`rtk`', 'Codex AGENTS.md module refresh');
   fs.rmSync(target, { recursive: true, force: true });
 }
 

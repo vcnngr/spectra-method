@@ -1,0 +1,11 @@
+ide: codex
+configured_date: 2026-05-16T12:00:00.000Z
+last_updated: 2026-05-16T12:00:00.000Z
+configuration:
+  adapter: repo-native
+  entrypoint: AGENTS.md
+  index: .codex/spectra/skill-index.json
+  instructions: .codex/spectra/instructions.md
+  notes:
+    - Codex uses AGENTS.md and the compact skill index instead of Claude Code slash-command symlinks.
+    - Skill IDs map directly to SPECTRA SKILL.md files under _spectra/.
