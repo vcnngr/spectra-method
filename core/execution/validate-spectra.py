@@ -34,7 +34,7 @@ except ImportError:
     print("Error: pyyaml required. Install with: pip install pyyaml", file=sys.stderr)
     sys.exit(2)
 
-VERSION = "0.1.1"
+VERSION = "0.2.0"
 MODULES = ("core", "rtk", "soc", "irt", "grc")
 
 AGENT_CSV_COLUMNS = [
@@ -806,6 +806,7 @@ def check_execution_scripts(spectra: Path, findings: Findings):
 
     required = {
         "scope-enforcer.py": "Scope enforcer script",
+        "engagement-state.py": "Engagement state machine script",
         "evidence-logger.py": "Evidence logger script",
         "tools-registry.yaml": "Tools registry",
     }
@@ -836,6 +837,37 @@ def check_execution_scripts(spectra: Path, findings: Findings):
             findings.add("EXEC-004", "critical", "execution_scripts",
                          f"_spectra/core/execution/{fname}",
                          f"Missing required execution file: {label}")
+
+
+def check_engagement_schemas(spectra: Path, findings: Findings):
+    """Validate engagement schema files exist and parse."""
+    schema_dir = spectra / "core" / "schemas"
+    if not schema_dir.is_dir():
+        findings.add("SCHEMA-001", "critical", "engagement_schemas",
+                     "_spectra/core/schemas/", "Schema directory does not exist")
+        return
+
+    required = {
+        "engagement.schema.json": "JSON engagement schema",
+        "engagement.schema.yaml": "YAML engagement schema",
+    }
+    for fname, label in required.items():
+        fpath = schema_dir / fname
+        if not fpath.is_file():
+            findings.add("SCHEMA-002", "critical", "engagement_schemas",
+                         f"_spectra/core/schemas/{fname}",
+                         f"Missing required schema: {label}")
+            continue
+        try:
+            if fname.endswith(".json"):
+                json.loads(fpath.read_text(encoding="utf-8"))
+            else:
+                yaml.safe_load(fpath.read_text(encoding="utf-8"))
+            findings.passed()
+        except (json.JSONDecodeError, yaml.YAMLError) as e:
+            findings.add("SCHEMA-003", "warning", "engagement_schemas",
+                         f"_spectra/core/schemas/{fname}",
+                         f"Invalid schema syntax: {e}")
 
 
 # ---------------------------------------------------------------------------
@@ -988,6 +1020,7 @@ def validate(spectra: Path, module_filter: str | None = None) -> Findings:
     check_path_standards(spectra, active_skill_rows, findings, module_filter)
     check_framework_data(spectra, findings)
     check_execution_scripts(spectra, findings)
+    check_engagement_schemas(spectra, findings)
 
     return findings
 

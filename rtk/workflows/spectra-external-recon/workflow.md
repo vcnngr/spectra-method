@@ -70,6 +70,14 @@ Load and read full config from {main_config} and resolve:
   - `scope` section contains at least one target (networks, domains, or applications)
   - `engagement_type` permits reconnaissance activities
   - Engagement dates are valid (start_date <= today <= end_date)
+- Run the deterministic SPECTRA workflow gate before any manual interpretation:
+
+```bash
+python3 {project-root}/_spectra/core/execution/engagement-state.py gate --engagement "{rtk_artifacts}/../engagement.yaml" --workflow spectra-external-recon
+```
+
+- If the gate exits non-zero or JSON `allowed` is not `true`: **HALT IMMEDIATELY**
+- Manual checks may add restrictions, but may not override a failed deterministic gate
 
 ### 3. Scope Loading
 
@@ -81,6 +89,14 @@ From the verified `engagement.yaml`, extract and hold in memory:
 - In-scope applications/URLs
 - Rules of Engagement (RoE) constraints
 - Out-of-scope exclusions
+
+Before every target-specific action, run deterministic target scope enforcement:
+
+```bash
+python3 {project-root}/_spectra/core/execution/scope-enforcer.py check --engagement "{rtk_artifacts}/../engagement.yaml" --target "<target>" --action "recon"
+```
+
+Only continue for that target when the verdict is `IN_SCOPE`.
 
 ### 4. Route to Reconnaissance Workflow
 

@@ -90,6 +90,14 @@ Exfiltration carries the highest legal risk of any engagement phase. Unauthorize
   - `exfiltration` is **explicitly** authorized in the Rules of Engagement (not implied from general pentest scope --- look for explicit exfiltration authorization, data extraction permission, or equivalent language)
   - Engagement dates are valid (start_date <= today <= end_date)
   - Data handling requirements are defined (encryption, retention, destruction policies)
+- Run the deterministic SPECTRA workflow gate before any manual interpretation:
+
+```bash
+python3 {project-root}/_spectra/core/execution/engagement-state.py gate --engagement "{rtk_artifacts}/../engagement.yaml" --workflow spectra-exfiltration
+```
+
+- If the gate exits non-zero or JSON `allowed` is not `true`: **HALT IMMEDIATELY**
+- Manual checks may add restrictions, but may not override a failed deterministic gate
 
 ### 3. Lateral Movement Output Verification
 
@@ -108,6 +116,14 @@ Exfiltration carries the highest legal risk of any engagement phase. Unauthorize
   - **WARN** the user: "No lateral movement report found. It is recommended to have completed `spectra-lateral-movement` first to provide access map, target data locations, staging infrastructure, and recommended exfiltration vectors. The operator may have obtained access and identified targets through other means --- proceeding without lateral movement context."
   - Do NOT block --- allow the operator to proceed at their own risk
   - Note the absence in the workflow state for downstream steps
+
+Before every target-specific action, run deterministic target scope enforcement:
+
+```bash
+python3 {project-root}/_spectra/core/execution/scope-enforcer.py check --engagement "{rtk_artifacts}/../engagement.yaml" --target "<target>" --action "exfiltration"
+```
+
+Only continue for that target when the verdict is `IN_SCOPE`.
 
 ### 4. Route to Exfiltration Workflow
 

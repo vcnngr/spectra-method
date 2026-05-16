@@ -71,6 +71,14 @@ YOU MUST ALWAYS WRITE all artifact and document content in `{document_output_lan
   - `engagement_type` permits post-exploitation operations
   - `lateral-movement` is explicitly authorized in the Rules of Engagement
   - Engagement dates are valid (start_date <= today <= end_date)
+- Run the deterministic SPECTRA workflow gate before any manual interpretation:
+
+```bash
+python3 {project-root}/_spectra/core/execution/engagement-state.py gate --engagement "{rtk_artifacts}/../engagement.yaml" --workflow spectra-lateral-movement
+```
+
+- If the gate exits non-zero or JSON `allowed` is not `true`: **HALT IMMEDIATELY**
+- Manual checks may add restrictions, but may not override a failed deterministic gate
 
 ### 3. Privilege Escalation Output Verification
 
@@ -86,6 +94,14 @@ YOU MUST ALWAYS WRITE all artifact and document content in `{document_output_lan
   - **WARN** the user: "No privilege escalation report found. It is recommended to have completed `spectra-privesc` first to provide access state, credentials, and escalation context. The operator may have obtained elevated access through other means --- proceeding without privilege escalation context."
   - Do NOT block --- allow the operator to proceed at their own risk
   - Note the absence in the workflow state for downstream steps
+
+Before every target-specific action, run deterministic target scope enforcement:
+
+```bash
+python3 {project-root}/_spectra/core/execution/scope-enforcer.py check --engagement "{rtk_artifacts}/../engagement.yaml" --target "<target>" --action "lateral-movement"
+```
+
+Only continue for that target when the verdict is `IN_SCOPE`.
 
 ### 4. Route to Lateral Movement Workflow
 

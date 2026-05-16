@@ -55,6 +55,14 @@ const MODULE_INFO = {
 
 const SUPPORTED_IDES = ['claude-code', 'cursor'];
 
+function getExecutionScript(targetRoot, scriptName) {
+  const installedPath = path.join(targetRoot, '_spectra', 'core', 'execution', scriptName);
+  if (fs.existsSync(installedPath)) {
+    return installedPath;
+  }
+  return path.join(getSourcePath(), 'core', 'execution', scriptName);
+}
+
 // ---------------------------------------------------------------------------
 // CLI Definition
 // ---------------------------------------------------------------------------
@@ -369,6 +377,65 @@ program
     } else {
       console.log(chalk.yellow.bold('  Validation completed with warnings.\n'));
       console.log(chalk.gray('  Run: npx spectra-method install --force   to repair\n'));
+    }
+  });
+
+// --- engagement ------------------------------------------------------------
+program
+  .command('engagement')
+  .description('Run deterministic engagement validation, gate, status, or transition')
+  .argument('<action>', 'validate, status, gate, or transition')
+  .option('-d, --directory <path>', 'Target project directory (default: cwd)')
+  .option('-t, --target <path>', 'Alias for --directory (backwards compat)')
+  .requiredOption('-e, --engagement <path>', 'Path to engagement.yaml')
+  .option('-w, --workflow <name>', 'RTK workflow name for gate/transition')
+  .option('--target-name <target>', 'Target to verify through scope-enforcer')
+  .option('--action-type <type>', 'Action override for gate/transition')
+  .option('--to <status>', 'Destination workflow status for transition')
+  .option('--agent <name>', 'Agent name for transition metadata')
+  .option('--artifact <path>', 'Artifact path for transition metadata', (value, previous) => {
+    previous.push(value);
+    return previous;
+  }, [])
+  .option('--findings-count <count>', 'Finding count for transition metadata')
+  .option('--strict', 'Strict validation')
+  .option('--force', 'Force transition despite invalid state/gate')
+  .option('--dry-run', 'Do not write transition updates')
+  .action((action, options) => {
+    const targetDir = options.directory || options.target;
+    const targetRoot = detectProjectRoot(targetDir);
+    const script = getExecutionScript(targetRoot, 'engagement-state.py');
+
+    if (!fs.existsSync(script)) {
+      console.error(chalk.red(`\n  engagement-state.py not found: ${script}\n`));
+      process.exit(1);
+    }
+
+    const allowed = new Set(['validate', 'status', 'gate', 'transition']);
+    if (!allowed.has(action)) {
+      console.error(chalk.red(`\n  Unknown engagement action: ${action}`));
+      console.error(chalk.gray('  Valid actions: validate, status, gate, transition\n'));
+      process.exit(1);
+    }
+
+    const args = [script, action, '--engagement', options.engagement];
+    if (options.strict) args.push('--strict');
+    if (options.workflow) args.push('--workflow', options.workflow);
+    if (options.targetName) args.push('--target', options.targetName);
+    if (options.actionType) args.push('--action', options.actionType);
+    if (options.to) args.push('--to', options.to);
+    if (options.agent) args.push('--agent', options.agent);
+    if (options.findingsCount) args.push('--findings-count', options.findingsCount);
+    for (const artifact of options.artifact || []) {
+      args.push('--artifact', artifact);
+    }
+    if (options.force) args.push('--force');
+    if (options.dryRun) args.push('--dry-run');
+
+    try {
+      execFileSync('python3', args, { stdio: 'inherit' });
+    } catch (error) {
+      process.exit(error.status || 1);
     }
   });
 

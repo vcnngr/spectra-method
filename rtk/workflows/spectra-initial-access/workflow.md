@@ -71,6 +71,14 @@ Load and read full config from {main_config} and resolve:
   - `engagement_type` permits initial access operations
   - `initial-access` is explicitly authorized in the Rules of Engagement
   - Engagement dates are valid (start_date <= today <= end_date)
+- Run the deterministic SPECTRA workflow gate before any manual interpretation:
+
+```bash
+python3 {project-root}/_spectra/core/execution/engagement-state.py gate --engagement "{rtk_artifacts}/../engagement.yaml" --workflow spectra-initial-access
+```
+
+- If the gate exits non-zero or JSON `allowed` is not `true`: **HALT IMMEDIATELY**
+- Manual checks may add restrictions, but may not override a failed deterministic gate
 
 ### 3. Recon Output Verification
 
@@ -82,6 +90,14 @@ Load and read full config from {main_config} and resolve:
   - **WARN** the user: "No reconnaissance report found. It is recommended to run `spectra-external-recon` first to maximize the effectiveness of initial access. Proceeding without reconnaissance significantly increases the risk of detection and reduces the probability of success."
   - Do NOT block — allow the operator to proceed at their own risk
   - Note the absence in the workflow state for downstream steps
+
+Before every target-specific action, run deterministic target scope enforcement:
+
+```bash
+python3 {project-root}/_spectra/core/execution/scope-enforcer.py check --engagement "{rtk_artifacts}/../engagement.yaml" --target "<target>" --action "initial-access"
+```
+
+Only continue for that target when the verdict is `IN_SCOPE`.
 
 ### 4. Route to Initial Access Workflow
 

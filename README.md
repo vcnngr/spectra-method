@@ -186,6 +186,10 @@ npx spectra-method install [options]
 npx spectra-method validate            Verify installation
 npx spectra-method status              Show version and modules
 npx spectra-method update              Update (preserves configs)
+
+npx spectra-method engagement validate -e engagement.yaml
+npx spectra-method engagement gate -e engagement.yaml -w spectra-external-recon --target-name example.com
+npx spectra-method engagement transition -e engagement.yaml -w spectra-external-recon --to in-progress
 ```
 
 ---

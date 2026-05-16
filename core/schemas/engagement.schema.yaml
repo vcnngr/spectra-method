@@ -1,0 +1,129 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: https://github.com/vcnngr/spectra-method/schemas/engagement.schema.yaml
+title: SPECTRA Engagement
+type: object
+required:
+  - engagement
+additionalProperties: true
+properties:
+  engagement:
+    type: object
+    required:
+      - id
+      - name
+      - type
+      - status
+      - authorization
+      - rules_of_engagement
+      - scope
+    properties:
+      id:
+        type: string
+        minLength: 1
+      name:
+        type: string
+        minLength: 1
+      type:
+        type: string
+        enum: [pentest, red-team, purple-team, ctf, training, assessment, incident-response, compliance-audit]
+      status:
+        type: string
+        enum: [planning, active, paused, complete, archived]
+      authorization:
+        type: object
+        required: [client, authorized_by, authorization_document, start_date, end_date, timezone]
+        properties:
+          client: {type: string, minLength: 1}
+          authorized_by: {type: string, minLength: 1}
+          authorization_document: {type: string, minLength: 1}
+          start_date: {type: string, format: date}
+          end_date: {type: string, format: date}
+          timezone: {type: string, minLength: 1}
+      rules_of_engagement:
+        type: object
+        required:
+          - testing_hours
+          - notify_before_exploit
+          - notify_on_critical
+          - social_engineering_allowed
+          - physical_access_allowed
+          - dos_testing_allowed
+          - data_exfiltration_allowed
+          - production_systems
+          - max_impact_level
+        properties:
+          testing_hours:
+            type: string
+            enum: [any, business-hours, after-hours, custom]
+          custom_hours: {type: string}
+          notify_before_exploit: {type: boolean}
+          notify_on_critical: {type: boolean}
+          social_engineering_allowed: {type: boolean}
+          physical_access_allowed: {type: boolean}
+          dos_testing_allowed: {type: boolean}
+          data_exfiltration_allowed: {type: boolean}
+          production_systems: {type: boolean}
+          max_impact_level:
+            type: string
+            enum: [low, medium, high, critical]
+      data_handling:
+        type: object
+        properties:
+          authorized_data_types: {type: array, items: {type: string}}
+          max_exfiltration_volume: {type: string}
+          allowed_exfiltration_methods: {type: array, items: {type: string}}
+          encryption_required: {type: boolean}
+          retention_period: {type: string}
+          destruction_procedure: {type: string}
+      scope:
+        type: object
+        required: [in_scope, out_of_scope]
+        properties:
+          in_scope:
+            $ref: '#/$defs/scope_section'
+          out_of_scope:
+            $ref: '#/$defs/out_scope_section'
+  workflow_state:
+    type: object
+    properties:
+      external_recon: {$ref: '#/$defs/workflow_state'}
+      initial_access: {$ref: '#/$defs/workflow_state'}
+      privilege_escalation: {$ref: '#/$defs/workflow_state'}
+      lateral_movement: {$ref: '#/$defs/workflow_state'}
+      exfiltration: {$ref: '#/$defs/workflow_state'}
+    additionalProperties: false
+  kill_chain: {type: object}
+  detection_coverage: {type: object}
+  risk_summary: {type: object}
+$defs:
+  scope_section:
+    type: object
+    properties:
+      networks: {type: array, items: {type: string}}
+      domains: {type: array, items: {type: string}}
+      applications: {type: array, items: {type: string}}
+      cloud_accounts: {type: array, items: {type: string}}
+      users: {type: array, items: {type: string}}
+      notes: {type: string}
+  out_scope_section:
+    type: object
+    properties:
+      networks: {type: array, items: {type: string}}
+      domains: {type: array, items: {type: string}}
+      applications: {type: array, items: {type: string}}
+      critical_systems: {type: array, items: {type: string}}
+      users: {type: array, items: {type: string}}
+      notes: {type: string}
+  workflow_state:
+    type: object
+    required: [status, phase, started, completed, artifacts]
+    properties:
+      status:
+        type: string
+        enum: [pending, in-progress, blocked, complete, skipped]
+      phase: {type: string}
+      agent: {type: string}
+      started: {type: string}
+      completed: {type: string}
+      findings_count: {type: integer, minimum: 0}
+      artifacts: {type: array, items: {type: string}}

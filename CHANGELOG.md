@@ -1,5 +1,29 @@
 # SPECTRA Changelog
 
+## v0.2.0 (2026-05-16)
+
+### Added
+
+- Deterministic engagement state machine in `core/execution/engagement-state.py`.
+- JSON and YAML engagement schemas in `core/schemas/`.
+- CLI bridge: `spectra engagement validate|status|gate|transition`.
+- `workflow_state` section in the engagement template for RTK phase tracking.
+- `data_handling` section in the engagement template for exfiltration authorization controls.
+- Installer smoke tests now verify schema/script installation and exercise the Node engagement command.
+
+### Changed
+
+- RTK workflows now require `engagement-state.py gate` before workflow execution.
+- RTK workflows now require `scope-enforcer.py check` before every target-specific action.
+- Validator now checks the engagement state script and schema files.
+- Version metadata updated to `0.2.0`.
+
+### Security
+
+- Exfiltration workflow gate now requires explicit `data_exfiltration_allowed` authorization.
+- Exfiltration workflow gate now requires data type, retention, destruction, and encryption controls.
+- Failed deterministic gates are hard stops and cannot be overridden by manual workflow interpretation.
+
 ## v0.1.1 (2026-05-16)
 
 ### Fixed

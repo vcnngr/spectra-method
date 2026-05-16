@@ -1,7 +1,7 @@
 code: rtk
 name: "SPECTRA Red Team Kit"
 description: "Offensive security module for penetration testing and red team operations"
-module_version: 0.1.1
+module_version: 0.2.0
 default_selected: false
 
 header: "Red Team Kit Configuration"

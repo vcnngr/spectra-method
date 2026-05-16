@@ -1,6 +1,6 @@
 {
   "name": "spectra-method",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "SPECTRA -- Security Protocol Engineering for Cyber Threat Response & Assessment. Multi-agent cybersecurity framework.",
   "type": "module",
   "bin": {
@@ -13,9 +13,10 @@
   },
   "scripts": {
     "validate": "python3 core/execution/validate-spectra.py --path .",
-    "test": "npm run test:validator && npm run test:scope",
+    "test": "npm run test:validator && npm run test:execution && npm run test:smoke",
     "test:validator": "python3 core/execution/validate-spectra.py --path . --strict",
-    "test:scope": "python3 -m unittest discover -s core/execution/tests -p 'test_*.py'",
+    "test:execution": "python3 -m unittest discover -s core/execution/tests -p 'test_*.py'",
+    "test:scope": "npm run test:execution",
     "test:smoke": "node scripts/smoke-install.mjs"
   },
   "keywords": [

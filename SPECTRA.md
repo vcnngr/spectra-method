@@ -22,28 +22,29 @@ _spectra/
 1. **Engagement Framework** — Every operation requires an engagement.yaml with scope, RoE, authorization. This context propagates to all agents.
 2. **War Room** — Enhanced Party Mode with Disagreement Protocol (Red vs Blue adversarial).
 3. **Context Budget System** — Adapts step granularity to model (Opus/Sonnet/Haiku).
-4. **Kill Chain State Machine** — engagement-status.yaml tracks progress per ATT&CK phase.
+4. **Deterministic Engagement State Machine** — engagement-state.py gates RTK workflows, tracks workflow_state, and mirrors progress into kill_chain.
 5. **Agent Autonomy** — Agents HARD BLOCK destructive payloads only (ransomware, wipers). Everything else: WARN + COMPLY. The operator decides.
 6. **Persona Carrythrough** — The persona stays active when invoking sub-skills.
 7. **Step-File Architecture** — JIT loading, "read fully and follow", append-only, frontmatter state.
 
-## Current Status (v0.1.1) — STABILITY RELEASE READY
+## Current Status (v0.2.0) — ENGAGEMENT CONTROL RELEASE READY
 
 ### Complete and operational:
 - All 21 agents with SKILL.md + bmad-skill-manifest.yaml
 - Complete manifests (agent-manifest.csv, skill-manifest.csv, manifest.yaml)
 - Config per module with context budget (all configs set to English)
-- Engagement template with kill chain + detection coverage
+- Engagement template with workflow_state + kill chain + detection coverage
 - Core: spectra-init, spectra-help, spectra-war-room (3 steps), spectra-new-engagement (3 steps), spectra-debrief
 - Core: spectra-report-generator (~613 lines), spectra-evidence-chain (~525 lines), spectra-scope-check (~312 lines), spectra-close-engagement (~349 lines), spectra-executive-brief (~412 lines) — 5 core skills with embedded templates, schemas, and protocols
 - Core: spectra_init.py (Python config loader, 4 subcommands: load/check/write/resolve-defaults, tested) + core-module.yaml
 - Module definitions: rtk/module.yaml, soc/module.yaml, irt/module.yaml, grc/module.yaml (interactive config questions)
 - Framework reference data: mitre-attack/techniques.json (14 tactics, 98 techniques), nist/800-53-controls.json (20 families, 54 controls), sigma-rules/templates/detection-templates.yaml (35 rules), owasp/top10.json (10 entries), cis/controls-v8.json (18 controls, 72 safeguards), cross-mapping/attack-nist-mapping.json (40 technique mappings)
-- Execution scripts: scope-enforcer.py (259 lines, scope verification), evidence-logger.py (341 lines, chain of custody), tools-registry.yaml (361 lines, 44 tools in 9 categories)
-- Validation framework: validate-spectra.py (968 lines, 1,459 checks across 4 severity tiers — 0 failures, 0 warnings)
-- CLI installer: npx spectra-method install/validate/status/update (package.json, spectra-cli.js, installer.js)
+- Execution scripts: scope-enforcer.py (scope verification), engagement-state.py (deterministic workflow gates/state transitions), evidence-logger.py (chain of custody), tools-registry.yaml (44 tools in 9 categories)
+- Engagement schemas: core/schemas/engagement.schema.json and engagement.schema.yaml
+- Validation framework: validate-spectra.py (1,463 checks across 4 severity tiers — 0 failures, 0 warnings)
+- CLI installer: npx spectra-method install/validate/status/update plus `spectra engagement validate|status|gate|transition`
 - E2E integration testing: 8/8 tests passed (config loading, scripts, framework data, workflow continuity, cross-refs, manifests, CLI, validator)
-- Distribution: package.json (spectra-method@0.1.1), README.md, LICENSE (MIT), CHANGELOG.md, .npmignore — npm pack ready (1.4 MB, 312 files)
+- Distribution: package.json (spectra-method@0.2.0), README.md, LICENSE (MIT), CHANGELOG.md, .npmignore
 - RTK: spectra-external-recon (10 steps, ~3,289 lines — flagship workflow)
 - RTK: spectra-initial-access (10 steps, ~3,852 lines — full kill chain from recon to foothold)
 - SOC: spectra-alert-triage (7 steps, ~2,687 lines — first Blue Team workflow, includes Purple Team bridge)
@@ -65,7 +66,7 @@ _spectra/
 **ALL 16 WORKFLOWS COMPLETE. ALL 4 MODULES COMPLETE.**
 
 ### To be completed:
-- v0.1.1 STABILITY RELEASE READY. Future v0.2.0 targets: full ATT&CK matrix (1000+ techniques from MITRE STIX data), expanded NIST (all enhancements), production Sigma library (100+ rules from SigmaHQ), SIEM integration connectors, automated reporting pipeline
+- v0.3.0 targets: performance work (compact skill index, lazy module loading), structured report generator, and real adapters for evidence, scope, and tool registry.
 
 ## How to Continue Development
 
@@ -76,7 +77,7 @@ _spectra/
 5. ~~**ALL 5 CORE SKILLS COMPLETE.**~~ DONE. report-generator, evidence-chain, scope-check, close-engagement, executive-brief
 6. ~~**Execution scripts**~~ DONE. spectra_init.py, scope-enforcer.py, evidence-logger.py, tools-registry.yaml + module.yaml configs
 7. ~~**Framework reference data**~~ DONE. ATT&CK (14 tactics, 98 techniques), NIST 800-53 (20 families, 54 controls), Sigma (35 rules), OWASP Top 10, CIS Controls v8 (18 controls, 72 safeguards), cross-mapping (40 technique mappings)
-8. **v0.1.1 STABILITY RELEASE READY.** All integration tests pass, validator clean, npm pack ready. v0.2.0 targets: full ATT&CK matrix, expanded Sigma library, SIEM connectors, automated reporting
+8. **v0.2.0 ENGAGEMENT CONTROL RELEASE READY.** Unit tests pass, validator clean, installer smoke tests cover schemas and Node engagement command. v0.3.0 targets: compact skill index, lazy loading, structured report generator, evidence/scope/tool adapters.
 9. **Always run validator before committing**: python3 core/execution/validate-spectra.py --path _spectra/
 10. Use spectra-external-recon, spectra-risk-assessment, or spectra-digital-forensics as reference for quality and depth
 

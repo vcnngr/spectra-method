@@ -1,6 +1,8 @@
 # SPECTRA Engagement Template
 # Copy this file and fill in for each new engagement
 # This context propagates to ALL agents during the engagement
+# Schema: _spectra/core/schemas/engagement.schema.yaml
+# Gate: python3 _spectra/core/execution/engagement-state.py gate --engagement engagement.yaml --workflow <workflow>
 
 engagement:
   id: "ENG-YYYY-NNN"
@@ -12,8 +14,8 @@ engagement:
     client: ""
     authorized_by: ""              # Name and title of authorizing person
     authorization_document: ""     # Path to signed authorization/SOW
-    start_date: ""                 # ISO-8601
-    end_date: ""                   # ISO-8601
+    start_date: ""                 # ISO-8601 date, e.g. 2026-05-16
+    end_date: ""                   # ISO-8601 date, e.g. 2026-05-23
     timezone: ""
 
   rules_of_engagement:
@@ -27,6 +29,14 @@ engagement:
     data_exfiltration_allowed: false  # Can we actually exfil data or just prove access?
     production_systems: false         # Are production systems in scope?
     max_impact_level: "high"          # low | medium | high | critical
+
+  data_handling:
+    authorized_data_types: []          # Required before exfiltration, e.g. ["sample PII", "source code"]
+    max_exfiltration_volume: ""        # e.g. "100MB proof-of-access sample"
+    allowed_exfiltration_methods: []   # e.g. ["HTTPS to client-controlled storage"]
+    encryption_required: true
+    retention_period: ""              # e.g. "30 days after report delivery"
+    destruction_procedure: ""         # e.g. "secure delete and certificate of destruction"
 
   scope:
     in_scope:
@@ -58,6 +68,49 @@ engagement:
     lead: ""                       # Engagement lead name
     members: []                    # Team member names
     client_contacts: []            # Client-side contacts
+
+# RTK Workflow State — deterministic state machine managed by engagement-state.py
+workflow_state:
+  external_recon:
+    status: "pending"              # pending | in-progress | blocked | complete | skipped
+    phase: "reconnaissance"
+    agent: ""
+    started: ""
+    completed: ""
+    findings_count: 0
+    artifacts: []
+  initial_access:
+    status: "pending"
+    phase: "exploitation"
+    agent: ""
+    started: ""
+    completed: ""
+    findings_count: 0
+    artifacts: []
+  privilege_escalation:
+    status: "pending"
+    phase: "installation"
+    agent: ""
+    started: ""
+    completed: ""
+    findings_count: 0
+    artifacts: []
+  lateral_movement:
+    status: "pending"
+    phase: "command_and_control"
+    agent: ""
+    started: ""
+    completed: ""
+    findings_count: 0
+    artifacts: []
+  exfiltration:
+    status: "pending"
+    phase: "actions_on_objectives"
+    agent: ""
+    started: ""
+    completed: ""
+    findings_count: 0
+    artifacts: []
 
 # Kill Chain Status — tracked per engagement phase
 kill_chain:

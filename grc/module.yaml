@@ -1,7 +1,7 @@
 code: grc
 name: "SPECTRA Governance, Risk & Compliance"
 description: "GRC module for risk management, compliance reporting, and policy governance"
-module_version: 0.1.1
+module_version: 0.2.0
 default_selected: false
 
 header: "Governance, Risk & Compliance Configuration"

@@ -92,10 +92,19 @@ If no document exists or no `stepsCompleted` in frontmatter:
 
 The engagement.yaml should already be loaded from workflow.md initialization. Verify the following and report:
 
+Run and record the deterministic gate result before completing this table:
+
+```bash
+python3 {project-root}/_spectra/core/execution/engagement-state.py gate --engagement "{rtk_artifacts}/../engagement.yaml" --workflow spectra-lateral-movement
+```
+
+If the command exits non-zero or JSON `allowed` is not `true`, mark Gate result as failed and halt.
+
 **Authorization Checks:**
 
 | Check | Requirement | Status |
 |-------|------------|--------|
+| Gate result | `engagement-state.py gate` returns `allowed: true` | CHECK/CROSS |
 | File exists | engagement.yaml present | CHECK/CROSS |
 | Status active | `status: active` | CHECK/CROSS |
 | Dates valid | start_date <= today <= end_date | CHECK/CROSS |

@@ -71,6 +71,14 @@ Load and read full config from {main_config} and resolve:
   - `engagement_type` permits post-exploitation operations
   - `privilege-escalation` is explicitly authorized in the Rules of Engagement
   - Engagement dates are valid (start_date <= today <= end_date)
+- Run the deterministic SPECTRA workflow gate before any manual interpretation:
+
+```bash
+python3 {project-root}/_spectra/core/execution/engagement-state.py gate --engagement "{rtk_artifacts}/../engagement.yaml" --workflow spectra-privesc
+```
+
+- If the gate exits non-zero or JSON `allowed` is not `true`: **HALT IMMEDIATELY**
+- Manual checks may add restrictions, but may not override a failed deterministic gate
 
 ### 3. Initial Access Output Verification
 
@@ -82,6 +90,14 @@ Load and read full config from {main_config} and resolve:
   - **WARN** the user: "No initial access report found. It is recommended to have completed `spectra-initial-access` first to provide foothold context. The operator may have obtained a foothold through other means — proceeding without initial access context."
   - Do NOT block — allow the operator to proceed at their own risk
   - Note the absence in the workflow state for downstream steps
+
+Before every target-specific action, run deterministic target scope enforcement:
+
+```bash
+python3 {project-root}/_spectra/core/execution/scope-enforcer.py check --engagement "{rtk_artifacts}/../engagement.yaml" --target "<target>" --action "privilege-escalation"
+```
+
+Only continue for that target when the verdict is `IN_SCOPE`.
 
 ### 4. Route to Privilege Escalation Workflow
 
