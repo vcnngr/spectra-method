@@ -18,7 +18,7 @@ When you are in this persona and the user calls a skill, this persona must carry
 
 ## WORKFLOW ARCHITECTURE
 
-This uses **micro-file architecture** with **sequential conversation orchestration**:
+This uses **micro-file architecture** with **sequential conversation orchestration** and an optional deterministic Party Mode planner:
 
 - Step 01 loads agent manifest and initializes War Room with mode selection
 - Step 02 orchestrates the ongoing multi-agent discussion with adversarial dynamics
@@ -26,6 +26,7 @@ This uses **micro-file architecture** with **sequential conversation orchestrati
 - Conversation state tracked in frontmatter
 - Agent personalities maintained through merged manifest data
 - **Adversarial dynamics** enforced: Red team and Blue team agents DISAGREE by design
+- **Party Mode planning** can emit sub-agent task contracts through `spectra party plan`
 
 ---
 
@@ -41,11 +42,14 @@ Load config from `{project-root}/_spectra/core/config.yaml` and resolve:
 - `date` as a system-generated value
 - Agent manifest path: `{project-root}/_spectra/_config/agent-manifest.csv`
 - Context budget: `context_budget` for agents_per_war_room setting
+- LLM routing: `llm_routing` maps coordinator, red, blue, purple, and scribe work to model classes
+- Party Mode: `party_mode` sets spawn policy, required scope gate, and artifact folder
 
 ### Paths
 
 - `agent_manifest_path` = `{project-root}/_spectra/_config/agent-manifest.csv`
 - `standalone_mode` = `true` (War Room is an interactive workflow)
+- `party_planner_script` = `{project-root}/_spectra/core/execution/party-orchestrator.py`
 
 ---
 
@@ -104,6 +108,81 @@ Read fully and follow: `./steps/step-01-agent-loading.md`
 ### Discussion Orchestration
 
 Load step: `./steps/step-02-discussion-orchestration.md`
+
+### Party Mode Sub-Agent Planning
+
+When the user asks for Party Mode, sub-agents, parallel agents, or multi-LLM execution, generate a plan before the debate round:
+
+```bash
+spectra party plan \
+  --topic "<topic>" \
+  --mode adversarial \
+  --agents-per-team 1 \
+  --format json \
+  --output _spectra-output/party/party-plan.json
+```
+
+Use the plan to decide which sub-agents to spawn or simulate. The planner output includes:
+
+- selected Red, Blue, and Purple agents
+- model profile class for each lane
+- task contracts and expected outputs
+- scope and authorization safety gates
+- round order for debate, arbitration, and action register
+
+Party Mode is plan-first: no RTK execution begins until engagement state and scope gates pass.
+
+### Duel Mode Role Separation
+
+When the user wants Red and Blue running from separate machines, use Duel Mode instead of a single shared War Room transcript:
+
+```bash
+spectra duel init --session "<engagement_id>" --role red
+spectra duel init --session "<engagement_id>" --role blue
+spectra duel init --session "<engagement_id>" --role referee
+```
+
+Duel Mode writes separated ledgers:
+
+- Red: `_spectra-output/duel/<session>/red/red-events.jsonl`
+- Blue: `_spectra-output/duel/<session>/blue/blue-events.jsonl`
+- Referee: `_spectra-output/duel/<session>/referee/referee-ledger.jsonl`
+
+The Red side records authorized activity, OPSEC constraints, and footprint assumptions. The Blue side records observations, detections, misses, and mitigations. The Referee scores detection rate, mitigation rate, misses, and latency.
+
+Do not provide procedures for log deletion, audit tampering, destructive cleanup, or security-tool disabling. Model stealth as noise budget, telemetry footprint, timing, attribution surface, and detection pressure.
+
+### Blue Live Telemetry
+
+When Blue has access to the defended host or exported logs, ingest telemetry into the Blue ledger:
+
+```bash
+spectra blue ingest --session "<engagement_id>" --source auth=/var/log/auth.log
+spectra blue ingest --session "<engagement_id>" --source nginx_access=/var/log/nginx/access.log
+spectra blue ingest --session "<engagement_id>" --source postfix=/var/log/mail.log
+spectra blue ingest --session "<engagement_id>" --source suricata_eve=/var/log/suricata/eve.json
+spectra blue ingest --session "<engagement_id>" --source wazuh=/var/ossec/logs/alerts/alerts.json
+spectra blue ingest --session "<engagement_id>" --source zeek_dns=/opt/zeek/logs/current/dns.log
+spectra blue tail --session "<engagement_id>" --source auth=/var/log/auth.log --once
+```
+
+Supported source types: `auth`, `nginx_access`, `nginx_error`, `postfix`, `dovecot`, `fail2ban`, `suricata_eve`, `wazuh`, `zeek_conn`, `zeek_dns`, `zeek_http`.
+
+The adapter is read-only. It converts telemetry into Blue observations, detections, and mitigations that can be correlated against Red ledger events. `blue tail --once` uses a checkpoint file under the Blue Duel session folder and only processes newly appended log bytes.
+
+### Distributed Ledger Broker
+
+When Red and Blue run on separate machines, exchange ledgers through offline bundles:
+
+```bash
+spectra broker export --session "<engagement_id>" --role red --bundle red-bundle.json
+spectra broker export --session "<engagement_id>" --role blue --bundle blue-bundle.json
+spectra broker import --session "<engagement_id>" --role red --bundle red-bundle.json
+spectra broker import --session "<engagement_id>" --role blue --bundle blue-bundle.json
+spectra duel score --session "<engagement_id>" --output scorecard.md
+```
+
+The broker writes signed JSON bundles with event payload SHA256 checksums and imports with deduplication. It is not a network service and does not modify remote hosts.
 
 ---
 

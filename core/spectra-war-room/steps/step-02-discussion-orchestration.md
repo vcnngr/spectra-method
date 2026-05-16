@@ -30,6 +30,7 @@ Orchestrate dynamic multi-agent security discussions with intelligent agent sele
 - 💬 Approach: structured debate with evidence-based positions
 - 🔄 Rotate agent participation across rounds to ensure diverse coverage
 - 🚪 Monitor for exit triggers and mode-switch requests
+- 🧩 If the user asks for Party Mode, sub-agents, parallel work, or multi-LLM routing, generate or load a Party Mode plan before the response round
 
 ### Agent Autonomy Protocol:
 - 🧠 YOU ARE THE PROFESSIONAL — your expertise informs the operator, the operator decides
@@ -56,6 +57,8 @@ Orchestrate dynamic multi-agent security discussions with intelligent agent sele
 - Current mode (adversarial or collaborative) from frontmatter
 - Exit triggers: `*exit`, `close war room`, `end session`, `quit`
 - Context budget: `agents_per_war_room` from config determines how many agents respond per round
+- Party Mode planner: `spectra party plan --topic "<topic>" --mode <mode>`
+- Party Mode artifacts: `{project-root}/_spectra-output/party/`
 
 ## Sequence of Instructions (Do not deviate, skip, or optimize)
 
@@ -77,6 +80,24 @@ For each user message or topic:
 ### 2. Intelligent Agent Selection
 
 Select 2-3 most relevant agents based on analysis:
+
+**Party Mode Planner Path:**
+
+If the user requests Party Mode, sub-agent generation, parallel analysis, or multi-LLM execution:
+
+1. Run or simulate `spectra party plan --topic "<user topic>" --mode <current mode> --format json`
+2. Use the generated `sub_agents` list as the primary selection source
+3. Preserve each sub-agent `task_contract`, `model_routing`, and expected output list
+4. Do not start offensive execution from the plan; require engagement gate and scope check first
+5. Use Specter as coordinator when available and Chronicle as scribe when reporting is requested
+
+**Sub-Agent Work Lanes:**
+
+- Coordinator: load context, enforce gates, split work, merge outputs
+- Red lane: attack-path analysis and feasibility within scope
+- Blue lane: detection, telemetry, control, and response analysis
+- Purple lane: risk arbitration, evidence needs, decision register
+- Scribe lane: report, action register, and handoff package
 
 **Adversarial Mode Selection Logic:**
 

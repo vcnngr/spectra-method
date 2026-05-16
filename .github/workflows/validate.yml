@@ -58,10 +58,14 @@ jobs:
       - name: Verify Python scripts syntax
         run: |
           python3 -m py_compile core/execution/scope-enforcer.py
+          python3 -m py_compile core/execution/blue-live-adapter.py
+          python3 -m py_compile core/execution/red-blue-broker.py
+          python3 -m py_compile core/execution/duel-orchestrator.py
           python3 -m py_compile core/execution/engagement-state.py
           python3 -m py_compile core/execution/evidence-logger.py
           python3 -m py_compile core/execution/report-adapters.py
           python3 -m py_compile core/execution/report-generator.py
+          python3 -m py_compile core/execution/party-orchestrator.py
           python3 -m py_compile core/spectra-init/scripts/spectra_init.py
 
       - name: Verify framework data

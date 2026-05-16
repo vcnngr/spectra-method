@@ -68,6 +68,8 @@ const OUTPUT_SUBDIRS = [
   'engagements',
   'reports',
   'evidence',
+  'party',
+  'duel',
 ];
 
 // ---------------------------------------------------------------------------

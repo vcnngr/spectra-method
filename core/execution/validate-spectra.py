@@ -34,7 +34,7 @@ except ImportError:
     print("Error: pyyaml required. Install with: pip install pyyaml", file=sys.stderr)
     sys.exit(2)
 
-VERSION = "0.3.0"
+VERSION = "0.3.1"
 MODULES = ("core", "rtk", "soc", "irt", "grc")
 
 AGENT_CSV_COLUMNS = [
@@ -805,10 +805,14 @@ def check_execution_scripts(spectra: Path, findings: Findings):
         return
 
     required = {
+        "blue-live-adapter.py": "Blue live telemetry adapter script",
+        "red-blue-broker.py": "Red/Blue distributed ledger broker script",
         "scope-enforcer.py": "Scope enforcer script",
+        "duel-orchestrator.py": "Duel Mode role ledger and scoring script",
         "engagement-state.py": "Engagement state machine script",
         "report-adapters.py": "Report adapters script",
         "report-generator.py": "Structured report generator script",
+        "party-orchestrator.py": "Party Mode sub-agent planner script",
         "evidence-logger.py": "Evidence logger script",
         "tools-registry.yaml": "Tools registry",
     }

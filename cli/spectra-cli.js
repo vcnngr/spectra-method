@@ -8,6 +8,10 @@
  *   npx spectra-method install -d ./my-proj --tools claude-code -y  Full options
  *   npx spectra-method validate                             Run project validation
  *   npx spectra-method status                               Show installation status
+ *   npx spectra-method party plan --topic "..."             Generate Party Mode sub-agent plan
+ *   npx spectra-method duel init --role red --session ENG   Initialize Duel Mode role
+ *   npx spectra-method blue ingest --session ENG --source auth=/var/log/auth.log
+ *   npx spectra-method broker export --session ENG --role red --bundle red.json
  *   npx spectra-method update                               Update SPECTRA to latest version
  */
 
@@ -61,6 +65,15 @@ function getExecutionScript(targetRoot, scriptName) {
     return installedPath;
   }
   return path.join(getSourcePath(), 'core', 'execution', scriptName);
+}
+
+function getOutputFolder(targetRoot) {
+  const manifest = readManifest(path.join(targetRoot, '_spectra'));
+  return manifest?.installation?.outputFolder || '_spectra-output';
+}
+
+function getDuelOutputRoot(targetRoot) {
+  return path.join(targetRoot, getOutputFolder(targetRoot), 'duel');
 }
 
 function parseModuleList(value) {
@@ -573,6 +586,228 @@ program
     const script = getExecutionScript(targetRoot, 'report-generator.py');
     const args = [script, 'generate', '--engagement', options.engagement, '--type', options.type];
     if (options.output) args.push('--output', options.output);
+    try {
+      execFileSync('python3', args, { stdio: 'inherit' });
+    } catch (error) {
+      process.exit(error.status || 1);
+    }
+  });
+
+// --- party ----------------------------------------------------------------
+program
+  .command('party')
+  .description('Generate deterministic Party Mode sub-agent plans')
+  .argument('<action>', 'plan')
+  .option('-d, --directory <path>', 'Target project directory (default: cwd)')
+  .option('-t, --target <path>', 'Alias for --directory (backwards compat)')
+  .requiredOption('--topic <topic>', 'Discussion or task topic')
+  .option('--mode <mode>', 'adversarial, collaborative, purple, or incident', 'adversarial')
+  .option('--agents-per-team <count>', 'Number of agents per required team', '1')
+  .option('--format <format>', 'json or markdown', 'json')
+  .option('-o, --output <path>', 'Output plan path')
+  .action((action, options) => {
+    if (action !== 'plan') {
+      console.error(chalk.red(`\n  Unknown party action: ${action}`));
+      console.error(chalk.gray('  Valid actions: plan\n'));
+      process.exit(1);
+    }
+    const targetDir = options.directory || options.target;
+    const targetRoot = detectProjectRoot(targetDir);
+    const script = getExecutionScript(targetRoot, 'party-orchestrator.py');
+    const installedManifest = path.join(targetRoot, '_spectra', '_config', 'agent-manifest.csv');
+    const sourceManifest = path.join(getSourcePath(), '_config', 'agent-manifest.csv');
+    const manifest = fs.existsSync(installedManifest) ? installedManifest : sourceManifest;
+    const installedConfig = path.join(targetRoot, '_spectra', 'core', 'config.yaml');
+    const sourceConfig = path.join(getSourcePath(), 'core', 'config.yaml');
+    const config = fs.existsSync(installedConfig) ? installedConfig : sourceConfig;
+    const manifestYaml = readManifest(path.join(targetRoot, '_spectra'));
+    const modules = manifestYaml?.modules?.map(m => m.name).filter(Boolean).join(',');
+    const args = [
+      script,
+      'plan',
+      '--topic',
+      options.topic,
+      '--mode',
+      options.mode,
+      '--agents-per-team',
+      options.agentsPerTeam,
+      '--format',
+      options.format,
+      '--manifest',
+      manifest,
+      '--config',
+      config,
+    ];
+    if (modules) args.push('--modules', modules);
+    if (options.output) args.push('--output', options.output);
+    try {
+      execFileSync('python3', args, { stdio: 'inherit' });
+    } catch (error) {
+      process.exit(error.status || 1);
+    }
+  });
+
+// --- duel -----------------------------------------------------------------
+program
+  .command('duel')
+  .description('Run Duel Mode role ledgers and Red/Blue scoring')
+  .argument('<action>', 'init, record, status, or score')
+  .option('-d, --directory <path>', 'Target project directory (default: cwd)')
+  .option('-t, --target <path>', 'Alias for --directory (backwards compat)')
+  .requiredOption('--session <id>', 'Duel session or engagement ID')
+  .option('--role <role>', 'red, blue, or referee')
+  .option('-e, --engagement <path>', 'Path to engagement.yaml')
+  .option('--event-type <type>', 'Role event type for record')
+  .option('--summary <text>', 'Event summary for record')
+  .option('--target-name <target>', 'Target associated with the event')
+  .option('--technique <technique>', 'ATT&CK technique or local technique label')
+  .option('--source <source>', 'Telemetry source, tool, or evidence source')
+  .option('--confidence <level>', 'low, medium, or high', 'medium')
+  .option('--severity <level>', 'low, medium, high, or critical', 'medium')
+  .option('--red-event-id <id>', 'Red event ID correlated by a Blue/Referee event')
+  .option('--artifact <path>', 'Artifact path to attach to the event', (value, previous) => {
+    previous.push(value);
+    return previous;
+  }, [])
+  .option('--format <format>', 'json or markdown for score', 'markdown')
+  .option('-o, --output <path>', 'Output scorecard path')
+  .action((action, options) => {
+    const targetDir = options.directory || options.target;
+    const targetRoot = detectProjectRoot(targetDir);
+    const script = getExecutionScript(targetRoot, 'duel-orchestrator.py');
+    const outputRoot = getDuelOutputRoot(targetRoot);
+
+    const args = [script, action, '--session', options.session];
+
+    if (action === 'init') {
+      if (!options.role) {
+        console.error(chalk.red('\n  --role is required for duel init\n'));
+        process.exit(1);
+      }
+      args.push('--role', options.role, '--output-root', outputRoot);
+      if (options.engagement) args.push('--engagement', options.engagement);
+    } else if (action === 'record') {
+      if (!options.role || !options.eventType || !options.summary) {
+        console.error(chalk.red('\n  --role, --event-type, and --summary are required for duel record\n'));
+        process.exit(1);
+      }
+      args.push(
+        '--role', options.role,
+        '--event-type', options.eventType,
+        '--summary', options.summary,
+        '--output-root', outputRoot,
+        '--confidence', options.confidence,
+        '--severity', options.severity,
+      );
+      if (options.targetName) args.push('--target', options.targetName);
+      if (options.technique) args.push('--technique', options.technique);
+      if (options.source) args.push('--source', options.source);
+      if (options.redEventId) args.push('--red-event-id', options.redEventId);
+      for (const artifact of options.artifact || []) {
+        args.push('--artifact', artifact);
+      }
+    } else if (action === 'status') {
+      args.push('--output-root', outputRoot);
+    } else if (action === 'score') {
+      const redLedger = path.join(outputRoot, options.session, 'red', 'red-events.jsonl');
+      const blueLedger = path.join(outputRoot, options.session, 'blue', 'blue-events.jsonl');
+      args.push('--red', redLedger, '--blue', blueLedger, '--format', options.format);
+      if (options.output) args.push('--output', options.output);
+    } else {
+      console.error(chalk.red(`\n  Unknown duel action: ${action}`));
+      console.error(chalk.gray('  Valid actions: init, record, status, score\n'));
+      process.exit(1);
+    }
+
+    try {
+      execFileSync('python3', args, { stdio: 'inherit' });
+    } catch (error) {
+      process.exit(error.status || 1);
+    }
+  });
+
+// --- blue -----------------------------------------------------------------
+program
+  .command('blue')
+  .description('Ingest Blue Team telemetry into Duel Mode')
+  .argument('<action>', 'ingest or tail')
+  .option('-d, --directory <path>', 'Target project directory (default: cwd)')
+  .option('-t, --target <path>', 'Alias for --directory (backwards compat)')
+  .requiredOption('--session <id>', 'Duel session or engagement ID')
+  .option('--source <type=path>', 'Telemetry source, e.g. auth=/var/log/auth.log', (value, previous) => {
+    previous.push(value);
+    return previous;
+  }, [])
+  .option('--dry-run', 'Parse and print detections without writing the Blue ledger')
+  .option('--once', 'For tail mode, process newly appended data once and exit')
+  .option('--checkpoint <path>', 'For tail mode, checkpoint file for source offsets')
+  .option('--format <format>', 'json or jsonl for dry-run output', 'json')
+  .action((action, options) => {
+    if (!['ingest', 'tail'].includes(action)) {
+      console.error(chalk.red(`\n  Unknown blue action: ${action}`));
+      console.error(chalk.gray('  Valid actions: ingest, tail\n'));
+      process.exit(1);
+    }
+    if (!options.source || options.source.length === 0) {
+      console.error(chalk.red('\n  At least one --source type=path is required\n'));
+      process.exit(1);
+    }
+    const targetDir = options.directory || options.target;
+    const targetRoot = detectProjectRoot(targetDir);
+    const script = getExecutionScript(targetRoot, 'blue-live-adapter.py');
+    const outputRoot = getDuelOutputRoot(targetRoot);
+    const args = [script, action, '--session', options.session, '--output-root', outputRoot, '--format', options.format];
+    for (const source of options.source) {
+      args.push('--source', source);
+    }
+    if (options.dryRun) args.push('--dry-run');
+    if (options.once) args.push('--once');
+    if (action === 'tail') {
+      const checkpoint = options.checkpoint
+        || path.join(outputRoot, options.session, 'blue', 'blue-tail.checkpoint.json');
+      args.push('--checkpoint', checkpoint);
+    } else if (options.checkpoint) {
+      args.push('--checkpoint', options.checkpoint);
+    }
+    try {
+      execFileSync('python3', args, { stdio: 'inherit' });
+    } catch (error) {
+      process.exit(error.status || 1);
+    }
+  });
+
+// --- broker ---------------------------------------------------------------
+program
+  .command('broker')
+  .description('Export/import Duel Mode ledgers for separated Red/Blue machines')
+  .argument('<action>', 'export or import')
+  .option('-d, --directory <path>', 'Target project directory (default: cwd)')
+  .option('-t, --target <path>', 'Alias for --directory (backwards compat)')
+  .requiredOption('--session <id>', 'Duel session or engagement ID')
+  .requiredOption('--role <role>', 'red, blue, or referee')
+  .requiredOption('--bundle <path>', 'JSON bundle path to write or read')
+  .action((action, options) => {
+    if (!['export', 'import'].includes(action)) {
+      console.error(chalk.red(`\n  Unknown broker action: ${action}`));
+      console.error(chalk.gray('  Valid actions: export, import\n'));
+      process.exit(1);
+    }
+    const targetDir = options.directory || options.target;
+    const targetRoot = detectProjectRoot(targetDir);
+    const script = getExecutionScript(targetRoot, 'red-blue-broker.py');
+    const outputRoot = getDuelOutputRoot(targetRoot);
+    const args = [
+      script,
+      action,
+      '--session',
+      options.session,
+      '--role',
+      options.role,
+      '--output-root',
+      outputRoot,
+      '--bundle',
+      path.resolve(options.bundle),
+    ];
     try {
       execFileSync('python3', args, { stdio: 'inherit' });
     } catch (error) {

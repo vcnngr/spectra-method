@@ -1,5 +1,41 @@
 # SPECTRA Changelog
 
+## Unreleased
+
+No unreleased changes.
+
+## v0.3.1 (2026-05-16)
+
+### Added
+
+- Party Mode sub-agent planner in `core/execution/party-orchestrator.py`.
+- CLI bridge: `spectra party plan --topic "..."`
+- Duel Mode runtime in `core/execution/duel-orchestrator.py`.
+- CLI bridge: `spectra duel init|record|status|score`.
+- Blue Live Adapter in `core/execution/blue-live-adapter.py`.
+- CLI bridge: `spectra blue ingest --session ENG --source auth=/var/log/auth.log`.
+- Blue Tail Mode with checkpointed `spectra blue tail --once`.
+- Blue telemetry parsers for Suricata/EVE JSONL, Wazuh JSON alerts, and Zeek conn/dns/http JSONL.
+- Red/Blue Broker in `core/execution/red-blue-broker.py`.
+- CLI bridge: `spectra broker export|import --session ENG --role red|blue --bundle bundle.json`.
+- LLM routing profile classes in `core/config.yaml` for coordinator, Red, Blue, Purple, and scribe lanes.
+- Separated Red/Blue/Referee ledgers with scorecard generation.
+- Referee scorecard metrics for detection latency, severity coverage, misses by technique, and outcome grade.
+- Party Mode regression tests and installer smoke coverage.
+- Development docs for the `red-blue-team` origin directory and distributed Duel Mode.
+
+### Changed
+
+- War Room workflow now documents plan-first sub-agent orchestration before parallel or multi-LLM execution.
+- Duel scorecards now include richer low-and-slow exercise metrics while preserving existing JSON fields.
+- Validator and CI now check Party Mode, Duel Mode, Blue adapter, and broker execution scripts.
+
+### Security
+
+- Duel Mode blocks Red ledger events that attempt log deletion, audit tampering, destructive cleanup, or security-tool disabling instructions.
+- Blue Live Adapter is read-only and only parses telemetry into Blue ledger events.
+- Red/Blue Broker is offline and file-based. It signs exported event payloads with SHA256 and imports with deduplication; it does not create a network listener or control remote hosts.
+
 ## v0.3.0 (2026-05-16)
 
 ### Added

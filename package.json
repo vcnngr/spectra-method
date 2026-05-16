@@ -1,15 +1,15 @@
 {
   "name": "spectra-method",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "SPECTRA -- Security Protocol Engineering for Cyber Threat Response & Assessment. Multi-agent cybersecurity framework.",
   "type": "module",
   "bin": {
-    "spectra": "./cli/spectra-cli.js"
+    "spectra": "cli/spectra-cli.js"
   },
   "main": "./cli/spectra-cli.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/vcnngr/spectra-method"
+    "url": "git+https://github.com/vcnngr/spectra-method.git"
   },
   "scripts": {
     "validate": "python3 core/execution/validate-spectra.py --path .",
@@ -47,6 +47,7 @@
     "!**/__pycache__/",
     "!**/*.pyc",
     "scripts/",
+    "docs/",
     "rtk/",
     "soc/",
     "irt/",

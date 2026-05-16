@@ -1,6 +1,6 @@
 # SPECTRA Core Module Configuration
 # Security Protocol Engineering for Cyber Threat Response & Assessment
-# Version: 0.3.0
+# Version: 0.3.1
 # Date: 2026-04-04T12:00:00.000Z
 
 user_name: Vincenzo
@@ -28,3 +28,61 @@ context_budget:
       max_step_tokens: 3000
       agents_per_war_room: 2
       resume_distillate_every: 3
+
+# Party Mode / sub-agent orchestration.
+# Profiles are model classes, not vendor bindings. Runners can map them to
+# OpenAI, Anthropic, local, or enterprise-hosted LLMs.
+llm_routing:
+  strategy: task_based
+  profiles:
+    coordinator:
+      class: balanced-reasoning
+      latency: medium
+      use_for: round control, synthesis, conflict resolution
+    red:
+      class: deep-reasoning
+      latency: medium
+      use_for: attack-path analysis, feasibility review, risk discovery
+    blue:
+      class: fast-analytical
+      latency: low
+      use_for: detection mapping, log questions, control validation
+    purple:
+      class: deep-synthesis
+      latency: medium
+      use_for: risk arbitration, evidence synthesis, executive framing
+    scribe:
+      class: long-context-writing
+      latency: medium
+      use_for: reporting, decision log, action register
+
+party_mode:
+  default_mode: adversarial
+  agents_per_team: 1
+  spawn_policy: plan_only
+  require_scope_before_spawn: true
+  artifact_folder: "{project-root}/_spectra-output/party"
+
+duel_mode:
+  enabled: true
+  roles: [red, blue, referee]
+  artifact_folder: "{project-root}/_spectra-output/duel"
+  blue_live_sources:
+    supported: [auth, nginx_access, nginx_error, postfix, dovecot, fail2ban, suricata_eve, wazuh, zeek_conn, zeek_dns, zeek_http]
+    ingest_mode: read_only
+    tail_mode: checkpointed_once
+  broker:
+    mode: offline_json_bundle
+    checksum: sha256
+    merge_policy: deduplicate_by_role_id_timestamp_summary
+    network_listener: false
+  separation_model:
+    red_sees: "own actions, own evidence, shared engagement scope"
+    blue_sees: "telemetry, alerts, controls, own detections"
+    referee_sees: "red and blue ledgers for correlation and scoring"
+  red_opsec_policy:
+    allow_low_and_slow: true
+    allow_noise_budgeting: true
+    forbid_log_deletion: true
+    forbid_audit_tampering: true
+    forbid_destructive_cleanup: true

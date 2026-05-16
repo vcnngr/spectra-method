@@ -60,6 +60,7 @@ npx spectra-method install \
 /spectra-new-engagement          # Create a scoped engagement
 /spectra-agent-red-lead          # Talk to Viper
 /spectra-war-room                # Launch Red vs Blue debate
+npx spectra-method party plan --topic "lateral movement detection gap review"
 ```
 
 ---
@@ -195,7 +196,27 @@ npx spectra-method engagement gate -e engagement.yaml -w spectra-external-recon 
 npx spectra-method engagement transition -e engagement.yaml -w spectra-external-recon --to in-progress
 
 npx spectra-method report generate -e engagement.yaml --type pentest
+npx spectra-method party plan --topic "lateral movement detection gap review" --mode adversarial
+npx spectra-method duel init --session ENG-2026-001 --role red
+npx spectra-method duel score --session ENG-2026-001
+npx spectra-method blue ingest --session ENG-2026-001 --source auth=/var/log/auth.log
+npx spectra-method blue tail --session ENG-2026-001 --source auth=/var/log/auth.log --once
+npx spectra-method broker export --session ENG-2026-001 --role red --bundle red-bundle.json
+npx spectra-method broker import --session ENG-2026-001 --role red --bundle red-bundle.json
 ```
+
+Party Mode generates deterministic sub-agent plans for Red, Blue, Purple, and scribe lanes. The plan includes task contracts, model profile classes, safety gates, and debate rounds. It is plan-first: RTK execution still requires engagement state and scope checks before any offensive workflow action.
+
+Duel Mode separates Red, Blue, and Referee views for exercises run across different machines. Red and Blue write role-local JSONL ledgers; the Referee scorecard correlates Red actions with Blue detections or mitigations. Red OPSEC is modeled as noise and footprint constraints, while log deletion, audit tampering, destructive cleanup, and security-tool disabling are blocked by policy.
+
+Blue Live Adapter ingests defensive telemetry read-only into the Blue ledger. Supported source types: `auth`, `nginx_access`, `nginx_error`, `postfix`, `dovecot`, `fail2ban`, `suricata_eve`, `wazuh`, `zeek_conn`, `zeek_dns`, and `zeek_http`. `blue tail --once` reads only new bytes since the stored checkpoint, so repeated runs do not duplicate old detections.
+
+Red/Blue Broker supports separated machines without requiring shared filesystem access. Each side exports a signed JSON bundle from its local ledger; the Referee imports Red and Blue bundles, deduplicates events, then runs `duel score`. The broker is offline and file-based: it does not open sockets, deploy agents, or modify remote hosts.
+
+Development background:
+
+- [red-blue-team origin](docs/development/red-blue-team-origin.md)
+- [distributed Red/Blue Duel](docs/development/distributed-red-blue-duel.md)
 
 ---
 
