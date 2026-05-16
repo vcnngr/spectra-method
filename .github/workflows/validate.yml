@@ -46,13 +46,14 @@ jobs:
       - name: Install Node dependencies
         run: npm install
 
+      - name: Run full SPECTRA validator
+        run: npm test
+
       - name: Verify CLI
         run: node cli/spectra-cli.js --help
 
-      - name: Verify spectra_init.py
-        run: |
-          python3 core/spectra-init/scripts/spectra_init.py load --project-root .
-          python3 core/spectra-init/scripts/spectra_init.py load --module rtk --project-root .
+      - name: Verify install smoke tests
+        run: npm run test:smoke
 
       - name: Verify Python scripts syntax
         run: |

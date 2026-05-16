@@ -624,7 +624,50 @@ export function writeInitialConfig(spectraDir, options = {}) {
   });
 
   fs.writeFileSync(configPath, yamlContent, 'utf-8');
+  writeModuleConfigs(spectraDir, config, options.modules || Object.keys(MODULE_DIRS));
   return true;
+}
+
+/**
+ * Keep module config identity/language settings synchronized with core config.
+ *
+ * Module configs ship with defaults, but a non-interactive install can override
+ * user-facing settings. Without this, spectra_init.py load --module rtk returns
+ * stale package defaults while core returns the requested values.
+ *
+ * @param {string} spectraDir
+ * @param {Object} coreConfig
+ * @param {string[]} modules
+ */
+function writeModuleConfigs(spectraDir, coreConfig, modules) {
+  for (const mod of modules) {
+    if (mod === 'core') continue;
+    const configPath = path.join(spectraDir, mod, 'config.yaml');
+    if (!fs.existsSync(configPath)) continue;
+
+    let existingConfig = {};
+    try {
+      existingConfig = YAML.parse(fs.readFileSync(configPath, 'utf-8')) || {};
+    } catch {
+      existingConfig = {};
+    }
+
+    const merged = {
+      ...existingConfig,
+      user_name: coreConfig.user_name,
+      communication_language: coreConfig.communication_language,
+      document_output_language: coreConfig.document_output_language,
+      output_folder: coreConfig.output_folder,
+    };
+
+    const yamlContent = YAML.stringify(merged, {
+      lineWidth: 0,
+      defaultStringType: 'QUOTE_DOUBLE',
+      defaultKeyType: 'PLAIN',
+    });
+
+    fs.writeFileSync(configPath, yamlContent, 'utf-8');
+  }
 }
 
 // ---------------------------------------------------------------------------

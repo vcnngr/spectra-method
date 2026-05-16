@@ -12,6 +12,8 @@
  */
 
 import fs from 'node:fs';
+import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 import { Command } from 'commander';
 import chalk from 'chalk';
 import {
@@ -263,6 +265,7 @@ program
   .description('Validate SPECTRA installation')
   .option('-d, --directory <path>', 'Target project directory (default: cwd)')
   .option('-t, --target <path>', 'Alias for --directory (backwards compat)')
+  .option('--deep', 'Run the full Python validator in addition to CLI checks')
   .action(async (options) => {
     console.log(BANNER);
 
@@ -312,7 +315,7 @@ program
     }
 
     // Check framework files
-    const frameworkFiles = ['SPECTRA.md', 'DEV-GUIDE.md', '_config/manifest.yaml'];
+    const frameworkFiles = ['SPECTRA.md', '_config/manifest.yaml'];
     for (const file of frameworkFiles) {
       if (fs.existsSync(`${spectraDir}/${file}`)) {
         console.log(chalk.green(`  \u2713 ${file}`));
@@ -339,6 +342,25 @@ program
       console.log(chalk.green(`  \u2713 Output directory ${outputDir}/ present`));
     } else {
       console.log(chalk.yellow(`  \u26A0 Output directory ${outputDir}/ missing`));
+    }
+
+    if (options.deep) {
+      console.log(chalk.white('\n  Deep validation'));
+      console.log(chalk.gray('  ----------------------------------------'));
+      const validatorPath = path.join(getSourcePath(), 'core', 'execution', 'validate-spectra.py');
+      if (!fs.existsSync(validatorPath)) {
+        console.log(chalk.yellow('  \u26A0 Full validator not available in this package'));
+      } else {
+        try {
+          execFileSync('python3', [validatorPath, '--path', targetRoot, '--strict', '--summary'], {
+            stdio: 'inherit',
+          });
+          console.log(chalk.green('  \u2713 Full validator passed'));
+        } catch {
+          console.log(chalk.red('  \u2717 Full validator failed'));
+          allValid = false;
+        }
+      }
     }
 
     console.log();

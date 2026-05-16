@@ -1,5 +1,27 @@
 # SPECTRA Changelog
 
+## v0.1.1 (2026-05-16)
+
+### Fixed
+
+- Validator now supports both npm source layout and installed `_spectra/` layout.
+- Validator now supports partial installs such as `--modules rtk` without false missing-module failures.
+- CLI `validate` no longer requires `DEV-GUIDE.md`, which is intentionally excluded from installed projects.
+- Scope enforcer now normalizes textual RoE values such as `"none"`, `"false"`, `"light"`, and `"full"`.
+- Scope enforcer now hard-blocks destructive action descriptions at the deterministic layer.
+- Corrected RTK lateral-movement and exfiltration workflow text from `NO HARD BLOCK` to `HARD BLOCK`.
+
+### Changed
+
+- CI and npm publish workflows now run the full SPECTRA validator.
+- CI now runs full and partial install smoke tests before accepting changes.
+- CLI `validate --deep` now runs the full Python validator against an installed project.
+- Added reusable npm scripts for validator, scope guardrail tests, and install smoke tests.
+
+### Added
+
+- Regression tests for scope enforcement, RoE normalization, out-of-scope precedence, and destructive-action blocking.
+
 ## v0.1.0 (2026-04-05)
 
 ### Initial Release

@@ -27,7 +27,7 @@ _spectra/
 6. **Persona Carrythrough** — The persona stays active when invoking sub-skills.
 7. **Step-File Architecture** — JIT loading, "read fully and follow", append-only, frontmatter state.
 
-## Current Status (v0.1.0) — FEATURE COMPLETE
+## Current Status (v0.1.1) — STABILITY RELEASE READY
 
 ### Complete and operational:
 - All 21 agents with SKILL.md + bmad-skill-manifest.yaml
@@ -43,7 +43,7 @@ _spectra/
 - Validation framework: validate-spectra.py (968 lines, 1,459 checks across 4 severity tiers — 0 failures, 0 warnings)
 - CLI installer: npx spectra-method install/validate/status/update (package.json, spectra-cli.js, installer.js)
 - E2E integration testing: 8/8 tests passed (config loading, scripts, framework data, workflow continuity, cross-refs, manifests, CLI, validator)
-- Distribution: package.json (spectra-method@0.1.0), README.md, LICENSE (MIT), CHANGELOG.md, .npmignore — npm pack ready (1.4 MB, 312 files)
+- Distribution: package.json (spectra-method@0.1.1), README.md, LICENSE (MIT), CHANGELOG.md, .npmignore — npm pack ready (1.4 MB, 312 files)
 - RTK: spectra-external-recon (10 steps, ~3,289 lines — flagship workflow)
 - RTK: spectra-initial-access (10 steps, ~3,852 lines — full kill chain from recon to foothold)
 - SOC: spectra-alert-triage (7 steps, ~2,687 lines — first Blue Team workflow, includes Purple Team bridge)
@@ -65,7 +65,7 @@ _spectra/
 **ALL 16 WORKFLOWS COMPLETE. ALL 4 MODULES COMPLETE.**
 
 ### To be completed:
-- v0.1.0 COMPLETE AND VALIDATED. Future v0.2.0 targets: full ATT&CK matrix (1000+ techniques from MITRE STIX data), expanded NIST (all enhancements), production Sigma library (100+ rules from SigmaHQ), SIEM integration connectors, automated reporting pipeline
+- v0.1.1 STABILITY RELEASE READY. Future v0.2.0 targets: full ATT&CK matrix (1000+ techniques from MITRE STIX data), expanded NIST (all enhancements), production Sigma library (100+ rules from SigmaHQ), SIEM integration connectors, automated reporting pipeline
 
 ## How to Continue Development
 
@@ -76,7 +76,7 @@ _spectra/
 5. ~~**ALL 5 CORE SKILLS COMPLETE.**~~ DONE. report-generator, evidence-chain, scope-check, close-engagement, executive-brief
 6. ~~**Execution scripts**~~ DONE. spectra_init.py, scope-enforcer.py, evidence-logger.py, tools-registry.yaml + module.yaml configs
 7. ~~**Framework reference data**~~ DONE. ATT&CK (14 tactics, 98 techniques), NIST 800-53 (20 families, 54 controls), Sigma (35 rules), OWASP Top 10, CIS Controls v8 (18 controls, 72 safeguards), cross-mapping (40 technique mappings)
-8. **v0.1.0 COMPLETE AND VALIDATED.** All integration tests pass, validator clean, npm pack ready. v0.2.0 targets: full ATT&CK matrix, expanded Sigma library, SIEM connectors, automated reporting
+8. **v0.1.1 STABILITY RELEASE READY.** All integration tests pass, validator clean, npm pack ready. v0.2.0 targets: full ATT&CK matrix, expanded Sigma library, SIEM connectors, automated reporting
 9. **Always run validator before committing**: python3 core/execution/validate-spectra.py --path _spectra/
 10. Use spectra-external-recon, spectra-risk-assessment, or spectra-digital-forensics as reference for quality and depth
 

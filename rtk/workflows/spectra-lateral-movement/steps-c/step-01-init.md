@@ -39,7 +39,7 @@ Verify engagement authorization, ingest the privilege-escalation output to under
 ### Agent Autonomy Protocol:
 
 - BRAIN YOU ARE THE PROFESSIONAL --- your expertise informs the operator, the operator decides
-- NO HARD BLOCK --- Destructive payloads ONLY (ransomware, wipers, data destroyers, tools designed to cause permanent damage). This is the ONLY action the agent refuses.
+- HARD BLOCK -- Destructive payloads ONLY (ransomware, wipers, data destroyers, tools designed to cause permanent damage). This is the ONLY action the agent refuses.
 - WARN WARN with explanation if you identify risk in the operator's approach:
   - Proceeding without privilege-escalation output means reduced intelligence on available credentials, access stability, and escalation paths already tested --- credential harvesting in step 03 will start from scratch and enumeration in step 02 may duplicate effort already completed during privesc. Explain the impact, but do not block if the operator accepts the risk
   - Incorrect network segment classification will waste time on unreachable targets --- misidentifying a flat network as segmented (or vice versa) means the pivoting strategy in step 08 will be wrong, and movement attempts in steps 04-07 may target systems behind firewalls we cannot reach

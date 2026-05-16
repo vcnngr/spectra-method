@@ -34,7 +34,7 @@ except ImportError:
     print("Error: pyyaml required. Install with: pip install pyyaml", file=sys.stderr)
     sys.exit(2)
 
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 MODULES = ("core", "rtk", "soc", "irt", "grc")
 
 AGENT_CSV_COLUMNS = [
@@ -55,6 +55,72 @@ AGENT_IDENTITY_SECTIONS = ["Identity", "Communication Style", "Principles"]
 # Path anti-patterns
 ABSOLUTE_PATH_RE = re.compile(r'(?:^|[\s"`\'(])(/(?:Users|home|opt|var|tmp|etc|usr)/\S+)', re.MULTILINE)
 PARENT_DIR_RE = re.compile(r'(?:^|[\s"`\'(])(\.\./\S+)', re.MULTILINE)
+
+
+# ---------------------------------------------------------------------------
+# Layout helpers
+# ---------------------------------------------------------------------------
+def resolve_declared_path(spectra: Path, declared_path: str) -> Path:
+    """Resolve manifest paths in both installed and source repository layouts.
+
+    Manifest paths are canonicalized for an installed project and therefore start
+    with "_spectra/". In the npm source repository those files live at the repo
+    root instead (core/..., rtk/..., etc.). This helper keeps one manifest format
+    while allowing the validator to run in both places.
+    """
+    declared_path = declared_path.strip()
+    installed_path = spectra.parent / declared_path
+
+    if declared_path.startswith("_spectra/"):
+        source_path = spectra / declared_path.removeprefix("_spectra/")
+        if source_path.exists() or (spectra / "_config").is_dir():
+            return source_path
+
+    return installed_path
+
+
+def resolve_declared_dir(spectra: Path, declared_path: str) -> Path:
+    """Resolve a manifest directory path in both supported layouts."""
+    return resolve_declared_path(spectra, declared_path)
+
+
+def display_path(path: Path, spectra: Path) -> str:
+    """Return a stable _spectra-prefixed path for validation output."""
+    try:
+        rel = path.relative_to(spectra)
+        return f"_spectra/{rel}"
+    except ValueError:
+        try:
+            return str(path.relative_to(spectra.parent))
+        except ValueError:
+            return str(path)
+
+
+def installed_modules_from_manifest(spectra: Path) -> set[str]:
+    """Read installed modules from manifest.yaml; fall back to present modules."""
+    manifest_yaml = spectra / "_config" / "manifest.yaml"
+    if manifest_yaml.is_file():
+        try:
+            data = yaml.safe_load(manifest_yaml.read_text(encoding="utf-8")) or {}
+            modules = {
+                m.get("name")
+                for m in data.get("modules", [])
+                if isinstance(m, dict) and m.get("name") in MODULES
+            }
+            if modules:
+                return modules
+        except yaml.YAMLError:
+            pass
+
+    present = {m for m in MODULES if (spectra / m).is_dir()}
+    return present or set(MODULES)
+
+
+def filter_rows_by_modules(rows: list[dict], active_modules: set[str],
+                           module_filter: str | None = None) -> list[dict]:
+    """Limit manifest rows to installed/requested modules."""
+    wanted = {module_filter} if module_filter else active_modules
+    return [r for r in rows if r.get("module", "").strip() in wanted]
 
 
 # ---------------------------------------------------------------------------
@@ -107,7 +173,7 @@ def check_file_existence_agents(spectra: Path, agent_rows: list[dict], findings:
         p = row.get("path", "").strip()
         if not p:
             continue
-        agent_dir = spectra.parent / p
+        agent_dir = resolve_declared_dir(spectra, p)
         skill_path = agent_dir / "SKILL.md"
         manifest_path = agent_dir / "bmad-skill-manifest.yaml"
         rel = p
@@ -133,7 +199,7 @@ def check_file_existence_skills(spectra: Path, skill_rows: list[dict], findings:
         p = row.get("path", "").strip()
         if not p:
             continue
-        skill_file = spectra.parent / p
+        skill_file = resolve_declared_path(spectra, p)
         rel = p
         if skill_file.is_file():
             findings.passed()
@@ -150,7 +216,7 @@ def check_file_existence_workflows(spectra: Path, skill_rows: list[dict], findin
         cid = row.get("canonicalId", "")
         if not p:
             continue
-        skill_dir = (spectra.parent / p).parent
+        skill_dir = resolve_declared_path(spectra, p).parent
         # Detect workflow: directory name does NOT contain 'agent' and is under workflows/
         if "/workflows/" not in p and "/spectra-agent-" not in p:
             # Core skills that are workflows have workflow.md
@@ -165,7 +231,7 @@ def check_file_existence_workflows(spectra: Path, skill_rows: list[dict], findin
                 findings.passed()
             else:
                 findings.add("FILE-004", "critical", "file_existence",
-                             str(skill_dir.relative_to(spectra.parent)),
+                             display_path(skill_dir, spectra),
                              f"Missing workflow.md for workflow {cid}",
                              f"Create workflow.md in {skill_dir.name}/")
             _check_steps_dir(skill_dir, cid, findings)
@@ -320,7 +386,8 @@ def check_manifest_integrity(spectra: Path, findings: Findings):
     return agent_rows, skill_rows
 
 
-def check_config_validation(spectra: Path, findings: Findings, module_filter: str | None):
+def check_config_validation(spectra: Path, findings: Findings, active_modules: set[str],
+                            module_filter: str | None):
     """Validate core and module config.yaml files."""
     core_cfg = spectra / "core" / "config.yaml"
     if core_cfg.is_file():
@@ -343,6 +410,8 @@ def check_config_validation(spectra: Path, findings: Findings, module_filter: st
                      "_spectra/core/config.yaml", "Core config.yaml does not exist")
 
     for mod in ("rtk", "soc", "irt", "grc"):
+        if mod not in active_modules:
+            continue
         if module_filter and mod != module_filter:
             continue
         cfg = spectra / mod / "config.yaml"
@@ -369,7 +438,7 @@ def check_skill_frontmatter(spectra: Path, skill_rows: list[dict], findings: Fin
         mod = row.get("module", "").strip()
         if not p or (module_filter and mod != module_filter):
             continue
-        skill_file = spectra.parent / p
+        skill_file = resolve_declared_path(spectra, p)
         if not skill_file.is_file():
             continue
 
@@ -416,7 +485,7 @@ def check_agent_sections(spectra: Path, agent_rows: list[dict], findings: Findin
         mod = row.get("module", "").strip()
         if not p or (module_filter and mod != module_filter):
             continue
-        skill_file = (spectra.parent / p) / "SKILL.md"
+        skill_file = resolve_declared_dir(spectra, p) / "SKILL.md"
         if not skill_file.is_file():
             continue
 
@@ -493,7 +562,7 @@ def check_workflow_step_content(spectra: Path, skill_rows: list[dict], findings:
         cid = row.get("canonicalId", "")
         if not p or (module_filter and mod != module_filter):
             continue
-        skill_dir = (spectra.parent / p).parent
+        skill_dir = resolve_declared_path(spectra, p).parent
 
         # Only check workflows
         steps_dir = skill_dir / "steps-c"
@@ -506,7 +575,7 @@ def check_workflow_step_content(spectra: Path, skill_rows: list[dict], findings:
                             if f.is_file() and f.suffix == ".md" and re.match(r'^step-\d+', f.name))
         for sf in step_files:
             content = sf.read_text(encoding="utf-8")
-            rel = f"{skill_dir.relative_to(spectra.parent)}/steps-c/{sf.name}"
+            rel = f"{display_path(skill_dir, spectra)}/steps-c/{sf.name}"
             checks = [
                 ("STEP GOAL", "STEP-001"),
                 ("MANDATORY EXECUTION RULES", "STEP-002"),
@@ -536,7 +605,7 @@ def check_workflow_step_content(spectra: Path, skill_rows: list[dict], findings:
 # ---------------------------------------------------------------------------
 def check_manifest_filesystem_sync(spectra: Path, agent_rows: list[dict],
                                    skill_rows: list[dict], findings: Findings,
-                                   module_filter: str | None):
+                                   active_modules: set[str], module_filter: str | None):
     """Check for orphan directories with no manifest entry and vice-versa."""
     # Build set of known paths from manifests
     known_agent_dirs = set()
@@ -551,10 +620,12 @@ def check_manifest_filesystem_sync(spectra: Path, agent_rows: list[dict],
         p = row.get("path", "").strip()
         if p:
             known_skill_paths.add(p)
-            skill_dirs_from_manifest.add(str((spectra.parent / p).parent.relative_to(spectra.parent)))
+            skill_dirs_from_manifest.add(display_path(resolve_declared_path(spectra, p).parent, spectra))
 
     # Scan filesystem for agent directories
     for mod in MODULES:
+        if mod not in active_modules:
+            continue
         if module_filter and mod != module_filter and mod != "core":
             continue
         if mod == "core":
@@ -583,6 +654,8 @@ def check_manifest_filesystem_sync(spectra: Path, agent_rows: list[dict],
 
     # Scan filesystem for workflow directories
     for mod in MODULES:
+        if mod not in active_modules:
+            continue
         if module_filter and mod != module_filter and mod != "core":
             continue
         if mod == "core":
@@ -643,7 +716,7 @@ def check_skill_cross_references(spectra: Path, skill_rows: list[dict],
         mod = row.get("module", "").strip()
         if not p or (module_filter and mod != module_filter):
             continue
-        skill_file = spectra.parent / p
+        skill_file = resolve_declared_path(spectra, p)
         if not skill_file.is_file():
             continue
 
@@ -671,7 +744,7 @@ def check_path_standards(spectra: Path, skill_rows: list[dict], findings: Findin
         mod = row.get("module", "").strip()
         if not p or (module_filter and mod != module_filter):
             continue
-        skill_file = spectra.parent / p
+        skill_file = resolve_declared_path(spectra, p)
         if not skill_file.is_file():
             continue
 
@@ -891,23 +964,28 @@ def validate(spectra: Path, module_filter: str | None = None) -> Findings:
 
     # Tier 1 — Structural
     agent_rows, skill_rows = check_manifest_integrity(spectra, findings)
-    check_config_validation(spectra, findings, module_filter)
-    check_file_existence_agents(spectra, agent_rows, findings)
-    check_file_existence_skills(spectra, skill_rows, findings)
-    check_file_existence_workflows(spectra, skill_rows, findings)
+    active_modules = installed_modules_from_manifest(spectra)
+    active_agent_rows = filter_rows_by_modules(agent_rows, active_modules, module_filter)
+    active_skill_rows = filter_rows_by_modules(skill_rows, active_modules, module_filter)
+
+    check_config_validation(spectra, findings, active_modules, module_filter)
+    check_file_existence_agents(spectra, active_agent_rows, findings)
+    check_file_existence_skills(spectra, active_skill_rows, findings)
+    check_file_existence_workflows(spectra, active_skill_rows, findings)
 
     # Tier 2 — Content Quality
-    check_skill_frontmatter(spectra, skill_rows, findings, module_filter)
-    check_agent_sections(spectra, agent_rows, findings, module_filter)
+    check_skill_frontmatter(spectra, active_skill_rows, findings, module_filter)
+    check_agent_sections(spectra, active_agent_rows, findings, module_filter)
     check_core_skill_sections(spectra, findings)
-    check_workflow_step_content(spectra, skill_rows, findings, module_filter)
+    check_workflow_step_content(spectra, active_skill_rows, findings, module_filter)
 
     # Tier 3 — Cross-References
-    check_manifest_filesystem_sync(spectra, agent_rows, skill_rows, findings, module_filter)
-    check_skill_cross_references(spectra, skill_rows, agent_rows, findings, module_filter)
+    check_manifest_filesystem_sync(spectra, active_agent_rows, active_skill_rows,
+                                   findings, active_modules, module_filter)
+    check_skill_cross_references(spectra, active_skill_rows, agent_rows, findings, module_filter)
 
     # Tier 4 — Path Standards, Frameworks, Execution
-    check_path_standards(spectra, skill_rows, findings, module_filter)
+    check_path_standards(spectra, active_skill_rows, findings, module_filter)
     check_framework_data(spectra, findings)
     check_execution_scripts(spectra, findings)
 

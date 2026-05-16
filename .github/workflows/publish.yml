@@ -19,16 +19,21 @@ jobs:
           node-version: '22'
           registry-url: 'https://registry.npmjs.org'
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
       - name: Install dependencies
         run: npm install
 
-      - name: Validate structure
-        run: |
-          for mod in core rtk soc irt grc; do
-            test -d "$mod" || (echo "Missing module: $mod" && exit 1)
-          done
-          test -f _config/manifest.yaml || (echo "Missing manifest" && exit 1)
-          echo "Structure validated."
+      - name: Install Python dependencies
+        run: pip install pyyaml
+
+      - name: Validate package structure
+        run: npm test
+
+      - name: Validate install smoke test
+        run: npm run test:smoke
 
       - name: Publish with provenance
         run: npm publish --provenance --access public

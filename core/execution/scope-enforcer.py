@@ -174,6 +174,21 @@ def _case_insensitive_match(target: str, scope_entry: str) -> bool:
     return target.strip().lower() == scope_entry.strip().lower()
 
 
+def _roe_allows(value) -> bool:
+    """Normalize RoE booleans and textual allow/deny values."""
+    if isinstance(value, bool):
+        return value
+    if value is None:
+        return False
+    if isinstance(value, str):
+        normalized = value.strip().lower()
+        if normalized in {"true", "yes", "y", "allowed", "allow", "full", "light", "limited"}:
+            return True
+        if normalized in {"false", "no", "n", "denied", "deny", "none", "off", "disabled"}:
+            return False
+    return bool(value)
+
+
 # ---------------------------------------------------------------------------
 # Core scope check
 # ---------------------------------------------------------------------------
@@ -262,6 +277,16 @@ def check_action_restrictions(action: str | None, roe: dict) -> tuple[bool, list
     restrictions = []
     action_lower = action.lower()
 
+    destructive_keywords = [
+        "ransomware", "wiper", "wipe", "data destroy", "data destruction",
+        "destructive payload", "encrypt files", "delete files", "rm -rf",
+        "format disk", "permanent damage",
+    ]
+    for keyword in destructive_keywords:
+        if keyword in action_lower:
+            restrictions.append(f"destructive action hard-blocked: {keyword}")
+            return False, restrictions
+
     action_map = {
         "dos":              "dos_testing_allowed",
         "stress":           "dos_testing_allowed",
@@ -273,11 +298,11 @@ def check_action_restrictions(action: str | None, roe: dict) -> tuple[bool, list
     }
 
     for keyword, field in action_map.items():
-        if keyword in action_lower and not roe.get(field, False):
+        if keyword in action_lower and not _roe_allows(roe.get(field, False)):
             restrictions.append(f"{field} is false — {action} not permitted by RoE")
 
     # Production systems check
-    if "production" in action_lower and not roe.get("production_systems", False):
+    if "production" in action_lower and not _roe_allows(roe.get("production_systems", False)):
         restrictions.append("production_systems is false — production access not permitted")
 
     # Max impact level check
@@ -471,15 +496,15 @@ def cmd_summary(args: argparse.Namespace) -> None:
         return total
 
     restrictions = []
-    if not roe.get("social_engineering_allowed", False):
+    if not _roe_allows(roe.get("social_engineering_allowed", False)):
         restrictions.append("social_engineering: denied")
-    if not roe.get("physical_access_allowed", False):
+    if not _roe_allows(roe.get("physical_access_allowed", False)):
         restrictions.append("physical_access: denied")
-    if not roe.get("dos_testing_allowed", False):
+    if not _roe_allows(roe.get("dos_testing_allowed", False)):
         restrictions.append("dos_testing: denied")
-    if not roe.get("data_exfiltration_allowed", False):
+    if not _roe_allows(roe.get("data_exfiltration_allowed", False)):
         restrictions.append("data_exfiltration: denied")
-    if not roe.get("production_systems", False):
+    if not _roe_allows(roe.get("production_systems", False)):
         restrictions.append("production_systems: denied")
 
     summary = {
