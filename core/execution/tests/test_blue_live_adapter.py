@@ -221,6 +221,20 @@ class BlueLiveAdapterTests(unittest.TestCase):
         ledger = output_root / "ENG-BLUE-001" / "blue" / "blue-events.jsonl"
         self.assertTrue(ledger.is_file())
         self.assertIn("Postfix SASL", ledger.read_text(encoding="utf-8"))
+        self.assertIn("203.0.113.10", ledger.read_text(encoding="utf-8"))
+
+    def test_suricata_parser_ignores_non_alert_event_with_alert_metadata(self):
+        log = self.write_log(
+            "eve-flow.json",
+            json.dumps({
+                "event_type": "flow",
+                "src_ip": "203.0.113.10",
+                "dest_ip": "198.51.100.20",
+                "alert": {"signature": "Prior alert metadata", "severity": 2},
+            }) + "\n",
+        )
+        detections = blue_live_adapter.ingest_sources([f"suricata_eve={log}"])
+        self.assertEqual(detections, [])
 
     def test_tail_once_checkpoint_prevents_duplicate_ingest(self):
         log = self.write_log(
@@ -284,6 +298,63 @@ class BlueLiveAdapterTests(unittest.TestCase):
         lines = ledger.read_text(encoding="utf-8").splitlines()
         self.assertEqual(len(lines), 1)
         self.assertIn("/.env", lines[0])
+
+    def test_tail_once_keeps_partial_line_until_newline(self):
+        log = self.write_log(
+            "partial-auth.log",
+            "May 16 10:00:00 host sshd[100]: Failed password for invalid user admin from 203.0.113.10",
+        )
+        output_root = self.root / "_spectra-output" / "duel"
+        checkpoint = self.root / "blue-tail-partial.checkpoint.json"
+
+        first = blue_live_adapter.tail_once(
+            sources=[f"auth={log}"],
+            checkpoint_path=checkpoint,
+            output_root=output_root,
+            session_id="ENG-BLUE-TAIL-003",
+        )
+        self.append_log(log, " port 53222 ssh2\n")
+        second = blue_live_adapter.tail_once(
+            sources=[f"auth={log}"],
+            checkpoint_path=checkpoint,
+            output_root=output_root,
+            session_id="ENG-BLUE-TAIL-003",
+        )
+
+        self.assertEqual(first["count"], 0)
+        self.assertEqual(second["count"], 1)
+        self.assertIn("admin", second["detections"][0]["summary"])
+
+    def test_tail_once_resets_offset_when_inode_changes(self):
+        log = self.write_log(
+            "rotate-auth.log",
+            "May 16 10:00:00 host sshd[100]: Failed password for invalid user admin from 203.0.113.10 port 53222 ssh2\n",
+        )
+        output_root = self.root / "_spectra-output" / "duel"
+        checkpoint = self.root / "blue-tail-rotate.checkpoint.json"
+
+        first = blue_live_adapter.tail_once(
+            sources=[f"auth={log}"],
+            checkpoint_path=checkpoint,
+            output_root=output_root,
+            session_id="ENG-BLUE-TAIL-004",
+        )
+        rotated = log.with_suffix(".log.1")
+        log.rename(rotated)
+        log.write_text(
+            "May 16 10:01:00 host sshd[101]: Failed password for invalid user deploy from 203.0.113.11 port 53223 ssh2\n",
+            encoding="utf-8",
+        )
+        second = blue_live_adapter.tail_once(
+            sources=[f"auth={log}"],
+            checkpoint_path=checkpoint,
+            output_root=output_root,
+            session_id="ENG-BLUE-TAIL-004",
+        )
+
+        self.assertEqual(first["count"], 1)
+        self.assertEqual(second["count"], 1)
+        self.assertIn("deploy", second["detections"][0]["summary"])
 
 
 if __name__ == "__main__":

@@ -230,9 +230,9 @@ def parse_nginx_error_line(line: str, source_name: str) -> list[Detection]:
 
 def parse_postfix_line(line: str, source_name: str) -> list[Detection]:
     detections: list[Detection] = []
-    sasl_failed = re.search(r"SASL .*authentication failed.*(?:\[(?P<ip>[0-9a-fA-F:.]+)\])?", line)
-    if sasl_failed:
-        ip = sasl_failed.group("ip") or "unknown"
+    if "SASL" in line and "authentication failed" in line:
+        bracket_values = re.findall(r"\[([0-9a-fA-F:.]+)\]", line)
+        ip = next((value for value in bracket_values if "." in value or ":" in value), "unknown")
         detections.append(Detection(
             event_type="detection",
             summary=f"Postfix SASL authentication failure from {ip}.",
@@ -385,6 +385,8 @@ def suspicious_http_path(path: str, status: Any) -> bool:
 def parse_suricata_eve_line(line: str, source_name: str) -> list[Detection]:
     data = json_object(line)
     if not data:
+        return []
+    if data.get("event_type") and data.get("event_type") != "alert":
         return []
     alert = data.get("alert")
     if not isinstance(alert, dict):
@@ -614,17 +616,31 @@ def tail_source_once(source_type: str, path: Path, checkpoint: dict[str, Any]) -
     sources = checkpoint.setdefault("sources", {})
     state = sources.get(key, {})
     stored_offset = state.get("offset", 0) if isinstance(state, dict) else 0
-    offset = stored_offset if isinstance(stored_offset, int) and stored_offset <= stat.st_size else 0
+    stored_inode = state.get("inode") if isinstance(state, dict) else None
+    stored_device = state.get("device") if isinstance(state, dict) else None
+    same_file = stored_inode == stat.st_ino and stored_device == stat.st_dev
+    valid_offset = isinstance(stored_offset, int) and stored_offset <= stat.st_size
+    offset = stored_offset if same_file and valid_offset else 0
 
     with path.open("rb") as handle:
         handle.seek(offset)
         chunk = handle.read()
-        new_offset = handle.tell()
+        read_offset = handle.tell()
 
     detections: list[Detection] = []
+    new_offset = read_offset
     if chunk:
         source_name = f"{source_type}:{path}"
-        text = chunk.decode("utf-8", errors="replace")
+        complete_chunk = chunk
+        if not chunk.endswith((b"\n", b"\r")):
+            last_newline = max(chunk.rfind(b"\n"), chunk.rfind(b"\r"))
+            if last_newline == -1:
+                complete_chunk = b""
+                new_offset = offset
+            else:
+                complete_chunk = chunk[:last_newline + 1]
+                new_offset = offset + last_newline + 1
+        text = complete_chunk.decode("utf-8", errors="replace")
         for line in text.splitlines():
             detections.extend(parse_line(source_type, line, source_name))
 
@@ -632,6 +648,8 @@ def tail_source_once(source_type: str, path: Path, checkpoint: dict[str, Any]) -
         "offset": new_offset,
         "size": stat.st_size,
         "mtime": stat.st_mtime,
+        "inode": stat.st_ino,
+        "device": stat.st_dev,
         "source_type": source_type,
         "path": str(path),
         "updated_at": now_utc(),

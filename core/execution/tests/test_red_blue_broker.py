@@ -89,6 +89,53 @@ class RedBlueBrokerTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             broker.import_bundle(self.referee_root, self.session, "blue", bundle)
 
+    def test_import_rejects_event_count_mismatch(self):
+        duel.init_session(self.session, "blue", self.red_root, "engagement.yaml")
+        duel.record_event(
+            self.red_root,
+            self.session,
+            "blue",
+            "detection",
+            "Detected authentication failures.",
+            target="app.example.test",
+            technique="T1110.001",
+        )
+        bundle = self.root / "blue-count-bundle.json"
+        broker.export_bundle(self.red_root, self.session, "blue", bundle)
+
+        data = json.loads(bundle.read_text(encoding="utf-8"))
+        data["event_count"] = 99
+        bundle.write_text(json.dumps(data), encoding="utf-8")
+
+        with self.assertRaises(ValueError):
+            broker.import_bundle(self.referee_root, self.session, "blue", bundle)
+
+    def test_import_strips_unknown_event_keys_and_uses_hash_marker(self):
+        duel.init_session(self.session, "blue", self.red_root, "engagement.yaml")
+        duel.record_event(
+            self.red_root,
+            self.session,
+            "blue",
+            "detection",
+            "Detected authentication failures.",
+            target="app.example.test",
+            technique="T1110.001",
+        )
+        bundle = self.root / "blue-extra-bundle.json"
+        broker.export_bundle(self.red_root, self.session, "blue", bundle)
+
+        data = json.loads(bundle.read_text(encoding="utf-8"))
+        data["events"][0]["html_payload"] = "<script>alert(1)</script>"
+        data["events_sha256"] = broker.events_hash(data["events"])
+        bundle.write_text(json.dumps(data), encoding="utf-8")
+
+        imported = broker.import_bundle(self.referee_root, self.session, "blue", bundle)
+        self.assertEqual(imported["imported"], 1)
+        events = broker.load_events(broker.ledger_path(self.referee_root, self.session, "blue"))
+        self.assertNotIn("html_payload", events[0])
+        markers = list((self.referee_root / self.session / "imports").glob("blue-*-blue-extra-bundle.json"))
+        self.assertEqual(len(markers), 1)
+
     def test_import_rejects_role_mismatch(self):
         duel.init_session(self.session, "red", self.red_root, "engagement.yaml")
         duel.record_event(

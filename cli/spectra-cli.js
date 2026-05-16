@@ -768,8 +768,6 @@ program
       const checkpoint = options.checkpoint
         || path.join(outputRoot, options.session, 'blue', 'blue-tail.checkpoint.json');
       args.push('--checkpoint', checkpoint);
-    } else if (options.checkpoint) {
-      args.push('--checkpoint', options.checkpoint);
     }
     try {
       execFileSync('python3', args, { stdio: 'inherit' });

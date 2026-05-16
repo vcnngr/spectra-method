@@ -20,6 +20,21 @@ from typing import Any
 ROLES = {"red", "blue", "referee"}
 BUNDLE_TYPE = "spectra-duel-ledger"
 SCHEMA_VERSION = "0.1"
+EVENT_KEYS = {
+    "id",
+    "session_id",
+    "role",
+    "event_type",
+    "summary",
+    "timestamp",
+    "target",
+    "technique",
+    "source",
+    "confidence",
+    "severity",
+    "red_event_id",
+    "artifacts",
+}
 
 
 def now_utc() -> str:
@@ -87,6 +102,10 @@ def validate_event(event: dict[str, Any], session_id: str, role: str):
         )
     if not event.get("id") or not event.get("event_type") or not event.get("summary"):
         raise ValueError(f"event missing required fields: {event}")
+
+
+def normalize_event(event: dict[str, Any]) -> dict[str, Any]:
+    return {key: event[key] for key in EVENT_KEYS if key in event}
 
 
 def event_key(event: dict[str, Any]) -> tuple[str, str, str, str]:
@@ -157,7 +176,7 @@ def import_bundle(output_root: Path, session_id: str, role: str, bundle_path: Pa
     if bundle.get("role") != role:
         raise ValueError(f"bundle role mismatch: {bundle.get('role')} != {role}")
 
-    incoming = bundle["events"]
+    incoming = [normalize_event(event) for event in bundle["events"]]
     for event in incoming:
         validate_event(event, session_id, role)
 
@@ -170,7 +189,7 @@ def import_bundle(output_root: Path, session_id: str, role: str, bundle_path: Pa
 
     imports_dir = output_root / session_id / "imports"
     imports_dir.mkdir(parents=True, exist_ok=True)
-    marker = imports_dir / f"{role}-{bundle_path.name}"
+    marker = imports_dir / f"{role}-{bundle['events_sha256'][:12]}-{bundle_path.name}"
     marker.write_text(json.dumps(bundle, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
     return {
