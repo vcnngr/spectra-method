@@ -7,6 +7,13 @@
 - Party Mode v2 plan schema with explicit Red, Blue, IRT, GRC, core/coordinator, and scribe lanes.
 - Sub-agent input contracts, output contracts, done criteria, quality gates, spawn manifest, and merge contract.
 - CLI lane override: `spectra party plan --lanes red,blue,irt,grc,core`.
+- Six additional agents prepared for the next patch/minor release:
+  - Referee, Exercise Referee for Red/Blue ledger correlation and scoring.
+  - Forge, AppSec/API Specialist for application and API security assessment.
+  - Keystone, Identity Security Specialist for AD, Entra ID, Okta, IAM, OAuth, and privilege analysis.
+  - Signal, Telemetry Engineer for log-source coverage, parser quality, SIEM readiness, and Blue Live source validation.
+  - Stratus, Cloud Security Specialist for AWS, Azure, GCP, Kubernetes, SaaS logs, cloud forensics, and cloud incident response.
+  - Counsel, Privacy/Breach Governance Specialist for privacy impact, breach governance, legal hold, and regulatory exposure.
 
 ## v0.3.1 (2026-05-16)
 

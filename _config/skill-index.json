@@ -1,13 +1,13 @@
 {
   "version": 1,
   "generated_from": "_config/skill-manifest.csv",
-  "count": 48,
+  "count": 54,
   "module_counts": {
-    "core": 12,
-    "rtk": 11,
-    "soc": 10,
-    "irt": 9,
-    "grc": 6
+    "core": 13,
+    "rtk": 12,
+    "soc": 12,
+    "irt": 10,
+    "grc": 7
   },
   "skills": [
     {
@@ -392,6 +392,54 @@
       "d": "Policy lifecycle workflow. Use when the user says \"create policy\" or \"draft policy\".",
       "m": "grc",
       "p": "_spectra/grc/workflows/spectra-policy-lifecycle/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-agent-referee",
+      "n": "spectra-agent-referee",
+      "d": "Exercise Referee and Duel Mode adjudicator. Use when the user asks to talk to Referee or needs Red/Blue ledger correlation, scoring, or exercise fairness review.",
+      "m": "core",
+      "p": "_spectra/core/spectra-agent-referee/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-agent-appsec",
+      "n": "spectra-agent-appsec",
+      "d": "AppSec and API Security Specialist. Use when the user asks to talk to Forge or needs application, API, authentication, authorization, or business-logic security assessment.",
+      "m": "rtk",
+      "p": "_spectra/rtk/agents/spectra-agent-appsec/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-agent-identity",
+      "n": "spectra-agent-identity",
+      "d": "Identity and Access Security Specialist. Use when the user asks to talk to Keystone or needs AD, Entra ID, Okta, IAM, OAuth, privilege, or session security analysis.",
+      "m": "soc",
+      "p": "_spectra/soc/agents/spectra-agent-identity/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-agent-telemetry",
+      "n": "spectra-agent-telemetry",
+      "d": "Telemetry Engineer. Use when the user asks to talk to Signal or needs log-source coverage, parser quality, SIEM pipeline readiness, or Blue Live data-source validation.",
+      "m": "soc",
+      "p": "_spectra/soc/agents/spectra-agent-telemetry/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-agent-cloud",
+      "n": "spectra-agent-cloud",
+      "d": "Cloud Security Specialist. Use when the user asks to talk to Stratus or needs AWS, Azure, GCP, Kubernetes, SaaS logs, cloud IAM, cloud forensics, or cloud incident response.",
+      "m": "irt",
+      "p": "_spectra/irt/agents/spectra-agent-cloud/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-agent-privacy",
+      "n": "spectra-agent-privacy",
+      "d": "Privacy and Breach Governance Specialist. Use when the user asks to talk to Counsel or needs privacy impact, breach notification, legal hold, regulatory exposure, or data governance analysis.",
+      "m": "grc",
+      "p": "_spectra/grc/agents/spectra-agent-privacy/SKILL.md",
       "i": true
     }
   ]

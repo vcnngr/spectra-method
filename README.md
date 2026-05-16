@@ -1,7 +1,7 @@
 <p align="center">
   <img src="https://img.shields.io/npm/v/spectra-method.svg?style=flat-square&color=red" alt="npm version">
   <img src="https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square" alt="License: MIT">
-  <img src="https://img.shields.io/badge/agents-21-blue?style=flat-square" alt="21 agents">
+  <img src="https://img.shields.io/badge/agents-28-blue?style=flat-square" alt="28 agents">
   <img src="https://img.shields.io/badge/workflows-16-orange?style=flat-square" alt="16 workflows">
   <img src="https://img.shields.io/badge/lines-80K%2B-green?style=flat-square" alt="80K+ lines">
 </p>
@@ -17,7 +17,7 @@
 </p>
 
 <p align="center">
-  21 AI agents. 16 structured workflows. 80,000+ lines of operational security knowledge.<br>
+  28 AI agents. 16 structured workflows. 80,000+ lines of operational security knowledge.<br>
   A complete cybersecurity team — instantly available in your AI IDE.
 </p>
 
@@ -37,11 +37,11 @@ npx spectra-method install --tools claude-code -y
 
 | Module | | Agents | Workflows | Focus |
 |--------|---|--------|-----------|-------|
-| **RTK** | :red_circle: | 6 | 5 | Red Team — recon, exploitation, lateral movement, exfiltration |
-| **SOC** | :large_blue_circle: | 6 | 4 | Security Operations — triage, hunting, detection engineering |
-| **IRT** | :orange_circle: | 5 | 4 | Incident Response — forensics, malware analysis, threat intel |
-| **GRC** | :white_circle: | 3 | 3 | Governance, Risk & Compliance — risk, audit, policy |
-| **Core** | :zap: | 2 | 10 skills | Engagement framework, War Room, reporting |
+| **RTK** | :red_circle: | 7 | 5 | Red Team — recon, exploitation, AppSec/API, lateral movement, exfiltration |
+| **SOC** | :large_blue_circle: | 8 | 4 | Security Operations — triage, hunting, telemetry, identity, detection engineering |
+| **IRT** | :orange_circle: | 6 | 4 | Incident Response — forensics, malware analysis, cloud security, threat intel |
+| **GRC** | :white_circle: | 4 | 3 | Governance, Risk & Compliance — risk, audit, policy, privacy |
+| **Core** | :zap: | 3 | 10 skills | Engagement framework, War Room, reporting, Duel adjudication |
 
 ---
 
@@ -73,6 +73,7 @@ npx spectra-method party plan --topic "lateral movement detection gap review"
 |-------|---------|-----------|
 | **Specter** | CISO | Cross-domain oversight, strategic coordination |
 | **Chronicle** | Documentation Specialist | Writes reports for ALL modules with full context |
+| **Referee** | Exercise Referee | Red/Blue ledger correlation, scoring, fairness review |
 
 ### RTK :red_circle: Red Team Kit
 
@@ -84,6 +85,7 @@ npx spectra-method party plan --topic "lateral movement detection gap review"
 | **Phantom** | Attack Operator | Post-exploitation, lateral movement, evasion |
 | **Mirage** | Social Engineer | Phishing, pretexting, awareness testing |
 | **Blade** | Quick Pentester | Rapid vulnerability assessment |
+| **Forge** | AppSec / API Specialist | Application security, API security, authz, business logic |
 
 ### SOC :large_blue_circle: Security Operations
 
@@ -95,6 +97,8 @@ npx spectra-method party plan --topic "lateral movement detection gap review"
 | **Hawk** | L3 Threat Hunter | Hypothesis-driven hunting, ATT&CK mapping |
 | **Sentinel** | Detection Engineer | Sigma/YARA/Suricata rule authoring |
 | **Shield** | Quick SOC Analyst | Rapid triage and investigation |
+| **Keystone** | Identity Security Specialist | AD, Entra ID, Okta, IAM, OAuth, privilege analysis |
+| **Signal** | Telemetry Engineer | Log-source coverage, parsing, SIEM pipeline readiness |
 
 ### IRT :orange_circle: Incident Response
 
@@ -105,6 +109,7 @@ npx spectra-method party plan --topic "lateral movement detection gap review"
 | **Scalpel** | Malware Analyst | Static/dynamic analysis, reverse engineering |
 | **Oracle** | Threat Intel Analyst | Diamond Model, attribution, STIX 2.1 |
 | **Surge** | Quick Responder | Emergency triage and containment |
+| **Stratus** | Cloud Security Specialist | AWS/Azure/GCP, Kubernetes, SaaS logs, cloud forensics |
 
 ### GRC :white_circle: Governance, Risk & Compliance
 
@@ -113,6 +118,7 @@ npx spectra-method party plan --topic "lateral movement detection gap review"
 | **Arbiter** | Risk Analyst | NIST 800-30, FAIR, risk quantification |
 | **Auditor** | Compliance Auditor | ISO 27001, SOC 2, PCI DSS, HIPAA, GDPR |
 | **Scribe** | Policy Author | Policy lifecycle, RFC 2119 |
+| **Counsel** | Privacy / Breach Governance Specialist | Privacy impact, breach governance, legal hold |
 
 ---
 
@@ -225,7 +231,7 @@ Development background:
 
 ```
 project/
-├── .claude/skills/       48 skills as slash commands
+├── .claude/skills/       54 skills as slash commands
 ├── _spectra/             Framework: agents, workflows, configs
 │   ├── core/             Engagement framework, skills, scripts
 │   ├── rtk/              Red Team Kit
