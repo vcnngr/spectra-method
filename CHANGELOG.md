@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Security
+
+- Migrated npm publish workflow to npm Trusted Publishers (OIDC). Removed dependency on long-lived `NPM_TOKEN` secret; npm now authenticates via GitHub Actions OIDC identity claims (org `vcnngr`, repo `spectra-method`, workflow `publish.yml`).
+- Pinned npm CLI upgrade step (`npm install -g npm@latest`) to satisfy Trusted Publishers minimum (npm >= 11.5.1).
+- Provenance attestations continue to be generated automatically on publish.
+- Recommended hardening (manual, post-migration): enable "Require two-factor authentication and disallow tokens" on the `spectra-method` npm package and delete the legacy `NPM_TOKEN` GitHub secret.
+
 ## v0.6.0 (2026-05-16)
 
 ### Added

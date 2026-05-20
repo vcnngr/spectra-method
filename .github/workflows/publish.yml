@@ -19,6 +19,9 @@ jobs:
           node-version: '22'
           registry-url: 'https://registry.npmjs.org'
 
+      - name: Upgrade npm CLI (Trusted Publishers requires >=11.5.1)
+        run: npm install -g npm@latest
+
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -35,7 +38,5 @@ jobs:
       - name: Validate install smoke test
         run: npm run test:smoke
 
-      - name: Publish with provenance
+      - name: Publish with provenance via Trusted Publisher (OIDC)
         run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
