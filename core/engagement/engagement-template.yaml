@@ -30,6 +30,21 @@ engagement:
     production_systems: false         # Are production systems in scope?
     max_impact_level: "high"          # low | medium | high | critical
 
+    # Noise budget — authorized timing/footprint envelope for Red activity.
+    # Planning and honest measurement only: it bounds how much signal the
+    # engagement may produce, never how to hide. Optional: omit the whole block
+    # if no budget is set. Leaving max_actions_per_hour or
+    # min_action_interval_seconds at 0 means "unspecified";
+    # max_concurrent_actions must be omitted or >= 1.
+    noise_budget:
+      profile: "balanced"             # low_footprint | balanced | high_footprint
+      max_actions_per_hour: 0         # 0 = unspecified; e.g. 20 for low-and-slow
+      min_action_interval_seconds: 0  # 0 = unspecified; minimum spacing between noisy actions
+      max_concurrent_actions: 1       # parallel noisy actions allowed (omit or >= 1)
+      telemetry_tolerance: "medium"   # low | medium | high — expected signal a defender may see
+      abort_on_detection: false       # stop Red activity once Blue evidences detection
+      notes: ""
+
   data_handling:
     authorized_data_types: []          # Required before exfiltration, e.g. ["sample PII", "source code"]
     max_exfiltration_volume: ""        # e.g. "100MB proof-of-access sample"

@@ -172,6 +172,35 @@ Confirm or modify each parameter. If hours are 'custom', specify the time window
 
 **Wait for user input.**
 
+#### 6b. Noise Budget (timing / footprint envelope)
+
+Capture the authorized **noise budget** — how much signal this engagement may produce. This is planning and honest measurement only: SPECTRA never models "invisible Red", and the budget never describes how to hide. It bounds activity so the operator can later measure which signals were produced, seen, and missed.
+
+"**Noise budget** (optional — press Enter on any field to leave it unspecified):
+
+| # | Parameter | Options | Default |
+|---|-----------|---------|---------|
+| 1 | **Profile** | low_footprint / balanced / high_footprint | balanced |
+| 2 | **Max actions per hour** | integer (0 = unspecified) | 0 |
+| 3 | **Min interval between noisy actions (seconds)** | integer (0 = unspecified) | 0 |
+| 4 | **Max concurrent noisy actions** | integer ≥ 1 | 1 |
+| 5 | **Telemetry tolerance** | low / medium / high | medium |
+| 6 | **Abort on detection** | yes / no | no |
+
+If the engagement has no noise constraint, you may skip this block entirely (omit `noise_budget`)."
+
+**Wait for user input.**
+
+Write the captured values into `engagement.rules_of_engagement.noise_budget`, then validate coherence with the deterministic checker:
+
+```bash
+python3 {project-root}/_spectra/core/execution/noise-budget.py check --engagement {outputFile}
+```
+
+- On **FAIL**, the budget is invalid or self-contradictory — show the issues and have the operator correct it before continuing.
+- On **WARN**, the budget is internally inconsistent (e.g. a `low_footprint` profile with a high action rate) — surface the warnings and let the operator reconcile or knowingly proceed.
+- A `low_footprint` profile pairs naturally with `abort_on_detection: yes`; suggest it but never force it.
+
 ### 7. Deconfliction Contacts
 
 Collect deconfliction information:

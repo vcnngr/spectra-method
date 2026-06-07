@@ -55,7 +55,20 @@
             "dos_testing_allowed": { "type": "boolean" },
             "data_exfiltration_allowed": { "type": "boolean" },
             "production_systems": { "type": "boolean" },
-            "max_impact_level": { "type": "string", "enum": ["low", "medium", "high", "critical"] }
+            "max_impact_level": { "type": "string", "enum": ["low", "medium", "high", "critical"] },
+            "noise_budget": {
+              "type": "object",
+              "description": "Authorized timing/footprint budget for Red activity. Planning and honest-measurement only — it constrains how much signal the engagement may produce, never how to hide. Optional; absent means no declared budget.",
+              "properties": {
+                "profile": { "type": "string", "enum": ["low_footprint", "balanced", "high_footprint"] },
+                "max_actions_per_hour": { "type": "integer", "minimum": 0 },
+                "min_action_interval_seconds": { "type": "integer", "minimum": 0 },
+                "max_concurrent_actions": { "type": "integer", "minimum": 1 },
+                "telemetry_tolerance": { "type": "string", "enum": ["low", "medium", "high"] },
+                "abort_on_detection": { "type": "boolean" },
+                "notes": { "type": "string" }
+              }
+            }
           }
         },
         "data_handling": {

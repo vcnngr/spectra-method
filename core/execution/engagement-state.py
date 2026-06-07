@@ -127,6 +127,19 @@ def _load_scope_enforcer():
 scope_enforcer = _load_scope_enforcer()
 
 
+def _load_noise_budget():
+    script = Path(__file__).resolve().with_name("noise-budget.py")
+    spec = importlib.util.spec_from_file_location("noise_budget", script)
+    if not spec or not spec.loader:
+        _die(f"Cannot load noise budget validator: {script}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+noise_budget = _load_noise_budget()
+
+
 def load_document(path: str) -> tuple[dict[str, Any], Path]:
     p = Path(path)
     if not p.exists():
@@ -307,6 +320,15 @@ def gate_document(data: dict[str, Any], workflow_name: str, target: str | None, 
     required_roe = workflow.get("requires_roe")
     if required_roe and not scope_enforcer._roe_allows(roe.get(required_roe, False)):
         errors.append(f"{required_roe} must be explicitly allowed before workflow {workflow_name}")
+
+    # A declared noise budget must be coherent before activity opens. Only a FAIL
+    # (invalid/contradictory budget) blocks; WARN/INFO are advisory. An absent
+    # budget is fine — existing engagements without one are unaffected.
+    nb_result = noise_budget.validate_noise_budget(roe)
+    if nb_result["status"] == "FAIL":
+        for issue in nb_result["issues"]:
+            if issue["severity"] == "FAIL":
+                errors.append(f"noise_budget: {issue['message']}")
 
     if workflow["state_key"] == "exfiltration":
         data_handling = eng.get("data_handling") or {}
