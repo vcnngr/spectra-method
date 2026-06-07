@@ -70,7 +70,13 @@ First, check if an engagement document already exists:
 
 ### 2. Engagement Type Selection
 
-Ask the user to select the engagement type:
+**If Step 0 (Persona Selection) already captured an engagement type, do NOT re-ask.** Instead confirm it:
+
+"Welcome {{user_name}}! Continuing the **{{engagement_type}}** engagement selected during persona setup, led by **{{lead_persona}}**. Is that still correct? (Y to confirm, or pick a different type below.)"
+
+If the operator confirms, carry `{{engagement_type}}` forward and proceed to section 3. Only present the full selection menu below if no type was carried in, or the operator wants to change it.
+
+Otherwise, ask the user to select the engagement type:
 
 "Welcome {{user_name}}! Let's start creating a new security engagement.
 
