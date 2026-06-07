@@ -13,7 +13,7 @@ This skill turns data SPECTRA already tracks — the engagement `kill_chain`, th
 
 This is a SPECTRA-native artifact, not a generic diagram:
 
-- **Evidence over assumption.** Every finding node carries its evidence references. A finding with no linked evidence is marked `evidence_state: "unverified"` — surfaced, never silently trusted. A path without evidence is a hypothesis, and the graph says so.
+- **Evidence over assumption.** Verification is a property of the evidence registry (`spectra-evidence-chain` / `evidence-logger.py`), never of a finding field. The graph resolves each finding's claimed evidence references against the real `evidence-registry.yaml` — in both directions (finding → registry item id, and registry `finding_reference` → finding) — and reports an honest `evidence_state`. It only reaches `integrity_verified` when references resolve **and** the registry integrity status is `VERIFIED`. A finding whose references do not resolve is surfaced, never silently trusted. A path without resolved evidence is a hypothesis, and the graph says so.
 - **Honest measurement, not "invisible Red".** Detection status comes only from Blue telemetry in the duel ledger, never from prior knowledge of the Red plan. Missed techniques are the point: they are the detection-gap backlog.
 - **Modeling only.** This skill MODELS authorized attack paths from recorded results. It never connects to a target, never executes anything, and never modifies a host. It is read-only over engagement artifacts and fully respects the SPECTRA safety boundary.
 
@@ -73,7 +73,21 @@ When you are in this persona and the user calls a skill, this persona must carry
 
 ## Reading the graph
 
-- **`evidence_state: "unverified"` findings** — these claims lack linked evidence. Treat them as hypotheses; verify or downgrade before they appear in a client deliverable.
+Each finding node carries an honest `evidence_state` (weakest → strongest):
+
+| `evidence_state` | Meaning |
+|---|---|
+| `no_reference` | Nothing links this finding to any evidence. |
+| `registry_missing` | The finding claims references but `evidence-registry.yaml` is absent. |
+| `referenced_unresolved` | References exist but none resolve to a registry item. |
+| `partially_resolved` | Some references resolve to registry items; others dangle. |
+| `resolved_unverified` | All references resolve, but registry integrity is `UNVERIFIED`. |
+| `resolved_integrity_failed` | References resolve, but registry integrity is `FAILED`. |
+| `integrity_verified` | All references resolve **and** registry integrity is `VERIFIED`. |
+
+Only `resolved_unverified` and `integrity_verified` count toward `evidence_backed_findings`; everything else is counted in `unsupported_findings` and flagged `[unverified]` in the Mermaid render.
+
+- **`unsupported_findings` / the `evidence_breakdown`** — claims not backed by resolved evidence. Treat them as hypotheses; resolve, verify, or downgrade before they appear in a client deliverable. Run `spectra-evidence-chain` to register and verify the underlying artifacts.
 - **`chained_to_impact`** — high/critical findings that reach the objective. These are the paths to lead with.
 - **Missed techniques (`detected: false`)** — the detection-gap backlog. Hand these to the detection engineer (`spectra-agent-detection-eng`) via `spectra-detection-lifecycle`.
 - **Coverage ratio** — detected techniques over techniques observed in the path. This is an honest exercise metric, not a Red success/failure score.

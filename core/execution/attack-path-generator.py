@@ -32,6 +32,7 @@ import argparse
 import importlib.util
 import json
 import sys
+from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
@@ -163,14 +164,116 @@ def _techniques_of(finding: dict[str, Any]) -> list[str]:
 
 
 def _evidence_refs(finding: dict[str, Any]) -> list[str]:
+    """Return the evidence ids a finding CLAIMS to reference (finding-side only).
+
+    These are claims, not proof. They are only meaningful once resolved against
+    the evidence registry — see classify_finding_evidence().
+    """
     refs = finding.get("evidence") or finding.get("evidence_refs") or finding.get("evidence_ids")
     if refs is None:
         return []
     if isinstance(refs, str):
         return [refs]
     if isinstance(refs, (list, tuple)):
-        return [str(r) for r in refs if r]
+        return [str(r).strip() for r in refs if str(r).strip()]
     return []
+
+
+# Honest evidence states, ordered weakest -> strongest. The graph never claims
+# "verified" from a finding field alone; verification is a property of the
+# evidence registry (evidence-logger.py), not of the finding.
+EVIDENCE_STATES = (
+    "no_reference",            # nothing links this finding to any evidence
+    "registry_missing",        # refs exist but evidence-registry.yaml is absent
+    "referenced_unresolved",   # refs/back-links exist but none resolve to a registry item
+    "partially_resolved",      # some finding refs resolve, others dangle
+    "resolved_unverified",     # all references resolve; registry integrity is UNVERIFIED
+    "resolved_integrity_failed",  # references resolve but registry integrity is FAILED
+    "integrity_verified",      # references resolve and registry integrity is VERIFIED
+)
+
+
+def build_evidence_index(evidence_bundle: dict[str, Any]) -> dict[str, Any]:
+    """Index the evidence registry for resolution and back-linking.
+
+    Returns registry item ids, a finding_reference -> {item ids} back-link map,
+    and registry-level integrity metadata, all sourced from the real registry
+    as exposed by report-adapters.evidence_summary().
+    """
+    items = evidence_bundle.get("items") or []
+    item_ids: set[str] = set()
+    backlinks: dict[str, set[str]] = defaultdict(set)
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        iid = str(item.get("id", "")).strip()
+        if iid:
+            item_ids.add(iid)
+        finding_ref = str(item.get("finding_reference", "")).strip()
+        if finding_ref and iid:
+            backlinks[finding_ref].add(iid)
+    return {
+        "present": bool(evidence_bundle.get("exists")),
+        "integrity_status": str(evidence_bundle.get("integrity_status", "UNVERIFIED")).upper(),
+        "last_verified": evidence_bundle.get("last_verified", "never"),
+        "item_count": evidence_bundle.get("item_count", len(items)),
+        "item_ids": item_ids,
+        "backlinks": backlinks,
+    }
+
+
+def classify_finding_evidence(
+    finding: dict[str, Any],
+    finding_id: str,
+    refs: list[str],
+    index: dict[str, Any],
+) -> dict[str, Any]:
+    """Resolve a finding's evidence against the registry and return an honest state.
+
+    Considers BOTH directions of the chain: finding-side references resolved to
+    registry item ids, and registry items whose finding_reference points back to
+    this finding (by id or title).
+    """
+    item_ids: set[str] = index["item_ids"]
+    backlinks: dict[str, set[str]] = index["backlinks"]
+    registry_present: bool = index["present"]
+    integrity: str = index["integrity_status"]
+
+    resolved = sorted(r for r in refs if r in item_ids)
+    unresolved = sorted(r for r in refs if r not in item_ids)
+
+    # Registry-side back-links: items that name this finding as their reference.
+    keys = {finding_id, str(finding.get("id", "")).strip(), str(finding.get("title", "")).strip()}
+    keys.discard("")
+    linked: set[str] = set()
+    for key in keys:
+        linked |= backlinks.get(key, set())
+
+    has_reference = bool(refs) or bool(linked)
+    resolved_ids = set(resolved) | linked
+
+    if not has_reference:
+        state = "no_reference"
+    elif refs and not registry_present:
+        state = "registry_missing"
+    elif not resolved_ids:
+        state = "referenced_unresolved"
+    elif unresolved:
+        state = "partially_resolved"
+    elif integrity == "FAILED":
+        state = "resolved_integrity_failed"
+    elif integrity == "VERIFIED":
+        state = "integrity_verified"
+    else:
+        state = "resolved_unverified"
+
+    return {
+        "evidence_state": state,
+        "claimed_refs": list(refs),
+        "resolved_refs": resolved,
+        "unresolved_refs": unresolved,
+        "linked_items": sorted(linked),
+    }
 
 
 def _ordered_phases(kill_chain: dict[str, Any]) -> list[tuple[str, dict[str, Any]]]:
@@ -248,6 +351,7 @@ def build_attack_path(
     engagement = bundle.get("engagement", {}) or {}
     kill_chain = bundle.get("kill_chain", {}) or {}
     findings = (bundle.get("findings", {}) or {}).get("findings", []) or []
+    evidence_index = build_evidence_index(bundle.get("evidence", {}) or {})
 
     detected_techniques = _blue_detected_techniques(duel_ledger_path)
     detection_overlay = duel_ledger_path is not None
@@ -295,6 +399,8 @@ def build_attack_path(
     # --- Finding nodes + edges -------------------------------------------
     chained_to_impact = 0
     impact_edges: list[dict[str, Any]] = []
+    evidence_breakdown = {state: 0 for state in EVIDENCE_STATES}
+    severity_counts = {k: 0 for k in ("critical", "high", "medium", "low", "informational")}
     # Detection coverage is measured over UNIQUE techniques observed in the path,
     # not per finding, so repeated techniques don't inflate the ratio.
     path_techniques: set[str] = set()
@@ -315,8 +421,10 @@ def build_attack_path(
         severity = _severity_of(finding)
         techniques = _techniques_of(finding)
         primary_technique = techniques[0] if techniques else ""
-        evidence = _evidence_refs(finding)
-        evidence_state = "verified" if evidence else "unverified"
+        refs = _evidence_refs(finding)
+        evidence = classify_finding_evidence(finding, fid, refs, evidence_index)
+        evidence_breakdown[evidence["evidence_state"]] += 1
+        severity_counts[severity] += 1
 
         node: dict[str, Any] = {
             "id": node_id,
@@ -326,8 +434,13 @@ def build_attack_path(
             "severity": severity,
             "technique": primary_technique,
             "techniques": techniques,
-            "evidence_state": evidence_state,
-            "evidence_refs": evidence,
+            "evidence_state": evidence["evidence_state"],
+            "evidence": {
+                "claimed_refs": evidence["claimed_refs"],
+                "resolved_refs": evidence["resolved_refs"],
+                "unresolved_refs": evidence["unresolved_refs"],
+                "linked_items": evidence["linked_items"],
+            },
             "source_path": finding.get("source_path", ""),
         }
 
@@ -385,13 +498,19 @@ def build_attack_path(
         edges.extend(impact_edges)
 
     # --- Summary ----------------------------------------------------------
-    severity_counts = {k: 0 for k in ("critical", "high", "medium", "low", "informational")}
-    unverified = 0
-    for finding in findings:
-        sev = _severity_of(finding)
-        severity_counts[sev] += 1
-        if not _evidence_refs(finding):
-            unverified += 1
+    # A finding is "evidence-backed" only when its references actually resolve to
+    # the registry. Anything weaker is surfaced, not silently trusted.
+    evidence_backed = (
+        evidence_breakdown["resolved_unverified"]
+        + evidence_breakdown["integrity_verified"]
+    )
+    unsupported = (
+        evidence_breakdown["no_reference"]
+        + evidence_breakdown["registry_missing"]
+        + evidence_breakdown["referenced_unresolved"]
+        + evidence_breakdown["partially_resolved"]
+        + evidence_breakdown["resolved_integrity_failed"]
+    )
 
     summary: dict[str, Any] = {
         "engagement_id": engagement.get("id", ""),
@@ -401,8 +520,16 @@ def build_attack_path(
         "edge_count": len(edges),
         "finding_count": len(findings),
         "severity_counts": severity_counts,
+        "evidence_breakdown": evidence_breakdown,
+        "evidence_backed_findings": evidence_backed,
+        "unsupported_findings": unsupported,
+        "evidence_registry": {
+            "present": evidence_index["present"],
+            "integrity_status": evidence_index["integrity_status"],
+            "last_verified": evidence_index["last_verified"],
+            "item_count": evidence_index["item_count"],
+        },
         "chained_to_impact": chained_to_impact,
-        "unverified_findings": unverified,
         "detection_overlay": detection_overlay,
     }
     if detection_overlay:
@@ -473,8 +600,13 @@ def render_mermaid(graph: dict[str, Any]) -> str:
         nid = id_map[node["id"]]
         open_b, close_b = _MERMAID_SHAPE.get(node.get("type", "phase"), ("[", "]"))
         label = _mermaid_escape(node.get("label", node["id"]))
-        if node.get("type") == "finding" and node.get("severity"):
-            label = f"{label} ({node['severity']})"
+        if node.get("type") == "finding":
+            if node.get("severity"):
+                label = f"{label} ({node['severity']})"
+            # Surface evidence honesty in the visual: anything not resolved to the
+            # registry is flagged so an operator never reads it as proven.
+            if node.get("evidence_state") not in ("resolved_unverified", "integrity_verified"):
+                label = f"{label} [unverified]"
         lines.append(f'    {nid}{open_b}"{label}"{close_b}')
 
     for edge in graph.get("edges", []):

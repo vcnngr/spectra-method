@@ -142,13 +142,96 @@ class AttackPathGeneratorTests(unittest.TestCase):
 
     # -- evidence ----------------------------------------------------------
 
-    def test_evidence_state(self):
+    def _write_registry(self, items, integrity_status="UNVERIFIED"):
+        # report-adapters resolves the registry at <eng_dir>.parent.parent /
+        # evidence / <eng_id> / evidence-registry.yaml.
+        reg_dir = self.root / "evidence" / "ENG-TEST-001"
+        reg_dir.mkdir(parents=True, exist_ok=True)
+        registry = {
+            "evidence_registry": {
+                "engagement_id": "ENG-TEST-001",
+                "integrity_status": integrity_status,
+                "item_count": len(items),
+                "last_verified": "2026-06-07T00:00:00Z",
+                "items": items,
+            }
+        }
+        import yaml  # report-adapters already depends on pyyaml
+        (reg_dir / "evidence-registry.yaml").write_text(
+            yaml.safe_dump(registry), encoding="utf-8",
+        )
+
+    def test_evidence_state_registry_missing(self):
+        # No registry on disk: a finding that CLAIMS refs is registry_missing,
+        # never "verified". Findings with no refs are no_reference.
         graph = self._build()
         by_id = {n["id"]: n for n in graph["nodes"]}
-        self.assertEqual(by_id["finding:F-001"]["evidence_state"], "verified")
-        self.assertEqual(by_id["finding:F-001"]["evidence_refs"], ["EV-12", "EV-13"])
-        self.assertEqual(by_id["finding:F-002"]["evidence_state"], "unverified")
-        self.assertEqual(graph["summary"]["unverified_findings"], 2)  # F-002, F-003
+        self.assertEqual(by_id["finding:F-001"]["evidence_state"], "registry_missing")
+        self.assertEqual(by_id["finding:F-001"]["evidence"]["claimed_refs"], ["EV-12", "EV-13"])
+        self.assertEqual(by_id["finding:F-002"]["evidence_state"], "no_reference")
+        self.assertEqual(by_id["finding:F-003"]["evidence_state"], "no_reference")
+        self.assertFalse(graph["summary"]["evidence_registry"]["present"])
+        self.assertEqual(graph["summary"]["evidence_backed_findings"], 0)
+
+    def test_evidence_resolved_unverified(self):
+        self._write_registry([{"id": "EV-12"}, {"id": "EV-13"}], "UNVERIFIED")
+        graph = self._build()
+        by_id = {n["id"]: n for n in graph["nodes"]}
+        self.assertEqual(by_id["finding:F-001"]["evidence_state"], "resolved_unverified")
+        self.assertEqual(by_id["finding:F-001"]["evidence"]["resolved_refs"], ["EV-12", "EV-13"])
+        self.assertEqual(graph["summary"]["evidence_backed_findings"], 1)
+
+    def test_evidence_integrity_verified(self):
+        self._write_registry([{"id": "EV-12"}, {"id": "EV-13"}], "VERIFIED")
+        graph = self._build()
+        by_id = {n["id"]: n for n in graph["nodes"]}
+        self.assertEqual(by_id["finding:F-001"]["evidence_state"], "integrity_verified")
+        self.assertEqual(graph["summary"]["evidence_registry"]["integrity_status"], "VERIFIED")
+
+    def test_evidence_integrity_failed(self):
+        self._write_registry([{"id": "EV-12"}, {"id": "EV-13"}], "FAILED")
+        graph = self._build()
+        by_id = {n["id"]: n for n in graph["nodes"]}
+        self.assertEqual(by_id["finding:F-001"]["evidence_state"], "resolved_integrity_failed")
+
+    def test_evidence_partially_resolved(self):
+        # Only one of F-001's two refs exists in the registry.
+        self._write_registry([{"id": "EV-12"}], "VERIFIED")
+        graph = self._build()
+        by_id = {n["id"]: n for n in graph["nodes"]}
+        node = by_id["finding:F-001"]
+        self.assertEqual(node["evidence_state"], "partially_resolved")
+        self.assertEqual(node["evidence"]["resolved_refs"], ["EV-12"])
+        self.assertEqual(node["evidence"]["unresolved_refs"], ["EV-13"])
+
+    def test_evidence_referenced_unresolved(self):
+        # Registry exists but contains none of the claimed refs.
+        self._write_registry([{"id": "EV-99"}], "UNVERIFIED")
+        graph = self._build()
+        by_id = {n["id"]: n for n in graph["nodes"]}
+        self.assertEqual(by_id["finding:F-001"]["evidence_state"], "referenced_unresolved")
+
+    def test_evidence_backlink_resolves_finding_without_refs(self):
+        # A registry item that names a finding via finding_reference links it,
+        # even though the finding carries no evidence field of its own.
+        (self.findings_dir / "f-back.yaml").write_text(
+            "id: \"F-BACK\"\ntitle: \"Backlinked finding\"\nseverity: \"low\"\n",
+            encoding="utf-8",
+        )
+        self._write_registry(
+            [{"id": "EV-50", "finding_reference": "F-BACK"}], "VERIFIED",
+        )
+        graph = self._build()
+        by_id = {n["id"]: n for n in graph["nodes"]}
+        node = by_id["finding:F-BACK"]
+        self.assertEqual(node["evidence_state"], "integrity_verified")
+        self.assertEqual(node["evidence"]["linked_items"], ["EV-50"])
+
+    def test_evidence_breakdown_sums_to_finding_count(self):
+        self._write_registry([{"id": "EV-12"}, {"id": "EV-13"}], "VERIFIED")
+        graph = self._build()
+        breakdown = graph["summary"]["evidence_breakdown"]
+        self.assertEqual(sum(breakdown.values()), graph["summary"]["finding_count"])
 
     # -- impact chaining ---------------------------------------------------
 
