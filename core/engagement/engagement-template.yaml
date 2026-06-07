@@ -84,6 +84,18 @@ engagement:
     members: []                    # Team member names
     client_contacts: []            # Client-side contacts
 
+  # Optional exec target — an operator-declared host where authorized commands
+  # may be executed over SSH (see spectra-exec-target). The pinned fingerprint +
+  # in-scope + authorized gate IS the authorization boundary. Omit to keep
+  # execution local. Get the fingerprint: ssh-keyscan -p <port> <host> | ssh-keygen -lf -
+  # exec_target:
+  #   host: ""                     # must be inside engagement scope
+  #   port: 22
+  #   user: ""
+  #   key_path: ""                 # path to the SSH private key
+  #   pinned_fingerprint: ""       # e.g. SHA256:...
+  #   authorized: false            # operator's explicit go-ahead
+
 # RTK Workflow State — deterministic state machine managed by engagement-state.py
 workflow_state:
   external_recon:

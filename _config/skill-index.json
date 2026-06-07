@@ -1,9 +1,9 @@
 {
   "version": 1,
   "generated_from": "_config/skill-manifest.csv",
-  "count": 62,
+  "count": 63,
   "module_counts": {
-    "core": 16,
+    "core": 17,
     "rtk": 13,
     "soc": 14,
     "irt": 11,
@@ -504,6 +504,14 @@
       "d": "Run a vetted security tool against an in-scope target, gated by engagement scope and Rules of Engagement. Use when an agent needs to actually execute recon/scanning tooling, not just plan it.",
       "m": "core",
       "p": "_spectra/core/spectra-tool-run/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-exec-target",
+      "n": "spectra-exec-target",
+      "d": "Run authorized commands on an operator-declared host over SSH, pinned to its host fingerprint and gated by engagement scope. Use to execute against a real in-scope target host.",
+      "m": "core",
+      "p": "_spectra/core/spectra-exec-target/SKILL.md",
       "i": true
     }
   ]
