@@ -1,9 +1,9 @@
 {
   "version": 1,
   "generated_from": "_config/skill-manifest.csv",
-  "count": 60,
+  "count": 61,
   "module_counts": {
-    "core": 14,
+    "core": 15,
     "rtk": 13,
     "soc": 14,
     "irt": 11,
@@ -488,6 +488,14 @@
       "d": "Duel adjudication workflow. Use for Red/Blue ledger correlation, Referee scorecards, fairness review, detection latency, mitigation credit, and evidence-backed exercise outcomes.",
       "m": "core",
       "p": "_spectra/core/spectra-duel-adjudication/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-attack-path",
+      "n": "spectra-attack-path",
+      "d": "Generate an evidence-anchored attack-path graph from engagement kill-chain and findings, with optional Blue detection overlay. Use to visualize how findings chain into impact and where detection gaps are.",
+      "m": "core",
+      "p": "_spectra/core/spectra-attack-path/SKILL.md",
       "i": true
     }
   ]
