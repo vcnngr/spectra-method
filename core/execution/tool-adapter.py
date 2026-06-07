@@ -45,6 +45,7 @@ import subprocess  # nosec B404 - we run only allowlisted binaries, never a shel
 import sys
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlparse
 
 try:
     import yaml
@@ -73,6 +74,7 @@ except ImportError:  # pragma: no cover
 ADAPTERS: dict[str, dict[str, Any]] = {
     "nmap": {
         "binary": "nmap", "action": "recon", "read_only": True,
+        "identity": {"probe": ["--version"], "expect": "nmap"},
         "allowed_flags": {
             "-sV", "-sn", "-sS", "-sT", "-sU", "-Pn", "-n", "-F", "-O",
             "-v", "-vv", "-4", "-6", "--open", "-p", "--top-ports",
@@ -85,6 +87,9 @@ ADAPTERS: dict[str, dict[str, Any]] = {
     "httpx": {
         "binary": "httpx", "action": "recon", "read_only": True,
         "target_flag": "-u",
+        # Pin identity to ProjectDiscovery httpx — the bare name collides with
+        # the Python `httpx` HTTP client (different, mutating flags).
+        "identity": {"probe": ["-version"], "expect": "projectdiscovery"},
         "allowed_flags": {
             "-silent", "-sc", "-status-code", "-title", "-td", "-tech-detect",
             "-fr", "-follow-redirects", "-json", "-ip", "-cdn", "-cname",
@@ -100,6 +105,7 @@ ADAPTERS: dict[str, dict[str, Any]] = {
     },
     "dig": {
         "binary": "dig", "action": "recon", "read_only": True,
+        "identity": {"probe": ["-v"], "expect": "dig"},
         "allowed_flags": {
             "+short", "+noall", "+answer", "+trace", "+tcp",
             "+nocomments", "+nostats", "-x", "-t", "-4", "-6",
@@ -112,6 +118,7 @@ ADAPTERS: dict[str, dict[str, Any]] = {
     },
     "whatweb": {
         "binary": "whatweb", "action": "recon", "read_only": True,
+        "identity": {"probe": ["--version"], "expect": "whatweb"},
         "allowed_flags": {
             "-a", "--aggression", "-v", "--verbose", "--no-errors",
             "-t", "--max-threads", "--open-timeout", "--read-timeout",
@@ -208,6 +215,38 @@ def destructive_check(argv: list[str]) -> tuple[bool, str]:
 def _safe_value(value: str) -> bool:
     """A value token must be a restricted scalar — no file paths, no traversal."""
     return bool(_SAFE_VALUE_RE.match(value)) and ".." not in value
+
+
+def _url_in_scope(target_url: str, in_scope: dict[str, Any]) -> bool:
+    """Path-aware URL scope check.
+
+    scope-enforcer treats a URL as in-scope when only its HOSTNAME matches an
+    in-scope application, ignoring the path — so an app declared as
+    https://host/app would also admit https://host/admin. For execution we
+    require either (a) the host matches an in-scope DOMAIN (host-level scope), or
+    (b) the URL falls under an in-scope APPLICATION's path prefix.
+    """
+    parsed = urlparse(target_url)
+    host = (parsed.hostname or "").lower()
+    if not host:
+        return False
+    path = parsed.path or "/"
+
+    for dom in in_scope.get("domains", []) or []:
+        if scope_enforcer._domain_matches(host, str(dom)):
+            return True
+
+    for app in in_scope.get("applications", []) or []:
+        app_parsed = urlparse(str(app))
+        app_host = (app_parsed.hostname or "").lower()
+        if app_host != host:
+            continue
+        app_path = (app_parsed.path or "").rstrip("/")
+        if not app_path:  # application declared host-only -> whole host in scope
+            return True
+        if path == app_path or path.startswith(app_path + "/"):
+            return True
+    return False
 
 
 def _cidr_contained(target_cidr: str, in_scope_networks: list[str]) -> bool:
@@ -322,6 +361,10 @@ def gate(engagement: dict[str, Any], adapter: dict[str, Any], target: str,
     elif target_type == "cidr" and not _cidr_contained(normalized, in_scope.get("networks", [])):
         # Overlap is not enough for execution: the whole range must be in scope.
         errors.append(f"CIDR target not fully contained in an in-scope network: {target}")
+    elif target_type == "url" and not _url_in_scope(target, in_scope):
+        # Hostname match is not enough: the URL must fall under an in-scope
+        # domain or application path, not just share a host with one.
+        errors.append(f"URL not within an in-scope domain or application path: {target}")
 
     # 3. RoE / action restrictions (also re-checks destructive keywords).
     action_string = f"{adapter.get('action', '')} {' '.join(argv)}"
@@ -373,6 +416,27 @@ def execute(argv: list[str], timeout: int = DEFAULT_TIMEOUT_SECONDS) -> dict[str
     }
 
 
+def verify_identity(resolved_path: str, adapter: dict[str, Any]) -> tuple[bool, str]:
+    """Confirm the resolved binary really is the expected tool.
+
+    `shutil.which("httpx")` may resolve to the Python `httpx` HTTP client rather
+    than ProjectDiscovery httpx — a different tool with mutating flags. A short
+    probe (e.g. --version) must contain the expected marker before we trust the
+    flag allowlist. Adapters without an `identity` block skip the check.
+    """
+    identity = adapter.get("identity")
+    if not identity:
+        return True, ""
+    probe = [resolved_path] + list(identity.get("probe", []))
+    expect = str(identity.get("expect", "")).lower()
+    result = execute(probe, timeout=15)
+    blob = ((result.get("stdout") or "") + " " + (result.get("stderr") or "")).lower()
+    if expect and expect in blob:
+        return True, ""
+    return False, (f"resolved binary at {resolved_path} is not the expected "
+                   f"'{adapter['binary']}' (identity marker '{expect}' not found)")
+
+
 def run(engagement_path: str, tool: str, target: str, extra_args: list[str] | None = None,
         dry_run: bool = False, timeout: int = DEFAULT_TIMEOUT_SECONDS) -> dict[str, Any]:
     """Resolve, gate, and (unless dry_run) execute a vetted tool invocation."""
@@ -404,6 +468,14 @@ def run(engagement_path: str, tool: str, target: str, extra_args: list[str] | No
     if resolved is None:
         result["status"] = "unavailable"
         result["error"] = f"binary '{adapter['binary']}' not found on PATH"
+        return result
+
+    # Confirm the resolved binary is actually the expected tool before trusting
+    # the flag allowlist (guards the httpx name collision).
+    id_ok, id_reason = verify_identity(resolved, adapter)
+    if not id_ok:
+        result["status"] = "unavailable"
+        result["error"] = id_reason
         return result
 
     exec_argv = [resolved] + argv[1:]

@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import importlib.util
 import io
+import shutil
 import sys
 import tempfile
 import unittest
@@ -218,6 +219,58 @@ class ToolAdapterTests(unittest.TestCase):
         # -method could send mutating HTTP verbs; not on the allowlist.
         ok, _ = self._va("httpx", ["-method", "DELETE"])
         self.assertFalse(ok)
+
+    # -- URL path-aware scope ---------------------------------------------
+
+    def test_url_application_path_prefix(self):
+        scope = {"applications": ["https://lab.example.com/app"]}
+        self.assertTrue(ta._url_in_scope("https://lab.example.com/app", scope))
+        self.assertTrue(ta._url_in_scope("https://lab.example.com/app/x", scope))
+        # Same host, different path -> NOT in scope (the bypass being closed).
+        self.assertFalse(ta._url_in_scope("https://lab.example.com/admin", scope))
+
+    def test_url_host_only_application_allows_any_path(self):
+        scope = {"applications": ["https://lab.example.com"]}
+        self.assertTrue(ta._url_in_scope("https://lab.example.com/anything", scope))
+
+    def test_url_domain_scope_allows_any_path(self):
+        scope = {"domains": ["lab.example.com"]}
+        self.assertTrue(ta._url_in_scope("https://lab.example.com/admin", scope))
+
+    def test_url_other_host_blocked(self):
+        scope = {"applications": ["https://lab.example.com/app"]}
+        self.assertFalse(ta._url_in_scope("https://evil.example.com/app", scope))
+
+    # -- binary identity pinning ------------------------------------------
+
+    def test_verify_identity_match(self):
+        echo = shutil.which("echo")
+        adapter = {"binary": "echo", "identity": {"probe": ["SPECTRA"], "expect": "spectra"}}
+        ok, _ = ta.verify_identity(echo, adapter)
+        self.assertTrue(ok)
+
+    def test_verify_identity_mismatch(self):
+        echo = shutil.which("echo")
+        adapter = {"binary": "echo", "identity": {"probe": ["SPECTRA"], "expect": "projectdiscovery"}}
+        ok, reason = ta.verify_identity(echo, adapter)
+        self.assertFalse(ok)
+        self.assertIn("not the expected", reason)
+
+    def test_verify_identity_skipped_without_block(self):
+        ok, _ = ta.verify_identity("/bin/echo", {"binary": "echo"})
+        self.assertTrue(ok)
+
+    def test_run_identity_mismatch_marks_unavailable(self):
+        ta.ADAPTERS["_test_id"] = {
+            "binary": "echo", "action": "recon", "read_only": True,
+            "allowed_flags": set(), "value_flags": set(), "allowed_values": set(),
+            "identity": {"probe": ["x"], "expect": "projectdiscovery"},
+        }
+        try:
+            result = ta.run(str(self.eng), "_test_id", "127.0.0.1")
+            self.assertEqual(result["status"], "unavailable")
+        finally:
+            del ta.ADAPTERS["_test_id"]
 
     # -- run orchestration -------------------------------------------------
 
