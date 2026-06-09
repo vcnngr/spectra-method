@@ -108,13 +108,13 @@ class ExecTargetSSHTests(unittest.TestCase):
 
     def test_build_ssh_argv_hardened_and_quoted(self):
         target = {"host": "127.0.0.1", "port": 2222, "user": "operator"}
-        argv = et.build_ssh_argv(target, "/tmp/kh", ["nmap", "-sn", "127.0.0.1"])
+        argv = et.build_ssh_argv(target, "/tmp/kh", ["uname", "-a"])
         self.assertEqual(argv[0], "ssh")
         self.assertIn("BatchMode=yes", argv)
         self.assertIn("StrictHostKeyChecking=yes", argv)
         self.assertIn("UserKnownHostsFile=/tmp/kh", argv)
         self.assertIn("operator@127.0.0.1", argv)
-        self.assertEqual(argv[-1], "nmap -sn 127.0.0.1")
+        self.assertEqual(argv[-1], "uname -a")
 
     def test_build_ssh_argv_quotes_dangerous_token(self):
         target = {"host": "h", "port": 22, "user": "u"}
@@ -127,7 +127,7 @@ class ExecTargetSSHTests(unittest.TestCase):
         bad = Path(self.tmp.name) / "bad.yaml"
         bad.write_text(yaml.safe_dump(engagement(target={"authorized": False})), encoding="utf-8")
         with mock.patch.object(et, "verify_fingerprint") as vf:
-            result = et.run_remote(str(bad), ["nmap", "-sn", "127.0.0.1"])
+            result = et.run_remote(str(bad), ["uname", "-a"])
             self.assertEqual(result["status"], "blocked")
             vf.assert_not_called()  # never even reaches the network
 
@@ -151,11 +151,20 @@ class ExecTargetSSHTests(unittest.TestCase):
             self.assertEqual(result["status"], "blocked")
             vf.assert_not_called()
 
-    def test_run_remote_allowed_tool_passes_gate(self):
-        # nmap is an allowlisted remote binary; should reach fingerprint stage.
+    def test_run_remote_scanning_tool_blocked(self):
+        # Scanning tools must NOT run via the raw remote runner — they would
+        # bypass the tool adapter's flag allowlist + per-target scope check.
+        with mock.patch.object(et, "verify_fingerprint") as vf:
+            result = et.run_remote(str(self.eng_path), ["nmap", "-iR", "1000"])
+            self.assertEqual(result["status"], "blocked")
+            self.assertTrue(any("not allowed" in e for e in result["validation"]["errors"]))
+            vf.assert_not_called()
+
+    def test_run_remote_diagnostic_passes_gate(self):
+        # A read-only diagnostic (uname) is allowed and reaches the fingerprint stage.
         with mock.patch.object(et, "verify_fingerprint",
                                return_value={"matched": False, "reason": "x", "known_hosts_line": ""}) as vf:
-            result = et.run_remote(str(self.eng_path), ["nmap", "-sn", "127.0.0.1"])
+            result = et.run_remote(str(self.eng_path), ["uname", "-a"])
             self.assertEqual(result["status"], "fingerprint_mismatch")
             vf.assert_called_once()
 
@@ -174,7 +183,7 @@ class ExecTargetSSHTests(unittest.TestCase):
         with mock.patch.object(et, "verify_fingerprint",
                                return_value={"matched": False, "reason": "mismatch",
                                              "known_hosts_line": ""}):
-            result = et.run_remote(str(self.eng_path), ["nmap", "-sn", "127.0.0.1"])
+            result = et.run_remote(str(self.eng_path), ["uname", "-a"])
             self.assertEqual(result["status"], "fingerprint_mismatch")
             self.assertNotIn("execution", result)
 
@@ -185,7 +194,7 @@ class ExecTargetSSHTests(unittest.TestCase):
              mock.patch.object(et.tool_adapter, "execute",
                                return_value={"executed": True, "exit_code": 0,
                                              "stdout": "ok", "stderr": "", "timed_out": False}):
-            result = et.run_remote(str(self.eng_path), ["nmap", "-sn", "127.0.0.1"])
+            result = et.run_remote(str(self.eng_path), ["uname", "-a"])
             self.assertEqual(result["status"], "executed")
             self.assertEqual(result["execution"]["exit_code"], 0)
 

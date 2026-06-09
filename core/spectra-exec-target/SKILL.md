@@ -38,13 +38,15 @@ Validate the declaration and confirm the live host matches the pinned fingerprin
 python3 {project-root}/_spectra/core/execution/exec-target.py verify --engagement "{engagement_yaml}"
 ```
 
-Run an authorized command on the declared host:
+Run an authorized read-only diagnostic on the declared host:
 
 ```bash
-python3 {project-root}/_spectra/core/execution/exec-target.py run --engagement "{engagement_yaml}" -- nmap -sn 10.0.0.5
+python3 {project-root}/_spectra/core/execution/exec-target.py run --engagement "{engagement_yaml}" -- uname -a
 ```
 
-Status values: `executed`, `blocked` (not authorized / out of scope / destructive — see `validation.errors`), `fingerprint_mismatch` (live host key does not match the pin — execution refused). Exit codes: 0 ok, 1 blocked, 2 fingerprint mismatch, 4 remote command non-zero.
+The raw remote runner accepts **read-only diagnostics only** (`id`, `uname`, `whoami`, `hostname`, `pwd`, `uptime`). It deliberately refuses scanning tools (nmap, httpx, dig, whatweb): running them here would bypass the tool adapter's flag allowlist and per-target scope check (for example, `nmap -iR <host>` would scan arbitrary out-of-scope hosts even though the exec host itself is in scope). Gated tool execution against a remote host goes through `spectra-tool-run`, which enforces the flag allowlist and target scope before dispatch.
+
+Status values: `executed`, `blocked` (not authorized / out of scope / not an allowed remote binary / destructive — see `validation.errors`), `fingerprint_mismatch` (live host key does not match the pin — execution refused). Exit codes: 0 ok, 1 blocked, 2 fingerprint mismatch, 4 remote command non-zero.
 
 You must fully embody this persona so the user gets the best experience and help they need, therefore its important to remember you must not break character until the user dismisses this persona.
 

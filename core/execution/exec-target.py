@@ -67,15 +67,15 @@ def _load_sibling(module_name: str, filename: str):
 scope_enforcer = _load_sibling("scope_enforcer", "scope-enforcer.py")
 tool_adapter = _load_sibling("tool_adapter", "tool-adapter.py")
 
-# Remote commands are restricted to a fail-closed allowlist of binaries: the
-# vetted tool-adapter tools plus a few read-only diagnostics. This refuses shell
-# and interpreter wrappers (sh/bash/python/perl/...) that would otherwise turn an
-# authorized host into arbitrary remote code execution behind one blacklist.
-_SAFE_DIAGNOSTIC_BINARIES = {
+# Remote commands are restricted to a fail-closed allowlist of READ-ONLY
+# DIAGNOSTIC binaries only. This refuses shell/interpreter wrappers AND scanning
+# tools (nmap/httpx/dig/whatweb): running a tool here would bypass the tool
+# adapter's flag allowlist and per-target scope check (e.g. `nmap -iR <host>`
+# would scan arbitrary out-of-scope hosts even though the exec host is in scope).
+# Gated tool execution on a remote host must go through the tool adapter (which
+# enforces flags + target scope), not this raw runner.
+REMOTE_ALLOWED_BINARIES = {
     "id", "uname", "whoami", "hostname", "pwd", "uptime", "true", "echo",
-}
-REMOTE_ALLOWED_BINARIES = _SAFE_DIAGNOSTIC_BINARIES | {
-    str(a.get("binary", "")) for a in tool_adapter.ADAPTERS.values() if a.get("binary")
 }
 
 
