@@ -246,12 +246,16 @@ def run_remote(engagement_path: str, remote_argv: list[str],
         result["status"] = "blocked"
         result["validation"]["errors"].append("empty remote command")
         return result
-    remote_bin = Path(remote_argv[0]).name
-    if remote_bin not in REMOTE_ALLOWED_BINARIES:
+    # The binary must be a BARE allowlisted name. A path-qualified token (e.g.
+    # /tmp/evil/id or ./id) whose basename is "id" would otherwise run an
+    # arbitrary planted binary — so reject any '/' or '\' and match the whole
+    # token. The remote shell resolves the bare name via PATH.
+    remote_bin = remote_argv[0]
+    if "/" in remote_bin or "\\" in remote_bin or remote_bin not in REMOTE_ALLOWED_BINARIES:
         result["status"] = "blocked"
         result["validation"]["errors"].append(
             f"remote binary not allowed: {remote_argv[0]!r} "
-            f"(allowed: {', '.join(sorted(REMOTE_ALLOWED_BINARIES))})")
+            f"(allowed bare names only: {', '.join(sorted(REMOTE_ALLOWED_BINARIES))})")
         return result
     ok, reason = tool_adapter.destructive_check(remote_argv)
     if not ok:

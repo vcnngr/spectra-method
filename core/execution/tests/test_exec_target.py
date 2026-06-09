@@ -160,6 +160,16 @@ class ExecTargetSSHTests(unittest.TestCase):
             self.assertTrue(any("not allowed" in e for e in result["validation"]["errors"]))
             vf.assert_not_called()
 
+    def test_run_remote_path_qualified_binary_blocked(self):
+        # A path-qualified name whose basename matches an allowed diagnostic
+        # would run an arbitrary planted binary — it must be refused.
+        with mock.patch.object(et, "verify_fingerprint") as vf:
+            for argv in (["/tmp/evil/id"], ["./id"], ["/usr/bin/uname", "-a"]):
+                result = et.run_remote(str(self.eng_path), argv)
+                self.assertEqual(result["status"], "blocked", argv)
+                self.assertTrue(any("not allowed" in e for e in result["validation"]["errors"]))
+            vf.assert_not_called()
+
     def test_run_remote_diagnostic_passes_gate(self):
         # A read-only diagnostic (uname) is allowed and reaches the fingerprint stage.
         with mock.patch.object(et, "verify_fingerprint",
