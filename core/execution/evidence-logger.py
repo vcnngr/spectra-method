@@ -138,6 +138,34 @@ def _get_or_create_registry(engagement_path: str) -> tuple[dict, Path]:
 # Hashing
 # ---------------------------------------------------------------------------
 
+# Media-type detection lets visual evidence (screenshots, diagrams, photos) be a
+# first-class, hashed, custody-tracked artifact. The multimodal *reasoning* is
+# the IDE's native vision; what is recorded here is the artifact + its hash + the
+# analysis text, so any visual conclusion is anchored to a verifiable image.
+_MEDIA_TYPE_BY_EXT = {
+    "image": {".png", ".jpg", ".jpeg", ".gif", ".bmp", ".webp", ".tiff", ".svg"},
+    "document": {".pdf", ".doc", ".docx", ".txt", ".md", ".rtf", ".odt"},
+    "capture": {".pcap", ".pcapng", ".cap", ".evtx"},
+    "binary": {".bin", ".exe", ".dll", ".so", ".dmg", ".img", ".raw"},
+}
+
+
+def _md_inline(text: str) -> str:
+    """Neutralize free text for safe single-line markdown embedding: newlines
+    become spaces (no heading/fence injection), backticks and pipes are softened."""
+    return (str(text).replace("\r", " ").replace("\n", " ")
+            .replace("`", "'").replace("|", "/").strip())
+
+
+def detect_media_type(file_path: str) -> str:
+    """Classify an evidence file by extension: image | document | capture | binary | other."""
+    ext = Path(file_path).suffix.lower()
+    for media_type, exts in _MEDIA_TYPE_BY_EXT.items():
+        if ext in exts:
+            return media_type
+    return "other"
+
+
 def compute_hashes(file_path: str) -> dict:
     """
     Compute SHA-256, MD5, and SHA-1 hashes for a file.
@@ -231,6 +259,8 @@ def cmd_acquire(args: argparse.Namespace) -> None:
         "ssdeep": "N/A",  # ssdeep requires external tool — mark N/A
         "file_path": file_path_str,
         "file_size_bytes": hashes.get("file_size_bytes", 0),
+        "media_type": detect_media_type(file_path_str) if file_path_str else "none",
+        "visual_analysis": getattr(args, "analysis", "") or "",
         "finding_reference": getattr(args, "finding_ref", "") or "",
         "classification": classification,
         "status": "active",
@@ -251,7 +281,7 @@ def cmd_acquire(args: argparse.Namespace) -> None:
     }
 
     # Append to registry
-    if reg["items"] is None:
+    if reg.get("items") is None:
         reg["items"] = []
     reg["items"].append(item)
     reg["item_count"] = len(reg["items"])
@@ -271,6 +301,8 @@ def cmd_acquire(args: argparse.Namespace) -> None:
         "hash_md5": item["hash_md5"],
         "hash_sha1": item["hash_sha1"],
         "file_size_bytes": item["file_size_bytes"],
+        "media_type": item["media_type"],
+        "visual_analysis": item["visual_analysis"],
         "custodian": actor,
         "timestamp": now,
         "registry_item_count": reg["item_count"],
@@ -546,6 +578,16 @@ def cmd_export(args: argparse.Namespace) -> None:
         desc = item.get("description", "")
         lines.append(f"### {ev_id}: {desc}")
         lines.append("")
+        # Surface visual/analytical notes so a visual finding is defensible in
+        # the report, anchored to the item's hash above.
+        media_type = item.get("media_type", "")
+        analysis = item.get("visual_analysis", "")
+        if media_type and media_type not in ("none", ""):
+            lines.append(f"**Media type:** {_md_inline(media_type)}")
+            lines.append("")
+        if analysis:
+            lines.append(f"**Analysis:** {_md_inline(analysis)}")
+            lines.append("")
         lines.append("| # | Timestamp | Action | Actor | From | To | Method | Reason | Hash Verified |")
         lines.append("|---|-----------|--------|-------|------|----|--------|--------|---------------|")
         for j, event in enumerate(item.get("custody_log", []), 1):
@@ -651,6 +693,8 @@ def main() -> None:
     p_acq.add_argument("--method", default=None, help="Acquisition method")
     p_acq.add_argument("--classification", default="original", choices=VALID_CLASSIFICATIONS, help="Evidence classification")
     p_acq.add_argument("--finding-ref", default=None, help="Linked finding ID")
+    p_acq.add_argument("--analysis", default=None,
+                       help="Visual/analytical notes for the artifact (e.g. native-vision analysis of a screenshot)")
     p_acq.add_argument("--notes", default=None, help="Additional notes")
 
     # -- transfer --

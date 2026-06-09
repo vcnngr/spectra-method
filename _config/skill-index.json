@@ -1,9 +1,9 @@
 {
   "version": 1,
   "generated_from": "_config/skill-manifest.csv",
-  "count": 64,
+  "count": 65,
   "module_counts": {
-    "core": 18,
+    "core": 19,
     "rtk": 13,
     "soc": 14,
     "irt": 11,
@@ -520,6 +520,14 @@
       "d": "Run a reproducible capability benchmark — gated tool runs against a known lab, scored against expected markers, with a deterministic grade. Use to prove SPECTRA finds what it claims.",
       "m": "core",
       "p": "_spectra/core/spectra-benchmark/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-visual-evidence",
+      "n": "spectra-visual-evidence",
+      "d": "Register a screenshot, diagram, or photo as hashed, custody-tracked evidence and anchor a visual analysis to it. Use when a finding rests on something you can see, not just text.",
+      "m": "core",
+      "p": "_spectra/core/spectra-visual-evidence/SKILL.md",
       "i": true
     }
   ]
