@@ -1,0 +1,17 @@
+# SPECTRA reproducible benchmark — recon baseline.
+# Run against an authorized lab where the target/services are known ground truth.
+# Every case runs through the scope+RoE-gated tool adapter.
+suite: "recon-baseline"
+cases:
+  - id: "host-up"
+    tool: "nmap"
+    target: "127.0.0.1"
+    args: ["-sn"]
+    expect:
+      - {name: "host reported up", match: "Host is up"}
+  - id: "ssh-port-open"
+    tool: "nmap"
+    target: "127.0.0.1"
+    args: ["-p", "2222"]
+    expect:
+      - {name: "ssh port open", match: "re:2222/tcp\\s+open"}

@@ -1,9 +1,9 @@
 {
   "version": 1,
   "generated_from": "_config/skill-manifest.csv",
-  "count": 63,
+  "count": 64,
   "module_counts": {
-    "core": 17,
+    "core": 18,
     "rtk": 13,
     "soc": 14,
     "irt": 11,
@@ -512,6 +512,14 @@
       "d": "Run authorized commands on an operator-declared host over SSH, pinned to its host fingerprint and gated by engagement scope. Use to execute against a real in-scope target host.",
       "m": "core",
       "p": "_spectra/core/spectra-exec-target/SKILL.md",
+      "i": true
+    },
+    {
+      "id": "spectra-benchmark",
+      "n": "spectra-benchmark",
+      "d": "Run a reproducible capability benchmark — gated tool runs against a known lab, scored against expected markers, with a deterministic grade. Use to prove SPECTRA finds what it claims.",
+      "m": "core",
+      "p": "_spectra/core/spectra-benchmark/SKILL.md",
       "i": true
     }
   ]
