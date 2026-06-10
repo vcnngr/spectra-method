@@ -45,6 +45,14 @@ modules:
     source: built-in
     npmPackage: null
     repoUrl: null
+  - name: ot
+    displayName: "OT/ICS Security"
+    version: 0.6.0
+    installDate: 2026-04-04T12:00:00.000Z
+    lastUpdated: 2026-04-04T12:00:00.000Z
+    source: built-in
+    npmPackage: null
+    repoUrl: null
 ides:
   - claude-code
   - codex

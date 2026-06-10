@@ -1,0 +1,12 @@
+# OT/ICS Security Module Configuration
+# Version: 0.1.0
+
+# Inherited from core
+user_name: Operator
+communication_language: English
+document_output_language: English
+output_folder: _spectra-output
+
+# ot-specific
+ot_artifacts: "{project-root}/_spectra-output/engagements/{engagement_id}/ot"
+ot_reports: "{project-root}/_spectra-output/engagements/{engagement_id}/ot/reports"

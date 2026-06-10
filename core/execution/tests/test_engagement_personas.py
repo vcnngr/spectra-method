@@ -164,9 +164,10 @@ class EngagementPersonasTests(unittest.TestCase):
         self.assertIn("path", red)
         self.assertTrue(red["path"])
 
-    def test_real_manifest_has_28_personas(self):
+    def test_real_manifest_has_29_personas(self):
+        # 28 core/RTK/SOC/IRT/GRC agents + Relay (OT/ICS module).
         personas = ep.load_personas(AGENT_MANIFEST)
-        self.assertEqual(len(personas), 28)
+        self.assertEqual(len(personas), 29)
 
     # -- CLI ---------------------------------------------------------------
 

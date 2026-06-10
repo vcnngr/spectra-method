@@ -35,7 +35,7 @@ except ImportError:
     sys.exit(2)
 
 VERSION = "0.6.0"
-MODULES = ("core", "rtk", "soc", "irt", "grc")
+MODULES = ("core", "rtk", "soc", "irt", "grc", "ot")
 
 AGENT_CSV_COLUMNS = [
     "name", "displayName", "title", "icon", "capabilities", "role",
