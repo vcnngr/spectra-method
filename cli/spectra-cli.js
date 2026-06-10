@@ -616,6 +616,63 @@ program
     }
   });
 
+// --- posture (recurring engagement posture diff) ---------------------------
+program
+  .command('posture')
+  .description('Snapshot an engagement posture and diff snapshots over time')
+  .argument('[action]', 'snapshot, diff, or list', 'diff')
+  .option('-d, --directory <path>', 'Target project directory (default: cwd)')
+  .requiredOption('-e, --engagement <path>', 'Path to engagement.yaml')
+  .option('--from <path>', 'Older snapshot JSON (diff)')
+  .option('--to <path>', 'Newer snapshot JSON (diff)')
+  .action((action, options) => {
+    const targetRoot = detectProjectRoot(options.directory);
+    const script = getExecutionScript(targetRoot, 'posture-diff.py');
+    if (!fs.existsSync(script)) {
+      console.error(chalk.red(`\n  posture-diff.py not found: ${script}\n`));
+      process.exit(1);
+    }
+    const allowed = new Set(['snapshot', 'diff', 'list']);
+    if (!allowed.has(action)) {
+      console.error(chalk.red(`\n  Unknown posture action: ${action}`));
+      console.error(chalk.gray('  Valid actions: snapshot, diff, list\n'));
+      process.exit(1);
+    }
+    const args = [script, action, '--engagement', options.engagement];
+    if (action === 'diff' && options.from) args.push('--from', options.from);
+    if (action === 'diff' && options.to) args.push('--to', options.to);
+    try {
+      execFileSync('python3', args, { stdio: 'inherit' });
+    } catch (error) {
+      process.exit(error.status || 1);
+    }
+  });
+
+// --- export (remediation-ready findings export) ----------------------------
+program
+  .command('export')
+  .description('Export engagement findings as sarif, csv, or md (remediation-ready)')
+  .requiredOption('-e, --engagement <path>', 'Path to engagement.yaml')
+  .requiredOption('-f, --format <fmt>', 'sarif, csv, or md')
+  .option('-d, --directory <path>', 'Target project directory (default: cwd)')
+  .option('-o, --out <path>', 'Write to file instead of stdout')
+  .action((options) => {
+    const targetRoot = detectProjectRoot(options.directory);
+    const script = getExecutionScript(targetRoot, 'remediation-export.py');
+    if (!fs.existsSync(script)) {
+      console.error(chalk.red(`\n  remediation-export.py not found: ${script}\n`));
+      process.exit(1);
+    }
+    const args = [script, 'export', '--engagement', options.engagement,
+                  '--format', options.format];
+    if (options.out) args.push('--out', options.out);
+    try {
+      execFileSync('python3', args, { stdio: 'inherit' });
+    } catch (error) {
+      process.exit(error.status || 1);
+    }
+  });
+
 // --- report ---------------------------------------------------------------
 program
   .command('report')

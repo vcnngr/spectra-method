@@ -1,9 +1,9 @@
 {
   "version": 1,
   "generated_from": "_config/skill-manifest.csv",
-  "count": 68,
+  "count": 70,
   "module_counts": {
-    "core": 20,
+    "core": 22,
     "rtk": 13,
     "soc": 14,
     "irt": 11,
@@ -553,6 +553,22 @@
       "d": "OT/ICS Security Specialist. Use when the user asks to talk to Relay or needs OT/ICS architecture review, Purdue-model segmentation analysis, ICS protocol exposure assessment, ICS ATT&CK mapping, or IEC 62443 control assessment.",
       "m": "ot",
       "p": "_spectra/ot/agents/spectra-agent-ot-ics/SKILL.md",
+      "i": false
+    },
+    {
+      "id": "spectra-posture-diff",
+      "n": "spectra-posture-diff",
+      "d": "Snapshot an engagement's security posture and diff two snapshots into a scored delta (improved/regressed). Use to re-assess the same scope over time and measure change — SPECTRA-native, not continuous monitoring.",
+      "m": "core",
+      "p": "_spectra/core/spectra-posture-diff/SKILL.md",
+      "i": false
+    },
+    {
+      "id": "spectra-remediation-export",
+      "n": "spectra-remediation-export",
+      "d": "Export an engagement's findings into remediation-ready formats — SARIF, CSV, or a Markdown ticket pack. Use to hand findings to engineering, CI, or a tracker. Deterministic export, not a live integration.",
+      "m": "core",
+      "p": "_spectra/core/spectra-remediation-export/SKILL.md",
       "i": true
     }
   ]
