@@ -52,6 +52,10 @@ def _load_report_adapters():
 
 def load_findings(engagement_path: str) -> list[dict[str, Any]]:
     ra = _load_report_adapters()
+    # Validate the engagement exists and is well-formed first; otherwise a bad
+    # path would silently export an empty set (findings_summary tolerates a
+    # missing findings/ dir) instead of failing loudly.
+    ra.load_engagement_document(engagement_path)
     return ra.findings_summary(engagement_path).get("findings", [])
 
 

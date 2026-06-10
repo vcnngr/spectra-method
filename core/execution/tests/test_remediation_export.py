@@ -128,6 +128,18 @@ class CliTests(unittest.TestCase):
         doc = json.loads(out.read_text())
         self.assertEqual(doc["runs"][0]["results"][0]["ruleId"], "F1")
 
+    def test_export_nonexistent_engagement_raises(self):
+        with self.assertRaises(FileNotFoundError):
+            rx.export(str(self.dir / "no-such-engagement.yaml"), "csv")
+
+    def test_cli_export_nonexistent_engagement_exits_3(self):
+        import io as _io
+        from contextlib import redirect_stdout
+        with self.assertRaises(SystemExit) as cm, redirect_stdout(_io.StringIO()):
+            rx.main(["export", "--engagement", str(self.dir / "nope.yaml"),
+                     "--format", "csv"])
+        self.assertEqual(cm.exception.code, 3)
+
     def test_cli_export_bad_out_path_exits_3(self):
         import io as _io
         from contextlib import redirect_stdout
