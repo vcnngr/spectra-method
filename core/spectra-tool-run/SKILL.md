@@ -44,6 +44,17 @@ python3 {project-root}/_spectra/core/execution/tool-adapter.py run \
 
 Status values: `planned` (dry run), `executed`, `blocked` (failed scope/RoE/HARD BLOCK — see `gate.errors`), `unavailable` (binary not installed). Exit codes: 0 ok/planned, 1 blocked, 2 unavailable, 4 tool exited non-zero.
 
+### Remote execution: `--via exec-target`
+
+The same gated command can run on the engagement's declared, in-scope, fingerprint-pinned host instead of locally:
+
+```bash
+python3 {project-root}/_spectra/core/execution/tool-adapter.py run \
+  --engagement "{engagement_yaml}" --tool nmap --target "{target}" --via exec-target -- -sV
+```
+
+The order of trust is layered and fail-closed: this adapter gates the tool, the flag allowlist, and the target scope **first**; only then does the command cross to `spectra-exec-target`, which adds the authorized-host check, the SSH fingerprint pin, the path-qualified-binary refusal, and the destructive HARD BLOCK. Neither layer trusts the other's input. Remote status values: `executed_remote`, `fingerprint_mismatch`, or `blocked` (see `remote.validation.errors`); the remote detail is returned under `result["remote"]`. A `--dry-run` always wins and never reaches the host.
+
 ### Fail-closed flag allowlist
 
 Tool flags are **allowlisted per tool**, not denylisted: only explicitly vetted, read-only flags are permitted, and the target is validated as data (never a flag). This structurally refuses flags that would read or write arbitrary files (`-oN`, `-iL`, `--resume`), run code (nmap `--script`), or override the gated target with other hosts (nmap `-iR`). `nuclei` is intentionally not included — its templates can execute code, which flag-gating alone cannot make safe. Adding a tool or flag is a security decision made in `tool-adapter.py`'s `ADAPTERS`, not at call time.

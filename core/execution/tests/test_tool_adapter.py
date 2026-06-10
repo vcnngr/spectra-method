@@ -9,6 +9,7 @@ import shutil
 import sys
 import tempfile
 import unittest
+from unittest import mock
 from contextlib import redirect_stdout
 from pathlib import Path
 
@@ -296,6 +297,49 @@ class ToolAdapterTests(unittest.TestCase):
             self.assertIn("127.0.0.1", result["execution"]["stdout"])
         finally:
             del ta.ADAPTERS["_test_echo"]
+
+    def test_run_via_exec_target_blocked_short_circuits(self):
+        # A blocked gate must never reach the remote dispatch.
+        result = ta.run(str(self.eng), "nmap", "8.8.8.8", via="exec-target")
+        self.assertEqual(result["status"], "blocked")
+        self.assertEqual(result["via"], "exec-target")
+        self.assertNotIn("remote", result)
+
+    def test_run_via_exec_target_dispatches_gated_command(self):
+        # An in-scope gated command routes to exec-target's run_remote_gated
+        # with the adapter-built argv, and the remote status is surfaced.
+        captured = {}
+
+        class FakeET:
+            def run_remote_gated(self, eng_path, argv, timeout):
+                captured["eng_path"] = eng_path
+                captured["argv"] = argv
+                return {"status": "executed", "execution": {"exit_code": 0}}
+
+        with mock.patch.object(ta, "_load_exec_target", return_value=FakeET()):
+            result = ta.run(str(self.eng), "nmap", "127.0.0.1",
+                            extra_args=["-sV"], via="exec-target")
+        self.assertEqual(result["status"], "executed_remote")
+        self.assertEqual(result["via"], "exec-target")
+        self.assertEqual(captured["argv"], ["nmap", "-sV", "127.0.0.1"])
+        self.assertEqual(result["remote"]["status"], "executed")
+
+    def test_run_via_exec_target_surfaces_fingerprint_mismatch(self):
+        class FakeET:
+            def run_remote_gated(self, eng_path, argv, timeout):
+                return {"status": "fingerprint_mismatch"}
+
+        with mock.patch.object(ta, "_load_exec_target", return_value=FakeET()):
+            result = ta.run(str(self.eng), "nmap", "127.0.0.1", via="exec-target")
+        self.assertEqual(result["status"], "fingerprint_mismatch")
+
+    def test_run_via_exec_target_dry_run_does_not_dispatch(self):
+        # dry_run wins: plan only, never reach the remote host.
+        with mock.patch.object(ta, "_load_exec_target") as loader:
+            result = ta.run(str(self.eng), "nmap", "127.0.0.1",
+                            extra_args=["-sV"], via="exec-target", dry_run=True)
+            loader.assert_not_called()
+        self.assertEqual(result["status"], "planned")
 
     def test_execute_captures_output(self):
         out = ta.execute(["echo", "spectra-ok"])

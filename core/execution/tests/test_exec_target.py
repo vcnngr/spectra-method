@@ -229,5 +229,79 @@ class ExecTargetSSHTests(unittest.TestCase):
             self.assertIn("could not retrieve", out["reason"])
 
 
+class RunRemoteGatedTests(unittest.TestCase):
+    """run_remote_gated is the tool-adapter --via composition: it SKIPS the
+    diagnostics-only binary allowlist (the adapter already gated tool/flags/
+    scope) but still enforces authorization, fingerprint pin, no path-qualified
+    binary, and the destructive refusal."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.eng_path = Path(self.tmp.name) / "e.yaml"
+        import yaml
+        self.eng_path.write_text(yaml.safe_dump(engagement()), encoding="utf-8")
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def test_scanning_tool_allowed_through_gate(self):
+        # nmap is NOT a remote diagnostic, but the adapter gated it — so the
+        # gated path lets it reach the fingerprint stage (unlike run_remote).
+        with mock.patch.object(et, "verify_fingerprint",
+                               return_value={"matched": False, "reason": "x",
+                                             "known_hosts_line": ""}) as vf:
+            result = et.run_remote_gated(str(self.eng_path), ["nmap", "-sV", "10.0.0.5"])
+            self.assertEqual(result["status"], "fingerprint_mismatch")
+            vf.assert_called_once()
+
+    def test_not_authorized_blocked(self):
+        import yaml
+        bad = Path(self.tmp.name) / "bad.yaml"
+        bad.write_text(yaml.safe_dump(engagement(target={"authorized": False})), encoding="utf-8")
+        with mock.patch.object(et, "verify_fingerprint") as vf:
+            result = et.run_remote_gated(str(bad), ["nmap", "-sV", "10.0.0.5"])
+            self.assertEqual(result["status"], "blocked")
+            vf.assert_not_called()
+
+    def test_path_qualified_binary_blocked(self):
+        with mock.patch.object(et, "verify_fingerprint") as vf:
+            for argv in (["/tmp/evil/nmap", "-sV"], ["./nmap"]):
+                result = et.run_remote_gated(str(self.eng_path), argv)
+                self.assertEqual(result["status"], "blocked", argv)
+                self.assertTrue(any("path-qualified" in e for e in result["validation"]["errors"]))
+            vf.assert_not_called()
+
+    def test_destructive_blocked(self):
+        with mock.patch.object(et, "verify_fingerprint") as vf:
+            result = et.run_remote_gated(str(self.eng_path), ["nmap", "; rm -rf /"])
+            self.assertEqual(result["status"], "blocked")
+            vf.assert_not_called()
+
+    def test_empty_command_blocked(self):
+        with mock.patch.object(et, "verify_fingerprint") as vf:
+            result = et.run_remote_gated(str(self.eng_path), [])
+            self.assertEqual(result["status"], "blocked")
+            vf.assert_not_called()
+
+    def test_fingerprint_mismatch_no_execution(self):
+        with mock.patch.object(et, "verify_fingerprint",
+                               return_value={"matched": False, "reason": "mismatch",
+                                             "known_hosts_line": ""}):
+            result = et.run_remote_gated(str(self.eng_path), ["nmap", "-sV", "10.0.0.5"])
+            self.assertEqual(result["status"], "fingerprint_mismatch")
+            self.assertNotIn("execution", result)
+
+    def test_executes_on_match(self):
+        with mock.patch.object(et, "verify_fingerprint",
+                               return_value={"matched": True, "reason": "",
+                                             "known_hosts_line": "[127.0.0.1]:2222 ssh-ed25519 AAAA"}), \
+             mock.patch.object(et.tool_adapter, "execute",
+                               return_value={"executed": True, "exit_code": 0,
+                                             "stdout": "ok", "stderr": "", "timed_out": False}):
+            result = et.run_remote_gated(str(self.eng_path), ["nmap", "-sV", "10.0.0.5"])
+            self.assertEqual(result["status"], "executed")
+            self.assertEqual(result["execution"]["exit_code"], 0)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -437,9 +437,26 @@ def verify_identity(resolved_path: str, adapter: dict[str, Any]) -> tuple[bool, 
                    f"'{adapter['binary']}' (identity marker '{expect}' not found)")
 
 
+def _load_exec_target():
+    # Lazy import (avoids a load-time cycle with exec-target.py).
+    script = Path(__file__).resolve().with_name("exec-target.py")
+    spec = importlib.util.spec_from_file_location("exec_target", script)
+    if not spec or not spec.loader:
+        raise RuntimeError(f"Cannot load exec target: {script}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 def run(engagement_path: str, tool: str, target: str, extra_args: list[str] | None = None,
-        dry_run: bool = False, timeout: int = DEFAULT_TIMEOUT_SECONDS) -> dict[str, Any]:
-    """Resolve, gate, and (unless dry_run) execute a vetted tool invocation."""
+        dry_run: bool = False, timeout: int = DEFAULT_TIMEOUT_SECONDS,
+        via: str | None = None) -> dict[str, Any]:
+    """Resolve, gate, and (unless dry_run) execute a vetted tool invocation.
+
+    via="exec-target" runs the *gated* command on the engagement's declared,
+    fingerprint-pinned exec_target host instead of locally — the tool adapter
+    enforces tool/flag/target scope, exec-target enforces the authorized host.
+    """
     adapter = resolve_tool(tool)
     engagement = load_engagement(engagement_path)
     argv = build_argv(adapter, target, extra_args)
@@ -450,6 +467,7 @@ def run(engagement_path: str, tool: str, target: str, extra_args: list[str] | No
         "target": target,
         "argv": argv,
         "dry_run": dry_run,
+        "via": via or "local",
         "gate": gate_result,
     }
 
@@ -460,6 +478,14 @@ def run(engagement_path: str, tool: str, target: str, extra_args: list[str] | No
     # A dry run shows the gated plan without needing the tool installed.
     if dry_run:
         result["status"] = "planned"
+        return result
+
+    # Remote execution on the declared exec_target: the command is already
+    # tool/flag/scope gated above; exec-target adds the authorized+pinned host.
+    if via == "exec-target":
+        remote = _load_exec_target().run_remote_gated(engagement_path, argv, timeout)
+        result["remote"] = remote
+        result["status"] = "executed_remote" if remote.get("status") == "executed" else remote.get("status", "error")
         return result
 
     # The binary must be installed to actually run. Resolve to an absolute path
@@ -501,19 +527,22 @@ def cmd_list(args: argparse.Namespace) -> None:
 def cmd_run(args: argparse.Namespace) -> None:
     try:
         result = run(args.engagement, args.tool, args.target,
-                     extra_args=args.extra, dry_run=args.dry_run, timeout=args.timeout)
+                     extra_args=args.extra, dry_run=args.dry_run, timeout=args.timeout,
+                     via=args.via)
     except (FileNotFoundError, ValueError, KeyError, RuntimeError) as exc:
         print(json.dumps({"error": str(exc)}), file=sys.stderr)
         sys.exit(3)
 
     print(json.dumps(result, indent=2))
-    # Exit codes: 0 ok/planned, 1 blocked, 2 unavailable, 4 tool nonzero exit.
+    # Exit codes: 0 ok/planned, 1 blocked, 2 unavailable/fingerprint, 4 nonzero exit.
     status = result["status"]
     if status == "blocked":
         sys.exit(1)
-    if status == "unavailable":
+    if status in ("unavailable", "fingerprint_mismatch"):
         sys.exit(2)
     if status == "executed" and result["execution"].get("exit_code") not in (0, None):
+        sys.exit(4)
+    if status == "executed_remote" and result["remote"].get("execution", {}).get("exit_code") not in (0, None):
         sys.exit(4)
     sys.exit(0)
 
@@ -533,6 +562,8 @@ def build_parser() -> argparse.ArgumentParser:
     p_run.add_argument("--tool", required=True, help="Allowlisted tool name (see 'list')")
     p_run.add_argument("--target", required=True, help="Target (must be in engagement scope)")
     p_run.add_argument("--dry-run", action="store_true", help="Gate and show the command; execute nothing")
+    p_run.add_argument("--via", choices=["exec-target"], default=None,
+                       help="Run the gated command on the engagement's declared exec_target host")
     p_run.add_argument("--timeout", type=int, default=DEFAULT_TIMEOUT_SECONDS, help="Execution timeout (s)")
     p_run.add_argument("extra", nargs="*", help="Extra tool args (after --)")
     p_run.set_defaults(func=cmd_run)

@@ -263,16 +263,52 @@ def run_remote(engagement_path: str, remote_argv: list[str],
         result["validation"]["errors"].append(reason)
         return result
 
-    target = validation["target"]
+    return _pin_and_ssh(validation["target"], remote_argv, result, timeout)
+
+
+def run_remote_gated(engagement_path: str, remote_argv: list[str],
+                     timeout: int = DEFAULT_TIMEOUT_SECONDS) -> dict[str, Any]:
+    """Run a remote command that has ALREADY been gated by the tool adapter
+    (tool allowlist + flag allowlist + target scope). Skips this module's
+    diagnostics-only binary allowlist, but still enforces the exec_target
+    authorization boundary (authorized + in-scope host + pinned fingerprint),
+    rejects path-qualified binaries, and refuses destructive commands.
+
+    This is the composition behind `tool-adapter.py run --via exec-target`.
+    """
+    engagement = load_engagement(engagement_path)
+    validation = validate_exec_target(engagement)
+    result: dict[str, Any] = {"remote_argv": remote_argv, "validation": validation}
+    if not validation["allowed"]:
+        result["status"] = "blocked"
+        return result
+    if not remote_argv:
+        result["status"] = "blocked"
+        result["validation"]["errors"].append("empty remote command")
+        return result
+    # Even though the caller gated the tool, never accept a path-qualified binary.
+    if "/" in remote_argv[0] or "\\" in remote_argv[0]:
+        result["status"] = "blocked"
+        result["validation"]["errors"].append(
+            f"remote binary may not be path-qualified: {remote_argv[0]!r}")
+        return result
+    ok, reason = tool_adapter.destructive_check(remote_argv)
+    if not ok:
+        result["status"] = "blocked"
+        result["validation"]["errors"].append(reason)
+        return result
+    return _pin_and_ssh(validation["target"], remote_argv, result, timeout)
+
+
+def _pin_and_ssh(target: dict[str, Any], remote_argv: list[str],
+                 result: dict[str, Any], timeout: int) -> dict[str, Any]:
+    """Verify the pinned fingerprint, then run the command over hardened SSH."""
     port = int(target.get("port", DEFAULT_PORT))
     pin = verify_fingerprint(target["host"], port, str(target["pinned_fingerprint"]).strip())
     result["fingerprint"] = {"matched": pin["matched"], "reason": pin["reason"]}
     if not pin["matched"]:
         result["status"] = "fingerprint_mismatch"
         return result
-
-    # delete=False + explicit close so ssh can reopen the file on any platform;
-    # unlinked in finally.
     kh = tempfile.NamedTemporaryFile("w", suffix=".known_hosts", delete=False)
     try:
         kh.write(pin["known_hosts_line"] + "\n")
