@@ -1,0 +1,12 @@
+id: F-001
+title: "Legacy TLS 1.0 accepted on demo web service"
+severity: medium
+status: open
+cvss: 5.3
+description: >
+  The demo web service at http://demo.lab.local negotiates TLS 1.0, a
+  deprecated protocol with known weaknesses (BEAST, weak cipher suites).
+remediation: >
+  Disable TLS 1.0/1.1 at the load balancer; require TLS 1.2+ with modern
+  cipher suites. Re-test the handshake after the change.
+mitre: ["T1040"]

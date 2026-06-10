@@ -1,0 +1,44 @@
+# SPECTRA scenario template — OT/ICS ASSESSMENT (OT module)
+# Recommended agent: Relay (OT/ICS Security Specialist)
+# Recommended workflow: spectra-ot-assessment -> spectra-report-generator
+# ASSESSMENT-ONLY: no control/PLC commands, no writes, no SIS interaction.
+# Fill the CAPS placeholders, set status to "active", then validate:
+#   spectra engagement validate --engagement engagement.yaml
+engagement:
+  id: "ENG-YYYY-NNN"
+  name: "OT/ICS Security Assessment"
+  type: "assessment"
+  status: "planning"
+
+  authorization:
+    client: "PLANT / OPERATOR NAME"
+    authorized_by: "OT SECURITY LEAD, TITLE"
+    authorization_document: "PATH/TO/OT-ASSESSMENT-AUTH.pdf"
+    start_date: "YYYY-MM-DD"
+    end_date: "YYYY-MM-DD"
+    timezone: "UTC"
+
+  rules_of_engagement:
+    testing_hours: "business-hours"
+    notify_before_exploit: true
+    notify_on_critical: true
+    social_engineering_allowed: false
+    physical_access_allowed: false
+    dos_testing_allowed: false
+    data_exfiltration_allowed: false
+    production_systems: false
+    max_impact_level: "low"
+
+  scope:
+    in_scope:
+      networks: ["192.168.10.0/24"]
+      applications: ["passive captures", "asset inventory export", "network diagrams"]
+      notes: "ASSESSMENT-ONLY. Passive/read-only first. Active testing only in an isolated lab."
+    out_of_scope:
+      critical_systems: ["safety-instrumented systems (SIS)", "live PLCs", "process controllers"]
+      notes: "Never issue control commands, never write to control points, never touch SIS."
+
+  deconfliction:
+    primary_contact: "OT SECURITY LEAD"
+    primary_email: "ot-security@example.com"
+    emergency_stop_procedure: "Halt immediately and notify the control room + OT lead."

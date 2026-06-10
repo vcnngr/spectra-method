@@ -673,6 +673,51 @@ program
     }
   });
 
+// --- quickstart (onboarding: scaffold a demo/scenario engagement) ----------
+program
+  .command('quickstart')
+  .description('Scaffold a ready-to-run demo (or scenario) engagement and print a guided tour')
+  .argument('[action]', 'init or list', 'init')
+  .option('-t, --template <name>', 'demo, web-pentest, cloud-ir, ot-assessment', 'demo')
+  .option('--dest <dir>', 'Destination directory', './spectra-quickstart')
+  .option('-d, --directory <path>', 'Target project directory (default: cwd)')
+  .option('--force', 'Overwrite an existing engagement.yaml')
+  .action((action, options) => {
+    const targetRoot = detectProjectRoot(options.directory);
+    const script = getExecutionScript(targetRoot, 'quickstart.py');
+    if (!fs.existsSync(script)) {
+      console.error(chalk.red(`\n  quickstart.py not found: ${script}\n`));
+      process.exit(1);
+    }
+    if (action === 'list') {
+      try {
+        execFileSync('python3', [script, 'list'], { stdio: 'inherit' });
+      } catch (error) {
+        process.exit(error.status || 1);
+      }
+      return;
+    }
+    if (action !== 'init') {
+      console.error(chalk.red(`\n  Unknown quickstart action: ${action}`));
+      console.error(chalk.gray('  Valid actions: init, list\n'));
+      process.exit(1);
+    }
+    const args = [script, 'init', '--template', options.template, '--dest', options.dest];
+    if (options.force) args.push('--force');
+    try {
+      const out = execFileSync('python3', args, { encoding: 'utf8' });
+      const m = JSON.parse(out);
+      console.log(chalk.bold(`\n  SPECTRA quickstart — ${m.template}\n`));
+      console.log(chalk.gray(`  Scaffolded ${m.files.length} file(s) into ${m.dest}\n`));
+      m.tour.forEach((step, i) => console.log(`  ${chalk.cyan(String(i + 1) + '.')} ${step}`));
+      console.log(chalk.gray('\n  Authorized-only, evidence-gated. The demo targets loopback only.\n'));
+    } catch (error) {
+      if (error.stdout) process.stdout.write(error.stdout);
+      if (error.stderr) process.stderr.write(error.stderr);
+      process.exit(error.status || 1);
+    }
+  });
+
 // --- report ---------------------------------------------------------------
 program
   .command('report')
