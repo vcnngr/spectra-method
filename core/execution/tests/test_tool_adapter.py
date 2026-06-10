@@ -365,6 +365,42 @@ class ToolAdapterTests(unittest.TestCase):
                      "--target", "8.8.8.8"])
         self.assertEqual(cm.exception.code, 1)
 
+    # -- run accounting integration ---------------------------------------
+
+    def _read_run_log(self):
+        import json
+        log = self.eng.parent / "run-log.jsonl"
+        if not log.is_file():
+            return []
+        return [json.loads(ln) for ln in log.read_text().splitlines() if ln.strip()]
+
+    def test_cli_run_writes_run_log(self):
+        # A dry run plans (exit 0) and is recorded in the engagement run log.
+        with self.assertRaises(SystemExit) as cm, redirect_stdout(io.StringIO()):
+            ta.main(["run", "--engagement", str(self.eng), "--tool", "nmap",
+                     "--target", "127.0.0.1", "--dry-run"])
+        self.assertEqual(cm.exception.code, 0)
+        recs = self._read_run_log()
+        self.assertEqual(len(recs), 1)
+        self.assertEqual(recs[0]["tool"], "nmap")
+        self.assertEqual(recs[0]["status"], "planned")
+        self.assertTrue(recs[0]["dry_run"])
+
+    def test_cli_run_no_log_suppresses(self):
+        with self.assertRaises(SystemExit), redirect_stdout(io.StringIO()):
+            ta.main(["run", "--engagement", str(self.eng), "--tool", "nmap",
+                     "--target", "127.0.0.1", "--dry-run", "--no-log"])
+        self.assertEqual(self._read_run_log(), [])
+
+    def test_cli_run_blocked_is_logged(self):
+        # Even a blocked run is accounted for (operator visibility).
+        with self.assertRaises(SystemExit), redirect_stdout(io.StringIO()):
+            ta.main(["run", "--engagement", str(self.eng), "--tool", "nmap",
+                     "--target", "8.8.8.8"])
+        recs = self._read_run_log()
+        self.assertEqual(len(recs), 1)
+        self.assertEqual(recs[0]["status"], "blocked")
+
 
 if __name__ == "__main__":
     unittest.main()

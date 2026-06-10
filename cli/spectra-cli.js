@@ -582,6 +582,40 @@ program
     }
   });
 
+// --- runs (run accounting) -------------------------------------------------
+program
+  .command('runs')
+  .description('Show the per-engagement run log: what gated tools ran and their outcomes')
+  .argument('[action]', 'status or path', 'status')
+  .option('-d, --directory <path>', 'Target project directory (default: cwd)')
+  .requiredOption('-e, --engagement <path>', 'Path to engagement.yaml')
+  .option('--limit <n>', 'How many recent runs to include (status)', '10')
+  .action((action, options) => {
+    const targetRoot = detectProjectRoot(options.directory);
+    const script = getExecutionScript(targetRoot, 'run-accounting.py');
+
+    if (!fs.existsSync(script)) {
+      console.error(chalk.red(`\n  run-accounting.py not found: ${script}\n`));
+      process.exit(1);
+    }
+
+    const allowed = new Set(['status', 'path']);
+    if (!allowed.has(action)) {
+      console.error(chalk.red(`\n  Unknown runs action: ${action}`));
+      console.error(chalk.gray('  Valid actions: status, path\n'));
+      process.exit(1);
+    }
+
+    const args = [script, action, '--engagement', options.engagement];
+    if (action === 'status') args.push('--limit', options.limit);
+
+    try {
+      execFileSync('python3', args, { stdio: 'inherit' });
+    } catch (error) {
+      process.exit(error.status || 1);
+    }
+  });
+
 // --- report ---------------------------------------------------------------
 program
   .command('report')

@@ -44,6 +44,19 @@ python3 {project-root}/_spectra/core/execution/tool-adapter.py run \
 
 Status values: `planned` (dry run), `executed`, `blocked` (failed scope/RoE/HARD BLOCK — see `gate.errors`), `unavailable` (binary not installed). Exit codes: 0 ok/planned, 1 blocked, 2 unavailable, 4 tool exited non-zero.
 
+### Run accounting
+
+Every `run` is recorded to a per-engagement append-only log (`run-log.jsonl`, beside `engagement.yaml`) — including dry runs and blocked attempts, so the engagement keeps an honest activity trail separate from the evidence chain. Recording is best-effort and never changes a run's outcome; pass `--no-log` to skip it.
+
+Review the activity log:
+
+```bash
+python3 {project-root}/_spectra/core/execution/run-accounting.py status \
+  --engagement "{engagement_yaml}" --limit 10
+```
+
+The summary reports totals by status and by tool, how many runs executed vs were blocked, the non-zero-exit count, and the most recent runs. This is the deterministic backing for what an operator sees as the engagement's run history.
+
 ### Remote execution: `--via exec-target`
 
 The same gated command can run on the engagement's declared, in-scope, fingerprint-pinned host instead of locally:

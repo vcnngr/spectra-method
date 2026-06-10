@@ -448,6 +448,17 @@ def _load_exec_target():
     return module
 
 
+def _load_run_accounting():
+    # Lazy import of the hyphenated run-accounting.py module.
+    script = Path(__file__).resolve().with_name("run-accounting.py")
+    spec = importlib.util.spec_from_file_location("run_accounting", script)
+    if not spec or not spec.loader:
+        raise RuntimeError(f"Cannot load run accounting: {script}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 def run(engagement_path: str, tool: str, target: str, extra_args: list[str] | None = None,
         dry_run: bool = False, timeout: int = DEFAULT_TIMEOUT_SECONDS,
         via: str | None = None) -> dict[str, Any]:
@@ -533,6 +544,15 @@ def cmd_run(args: argparse.Namespace) -> None:
         print(json.dumps({"error": str(exc)}), file=sys.stderr)
         sys.exit(3)
 
+    # Best-effort run accounting: record what ran so the engagement keeps an
+    # operational activity log. Never let an accounting failure affect the run
+    # outcome or exit code.
+    if not args.no_log:
+        try:
+            _load_run_accounting().record(args.engagement, result)
+        except Exception:  # nosec B110 - accounting is advisory, never fatal
+            pass
+
     print(json.dumps(result, indent=2))
     # Exit codes: 0 ok/planned, 1 blocked, 2 unavailable/fingerprint, 4 nonzero exit.
     status = result["status"]
@@ -565,6 +585,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_run.add_argument("--via", choices=["exec-target"], default=None,
                        help="Run the gated command on the engagement's declared exec_target host")
     p_run.add_argument("--timeout", type=int, default=DEFAULT_TIMEOUT_SECONDS, help="Execution timeout (s)")
+    p_run.add_argument("--no-log", action="store_true", help="Do not append this run to the engagement run log")
     p_run.add_argument("extra", nargs="*", help="Extra tool args (after --)")
     p_run.set_defaults(func=cmd_run)
 
