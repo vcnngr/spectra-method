@@ -17,7 +17,7 @@
 </p>
 
 <p align="center">
-  28 AI agents. 22 structured workflows. 80,000+ lines of operational security knowledge.<br>
+  29 AI agents. 23 structured workflows. 80,000+ lines of operational security knowledge.<br>
   A complete cybersecurity team — instantly available in your AI IDE.
 </p>
 
@@ -275,6 +275,7 @@ project/
 │   ├── soc/              Security Operations
 │   ├── irt/              Incident Response
 │   ├── grc/              Governance, Risk & Compliance
+│   ├── ot/               OT/ICS Security
 │   └── _config/          Manifests
 └── _spectra-output/      Engagement artifacts
     ├── engagements/
