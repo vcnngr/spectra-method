@@ -1,8 +1,8 @@
 <p align="center">
   <img src="https://img.shields.io/npm/v/spectra-method.svg?style=flat-square&color=red" alt="npm version">
   <img src="https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square" alt="License: MIT">
-  <img src="https://img.shields.io/badge/agents-28-blue?style=flat-square" alt="28 agents">
-  <img src="https://img.shields.io/badge/workflows-22-orange?style=flat-square" alt="22 workflows">
+  <img src="https://img.shields.io/badge/agents-29-blue?style=flat-square" alt="29 agents">
+  <img src="https://img.shields.io/badge/workflows-23-orange?style=flat-square" alt="23 workflows">
   <img src="https://img.shields.io/badge/lines-80K%2B-green?style=flat-square" alt="80K+ lines">
 </p>
 
@@ -41,6 +41,7 @@ npx spectra-method install --tools claude-code,codex -y
 | **SOC** | :large_blue_circle: | 8 | 6 | Security Operations — triage, hunting, telemetry, identity, detection engineering |
 | **IRT** | :orange_circle: | 6 | 5 | Incident Response — forensics, malware analysis, cloud security, threat intel |
 | **GRC** | :white_circle: | 4 | 4 | Governance, Risk & Compliance — risk, audit, policy, privacy |
+| **OT** | :gear: | 1 | 1 | OT/ICS — Purdue model, ICS protocol exposure, ATT&CK for ICS, IEC 62443 (assessment-only) |
 | **Core** | :zap: | 3 | 11 skills | Engagement framework, War Room, reporting, Duel adjudication |
 
 ---
@@ -196,7 +197,7 @@ npx spectra-method party plan --topic "lateral movement detection gap review"
 npx spectra-method install [options]
 
   -d, --directory <path>               Target directory (default: ".")
-  -m, --modules <modules>              Module IDs: rtk,soc,irt,grc
+  -m, --modules <modules>              Module IDs: rtk,soc,irt,grc,ot
   --tools <tools>                      IDEs: claude-code, codex (default: claude-code)
   --user-name <name>                   Name for agents
   --communication-language <lang>      Agent language (default: English)
@@ -211,6 +212,13 @@ npx spectra-method status              Show version and modules
 npx spectra-method update              Update (preserves configs)
 npx spectra-method modules list        Show installed/available modules
 npx spectra-method modules add rtk     Add modules after a lazy install
+
+npx spectra-method quickstart          Scaffold a demo engagement + guided tour
+npx spectra-method quickstart --template web-pentest --dest ./my-engagement
+npx spectra-method runs status -e engagement.yaml       Per-engagement run log
+npx spectra-method posture snapshot -e engagement.yaml  Capture posture snapshot
+npx spectra-method posture diff -e engagement.yaml      Diff posture over time
+npx spectra-method export -e engagement.yaml -f sarif   Export findings (sarif|csv|md)
 
 npx spectra-method engagement validate -e engagement.yaml
 npx spectra-method engagement gate -e engagement.yaml -w spectra-external-recon --target-name example.com

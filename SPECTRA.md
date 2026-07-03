@@ -30,7 +30,7 @@ _spectra/
 ## Current Status (v0.6.0) — CODEX ADAPTER READY
 
 ### Complete and operational:
-- All 28 agents with SKILL.md + spectra-skill-manifest.yaml
+- All 29 agents with SKILL.md + spectra-skill-manifest.yaml
 - Complete manifests (agent-manifest.csv, skill-manifest.csv, manifest.yaml)
 - Config per module with context budget (all configs set to English)
 - Engagement template with workflow_state + kill chain + detection coverage
@@ -82,7 +82,7 @@ _spectra/
 1. Read this file for context
 2. Read `_spectra/DEV-GUIDE.md` for exact file formats, patterns, and development principles
 3. Read `_spectra/_config/skill-manifest.csv` for skill status
-4. **ALL 22 WORKFLOWS COMPLETE.** RTK 6/6, SOC 6/6, IRT 5/5, GRC 4/4, Core adjudication 1/1.
+4. **ALL 23 WORKFLOWS COMPLETE.** RTK 6/6, SOC 6/6, IRT 5/5, GRC 4/4, OT 1/1, Core adjudication 1/1.
 5. ~~**ALL 5 CORE SKILLS COMPLETE.**~~ DONE. report-generator, evidence-chain, scope-check, close-engagement, executive-brief
 6. ~~**Execution scripts**~~ DONE. spectra_init.py, scope-enforcer.py, evidence-logger.py, tools-registry.yaml + module.yaml configs
 7. ~~**Framework reference data**~~ DONE. ATT&CK (14 tactics, 98 techniques), NIST 800-53 (20 families, 54 controls), Sigma (35 rules), OWASP Top 10, CIS Controls v8 (18 controls, 72 safeguards), cross-mapping (40 technique mappings)

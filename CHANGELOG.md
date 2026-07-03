@@ -2,6 +2,30 @@
 
 ## Unreleased
 
+### Added
+
+- **OT/ICS module** (6th module): agent **Relay** (OT/ICS Security Specialist) and the `spectra-ot-assessment` 6-step workflow — Purdue-model architecture, ICS protocol exposure, MITRE ATT&CK for ICS, and IEC 62443 zones/conduits + SR/CR controls. Assessment-only boundary at every layer (no control/PLC commands, no writes, no SIS interaction). Agent count 28 → 29.
+- **Quickstart onboarding** — `spectra quickstart` scaffolds a shipped, loopback-only demo engagement (sample findings + a worked War Room debrief) or a scenario template (`web-pentest`, `cloud-ir`, `ot-assessment`) and prints a guided tour. Copy-only, symlink/hardlink-escape guarded.
+- **Posture diff** — `spectra posture` (skill `spectra-posture-diff`): snapshot an engagement's posture (findings/scope/run-log) and diff two snapshots into a status-aware, severity-weighted delta (improved/regressed/unchanged). Makes recurring engagements a trend line.
+- **Remediation export** — `spectra export` (skill `spectra-remediation-export`): export findings to SARIF 2.1.0 (with locations), CSV (formula-injection escaped), or a Markdown ticket pack. Deterministic export, no network.
+- **Run accounting** — `spectra runs` + `run-accounting.py`: append-only per-engagement `run-log.jsonl` of every gated tool run (including dry-run and blocked), with a status/tool summary. `--no-log` opts out.
+- **`tool-run --via exec-target`** — run a gated tool command on the engagement's declared, in-scope, SSH-fingerprint-pinned host; the tool adapter gates tool/flags/scope and exec-target adds the authorized-host boundary.
+- Growth execution layer: attack-path graph generator, persona-first engagement entry, RoE noise budget, fail-closed tool adapter, fingerprint-pinned exec-target, reproducible Referee benchmark, multimodal (screenshot) evidence, and a custom-module scaffold.
+
+### Fixed
+
+- #2 — engagement state machine now tolerates the natural spellings `completed`/`in progress` and canonicalizes them to `complete`/`in-progress`, so a workflow's status no longer fails the next gate or needs a manual edit.
+- #3 — AppSec token/JWT inspection guidance: self-contained, correct commands (no `|| fallback` masking, no undefined vars or dead branches); robust base64url decode with explicit padding.
+- #4 — external-recon verifies which spec a Swagger/OpenAPI UI loads before rating severity (default petstore spec → Low; target's own API → Medium), avoiding an inflated false positive.
+- #5 — AppSec step close is gated by a REQUIRED-OUTPUT self-audit; a step cannot be marked complete with missing outputs.
+- #6 — canonical step-close order (consolidate evidence → verify no secrets → then sanitize), no error-silencing on destruction, and a token-hygiene rule; sanitization scoped to the agent's own files only.
+- #7 — Target Artifact Ledger tracks artifacts created on the target with a disposition; privileged synthetic artifacts (e.g. admin accounts) must be removed or flagged, never left silently active.
+- #1 — CI prepared for the GitHub Actions Node.js 24 runtime (compat smoke + test on Node 24).
+
+### Changed
+
+- Validator module set and persona-count test extended for the OT module (validator 2040 checks, execution suite 330 tests).
+
 ### Security
 
 - Migrated npm publish workflow to npm Trusted Publishers (OIDC). Removed dependency on long-lived `NPM_TOKEN` secret; npm now authenticates via GitHub Actions OIDC identity claims (org `vcnngr`, repo `spectra-method`, workflow `publish.yml`).
