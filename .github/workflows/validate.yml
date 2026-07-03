@@ -9,6 +9,13 @@ on:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    # Node.js 24 runtime compatibility smoke (issue #1): force JavaScript actions
+    # to run on the Node 24 runtime now, ahead of GitHub's default switch, so any
+    # action incompatibility surfaces here instead of in a future forced upgrade.
+    # This is the ACTIONS runtime, kept separate from the package's own Node
+    # target (>=18) — the app is exercised on the node-version set below.
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - uses: actions/checkout@v4
 
@@ -41,7 +48,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '24'
 
       - name: Install Node dependencies
         run: npm install

@@ -120,9 +120,21 @@ Proceeding with CVE correlation and security analysis?"
 **Application Misconfigurations:**
 - Exposed admin panels without IP restriction
 - GraphQL introspection enabled in production
-- Swagger/API documentation exposed in production
+- Swagger/OpenAPI UI exposed in production — **verify which spec it loads before rating severity** (see note below)
 - CORS misconfiguration (Access-Control-Allow-Origin: *)
 - Verbose error messages revealing internal paths
+
+> **Swagger/OpenAPI severity check (avoid the default-spec false positive).**
+> The mere presence of a Swagger UI at `/swagger`, `/api-docs`, etc. is NOT by
+> itself an API-contract disclosure. Before assigning severity, confirm **which
+> spec the UI actually loads** — read `swagger-initializer.js` (or the page's
+> spec `url`) and fetch that spec:
+> - If it points at a stock/sample spec (e.g. `petstore.swagger.io`) or a spec
+>   that does not describe the target, classify as **Low / default-install
+>   artifact** (minor misconfiguration).
+> - Only if the loaded spec documents the **target's own API** classify it as a
+>   **Medium API-contract disclosure**, and record the spec URL as evidence.
+> Do not rate on endpoint presence alone; rate on the spec content you verified.
 
 **Infrastructure Misconfigurations:**
 - Open DNS resolver
