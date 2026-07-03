@@ -66,6 +66,25 @@ properties:
           max_impact_level:
             type: string
             enum: [low, medium, high, critical]
+          noise_budget:
+            type: object
+            description: >-
+              Authorized timing/footprint budget for Red activity. Planning and
+              honest-measurement only — it constrains how much signal the
+              engagement may produce, never how to hide. Optional; absent means
+              no declared budget.
+            properties:
+              profile:
+                type: string
+                enum: [low_footprint, balanced, high_footprint]
+              max_actions_per_hour: {type: integer, minimum: 0}
+              min_action_interval_seconds: {type: integer, minimum: 0}
+              max_concurrent_actions: {type: integer, minimum: 1}
+              telemetry_tolerance:
+                type: string
+                enum: [low, medium, high]
+              abort_on_detection: {type: boolean}
+              notes: {type: string}
       data_handling:
         type: object
         properties:
@@ -92,6 +111,23 @@ properties:
       lateral_movement: {$ref: '#/$defs/workflow_state'}
       exfiltration: {$ref: '#/$defs/workflow_state'}
     additionalProperties: false
+  exec_target:
+    type: object
+    description: >-
+      Optional operator-declared host where authorized commands may be executed
+      over SSH. The pinned host fingerprint plus the in-scope + authorized gate
+      IS the authorization boundary. Absent means execution stays local.
+    required: [host, user, pinned_fingerprint, authorized]
+    properties:
+      host: {type: string, minLength: 1}
+      port: {type: integer, minimum: 1, maximum: 65535}
+      user: {type: string, minLength: 1}
+      key_path: {type: string}
+      pinned_fingerprint:
+        type: string
+        pattern: '^SHA256:[A-Za-z0-9+/=]+$'
+      authorized: {type: boolean}
+      notes: {type: string}
   kill_chain: {type: object}
   detection_coverage: {type: object}
   risk_summary: {type: object}

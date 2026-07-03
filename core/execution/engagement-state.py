@@ -40,6 +40,25 @@ VERSION = "0.2.0"
 
 VALID_ENGAGEMENT_STATUSES = {"planning", "active", "paused", "complete", "archived"}
 VALID_WORKFLOW_STATUSES = {"pending", "in-progress", "blocked", "complete", "skipped"}
+
+# LLM agents naturally write "completed"/"in progress" when closing a workflow,
+# but the canonical enum values are "complete"/"in-progress". Accept the common
+# natural-language spellings and canonicalize them, so an engagement.yaml never
+# needs a manual edit to validate or transition (see GitHub issue #2).
+STATUS_ALIASES = {
+    "completed": "complete",
+    "complete": "complete",
+    "in progress": "in-progress",
+    "in_progress": "in-progress",
+    "inprogress": "in-progress",
+    "in-progress": "in-progress",
+}
+
+
+def canonical_status(value: Any) -> str:
+    """Map a status value to its canonical spelling (lowercased, trimmed)."""
+    s = str(value or "").strip().lower()
+    return STATUS_ALIASES.get(s, s)
 VALID_TRANSITIONS = {
     "pending": {"in-progress", "blocked", "skipped"},
     "in-progress": {"complete", "blocked"},
@@ -127,6 +146,19 @@ def _load_scope_enforcer():
 scope_enforcer = _load_scope_enforcer()
 
 
+def _load_noise_budget():
+    script = Path(__file__).resolve().with_name("noise-budget.py")
+    spec = importlib.util.spec_from_file_location("noise_budget", script)
+    if not spec or not spec.loader:
+        _die(f"Cannot load noise budget validator: {script}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+noise_budget = _load_noise_budget()
+
+
 def load_document(path: str) -> tuple[dict[str, Any], Path]:
     p = Path(path)
     if not p.exists():
@@ -211,7 +243,7 @@ def validate_document(data: dict[str, Any], strict: bool = False) -> dict[str, A
         if not str(eng.get(key) or "").strip():
             errors.append(f"engagement.{key} is required")
 
-    status = str(eng.get("status") or "").strip()
+    status = canonical_status(eng.get("status"))
     if status and status not in VALID_ENGAGEMENT_STATUSES:
         errors.append(f"engagement.status must be one of {sorted(VALID_ENGAGEMENT_STATUSES)}")
 
@@ -262,7 +294,7 @@ def validate_document(data: dict[str, Any], strict: bool = False) -> dict[str, A
             if not isinstance(state, dict):
                 errors.append(f"workflow_state.{key} must be an object")
                 continue
-            wf_status = str(state.get("status") or "pending")
+            wf_status = canonical_status(state.get("status") or "pending")
             if wf_status not in VALID_WORKFLOW_STATUSES:
                 errors.append(f"workflow_state.{key}.status must be one of {sorted(VALID_WORKFLOW_STATUSES)}")
 
@@ -287,7 +319,7 @@ def gate_document(data: dict[str, Any], workflow_name: str, target: str | None, 
     errors.extend(validation["errors"])
     warnings.extend(validation["warnings"])
 
-    if eng.get("status") != "active":
+    if canonical_status(eng.get("status")) != "active":
         errors.append("engagement.status must be active before running RTK workflows")
 
     engagement_type = str(eng.get("type") or "").strip()
@@ -307,6 +339,15 @@ def gate_document(data: dict[str, Any], workflow_name: str, target: str | None, 
     required_roe = workflow.get("requires_roe")
     if required_roe and not scope_enforcer._roe_allows(roe.get(required_roe, False)):
         errors.append(f"{required_roe} must be explicitly allowed before workflow {workflow_name}")
+
+    # A declared noise budget must be coherent before activity opens. Only a FAIL
+    # (invalid/contradictory budget) blocks; WARN/INFO are advisory. An absent
+    # budget is fine — existing engagements without one are unaffected.
+    nb_result = noise_budget.validate_noise_budget(roe)
+    if nb_result["status"] == "FAIL":
+        for issue in nb_result["issues"]:
+            if issue["severity"] == "FAIL":
+                errors.append(f"noise_budget: {issue['message']}")
 
     if workflow["state_key"] == "exfiltration":
         data_handling = eng.get("data_handling") or {}
@@ -380,6 +421,7 @@ def now_iso() -> str:
 
 
 def transition_document(data: dict[str, Any], workflow_name: str, to_status: str, args: argparse.Namespace) -> dict[str, Any]:
+    to_status = canonical_status(to_status)
     if to_status not in VALID_WORKFLOW_STATUSES:
         return {
             "transitioned": False,
@@ -388,7 +430,7 @@ def transition_document(data: dict[str, Any], workflow_name: str, to_status: str
 
     workflow = normalize_workflow(workflow_name)
     state = get_workflow_state(data, workflow["state_key"], workflow)
-    from_status = str(state.get("status") or "pending")
+    from_status = canonical_status(state.get("status") or "pending")
     allowed_next = VALID_TRANSITIONS.get(from_status, set())
     if to_status not in allowed_next and not args.force:
         return {

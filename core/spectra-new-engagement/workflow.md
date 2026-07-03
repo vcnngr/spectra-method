@@ -65,4 +65,8 @@ Load and read full config from `{main_config}` and resolve:
 
 "**Creation Mode: Starting a new security engagement.**"
 
-Read fully and follow: `./steps-c/step-01-init.md`
+Begin with persona orientation so the operator picks the right SPECTRA team before scope is defined.
+
+Read fully and follow: `./steps-c/step-00-persona.md`
+
+(Step 0 captures the engagement type and lead persona, then chains to `./steps-c/step-01-init.md`.)

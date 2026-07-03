@@ -1,0 +1,4 @@
+SPECTRA DEMO AUTHORIZATION (fictional)
+This demo engagement targets only loopback (127.0.0.0/8) and the fictional
+domain demo.lab.local. No real system is authorized or targeted. For learning
+the SPECTRA flow only.

@@ -1,0 +1,52 @@
+# SPECTRA DEMO ENGAGEMENT — safe, self-contained, for the quickstart tour.
+# Scope is loopback + a fictional .lab.local domain: nothing real is targeted.
+# Copied into your workspace by `spectra quickstart`. Authorized-only, evidence-gated.
+engagement:
+  id: "ENG-DEMO-001"
+  name: "SPECTRA Quickstart Demo"
+  type: "pentest"
+  status: "active"
+
+  authorization:
+    client: "SPECTRA Demo Lab (fictional)"
+    authorized_by: "You — local demo operator"
+    authorization_document: "DEMO-AUTH.txt"
+    start_date: "2026-01-01"
+    end_date: "2026-12-31"
+    timezone: "UTC"
+
+  rules_of_engagement:
+    testing_hours: "any"
+    notify_before_exploit: false
+    notify_on_critical: true
+    social_engineering_allowed: false
+    physical_access_allowed: false
+    dos_testing_allowed: false
+    data_exfiltration_allowed: false
+    production_systems: false
+    max_impact_level: "high"
+    noise_budget:
+      profile: "balanced"
+      max_actions_per_hour: 20
+      min_action_interval_seconds: 5
+      max_concurrent_actions: 1
+      telemetry_tolerance: "medium"
+      abort_on_detection: false
+      notes: "Demo budget — low-and-slow for the tour."
+
+  scope:
+    in_scope:
+      networks: ["127.0.0.0/8"]
+      domains: ["demo.lab.local", "*.demo.lab.local"]
+      applications: ["http://demo.lab.local"]
+      notes: "Loopback + fictional lab domain only. Nothing real is in scope."
+    out_of_scope:
+      networks: ["10.0.0.0/8"]
+      notes: >
+        Example out-of-scope range. Scope is an allowlist: any target not in
+        in_scope (e.g. 8.8.8.8) is refused anyway — that is the demo's
+        in-scope-passes vs out-of-scope-blocked contrast.
+
+  deconfliction:
+    primary_contact: "Local operator"
+    emergency_stop_procedure: "Ctrl-C — this is a local demo, no live targets."

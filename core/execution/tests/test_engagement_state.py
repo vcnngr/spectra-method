@@ -80,7 +80,47 @@ class EngagementStateTests(unittest.TestCase):
             None,
         )
         self.assertTrue(result["allowed"], result["errors"])
-        self.assertEqual(result["state_key"], "external_recon")
+
+    # -- issue #2: 'completed' vs 'complete' tolerance ---------------------
+
+    def test_canonical_status_maps_natural_spellings(self):
+        self.assertEqual(engagement_state.canonical_status("completed"), "complete")
+        self.assertEqual(engagement_state.canonical_status("in progress"), "in-progress")
+        self.assertEqual(engagement_state.canonical_status("in_progress"), "in-progress")
+        self.assertEqual(engagement_state.canonical_status("COMPLETE"), "complete")
+        self.assertEqual(engagement_state.canonical_status("active"), "active")
+
+    def test_workflow_status_completed_validates(self):
+        # An agent that wrote "completed" (not the canonical "complete") must not
+        # break validation — no manual edit required.
+        self.doc["workflow_state"] = {"external_recon": {"status": "completed"}}
+        result = engagement_state.validate_document(self.doc)
+        self.assertTrue(result["valid"], result["errors"])
+
+    def test_engagement_status_completed_validates(self):
+        self.doc["engagement"]["status"] = "completed"
+        result = engagement_state.validate_document(self.doc)
+        self.assertTrue(result["valid"], result["errors"])
+
+    def test_transition_accepts_and_canonicalizes_completed(self):
+        # Move to in-progress first, then transition target "completed" must be
+        # accepted and written as the canonical "complete".
+        self.doc["workflow_state"] = {"external_recon": {"status": "in-progress"}}
+        args = SimpleNamespace(force=False, agent=None, findings_count=None, artifact=[])
+        result = engagement_state.transition_document(
+            self.doc, "spectra-external-recon", "completed", args)
+        self.assertTrue(result["transitioned"], result.get("errors"))
+        self.assertEqual(
+            self.doc["workflow_state"]["external_recon"]["status"], "complete")
+
+    def test_transition_from_completed_state_maps_correctly(self):
+        # Prior state persisted as "completed" must canonicalize to "complete"
+        # for the transition lookup rather than dead-ending on an unknown status.
+        self.doc["workflow_state"] = {"external_recon": {"status": "completed"}}
+        args = SimpleNamespace(force=False, agent=None, findings_count=None, artifact=[])
+        result = engagement_state.transition_document(
+            self.doc, "spectra-external-recon", "in-progress", args)
+        self.assertEqual(result["from"], "complete")
 
     def test_gate_blocks_out_of_scope_target(self):
         result = engagement_state.gate_document(

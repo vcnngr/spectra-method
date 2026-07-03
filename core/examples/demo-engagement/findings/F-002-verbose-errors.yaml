@@ -1,0 +1,11 @@
+id: F-002
+title: "Verbose stack traces exposed on error pages"
+severity: low
+status: open
+cvss: 3.1
+description: >
+  Triggering an unhandled error returns a full stack trace including framework
+  versions and internal file paths — useful reconnaissance for an attacker.
+remediation: >
+  Return a generic error page in production; log details server-side only.
+mitre: ["T1592"]

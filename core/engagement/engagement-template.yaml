@@ -30,6 +30,21 @@ engagement:
     production_systems: false         # Are production systems in scope?
     max_impact_level: "high"          # low | medium | high | critical
 
+    # Noise budget — authorized timing/footprint envelope for Red activity.
+    # Planning and honest measurement only: it bounds how much signal the
+    # engagement may produce, never how to hide. Optional: omit the whole block
+    # if no budget is set. Leaving max_actions_per_hour or
+    # min_action_interval_seconds at 0 means "unspecified";
+    # max_concurrent_actions must be omitted or >= 1.
+    noise_budget:
+      profile: "balanced"             # low_footprint | balanced | high_footprint
+      max_actions_per_hour: 0         # 0 = unspecified; e.g. 20 for low-and-slow
+      min_action_interval_seconds: 0  # 0 = unspecified; minimum spacing between noisy actions
+      max_concurrent_actions: 1       # parallel noisy actions allowed (omit or >= 1)
+      telemetry_tolerance: "medium"   # low | medium | high — expected signal a defender may see
+      abort_on_detection: false       # stop Red activity once Blue evidences detection
+      notes: ""
+
   data_handling:
     authorized_data_types: []          # Required before exfiltration, e.g. ["sample PII", "source code"]
     max_exfiltration_volume: ""        # e.g. "100MB proof-of-access sample"
@@ -68,6 +83,18 @@ engagement:
     lead: ""                       # Engagement lead name
     members: []                    # Team member names
     client_contacts: []            # Client-side contacts
+
+  # Optional exec target — an operator-declared host where authorized commands
+  # may be executed over SSH (see spectra-exec-target). The pinned fingerprint +
+  # in-scope + authorized gate IS the authorization boundary. Omit to keep
+  # execution local. Get the fingerprint: ssh-keyscan -p <port> <host> | ssh-keygen -lf -
+  # exec_target:
+  #   host: ""                     # must be inside engagement scope
+  #   port: 22
+  #   user: ""
+  #   key_path: ""                 # path to the SSH private key
+  #   pinned_fingerprint: ""       # e.g. SHA256:...
+  #   authorized: false            # operator's explicit go-ahead
 
 # RTK Workflow State — deterministic state machine managed by engagement-state.py
 workflow_state:

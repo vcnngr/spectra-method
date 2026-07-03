@@ -1,0 +1,13 @@
+id: F-003
+title: "Missing security headers (CSP, HSTS, X-Content-Type-Options)"
+severity: low
+status: open
+cvss: 2.6
+description: >
+  Responses lack Content-Security-Policy, Strict-Transport-Security, and
+  X-Content-Type-Options, leaving the app weaker against injection and
+  protocol-downgrade classes.
+remediation: >
+  Add CSP, HSTS (with preload once validated), and X-Content-Type-Options:
+  nosniff at the edge. Validate CSP in report-only mode first.
+mitre: ["T1059"]

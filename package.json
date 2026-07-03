@@ -1,6 +1,6 @@
 {
   "name": "spectra-method",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "description": "SPECTRA -- Security Protocol Engineering for Cyber Threat Response & Assessment. Multi-agent cybersecurity framework.",
   "type": "module",
   "bin": {

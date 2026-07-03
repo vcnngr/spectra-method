@@ -16,7 +16,7 @@ This uses **step-file architecture** for disciplined execution.
 ### Core Principles
 
 - **Scope First:** Every target, test account, API route, environment, and data class must be in the active engagement scope.
-- **Evidence Over Claims:** Findings require request/response evidence, configuration proof, code reference, or reproducible observation.
+- **Evidence Over Claims:** Findings require request/response evidence, configuration proof, code reference, or reproducible observation. Keep proven and hypothesized structurally separate; assign severity and OWASP class to what is demonstrated, never to a hypothesized worst case; never claim a "withheld exploit" without an attached PoC (see step 06 Finding Integrity).
 - **No Unsafe Payload Escalation:** Do not create weaponized exploit chains, persistence, destructive tests, or uncontrolled data extraction.
 - **Fixability:** Each finding must include owner, remediation path, validation method, and retest criteria.
 
@@ -27,6 +27,15 @@ This uses **step-file architecture** for disciplined execution.
 3. Stop at human gates.
 4. Save `stepsCompleted` in the output artifact before loading the next step.
 5. Load only the next step when directed.
+
+### Step-Close Discipline (applies to EVERY step)
+
+Before writing a step into `stepsCompleted`:
+
+- **Self-audit against REQUIRED OUTPUT.** Map each required output to the section that satisfies it. If any is missing, the step is **partial** — do not mark it complete; run the missing block (often the highest-value one) or get explicit operator confirmation to skip.
+- **Consolidate evidence before sanitizing.** Order is fixed: (1) consolidate redacted evidence, (2) verify no secrets remain in evidence files, (3) only then destroy raw working material. Never shred unconsolidated output; never add `2>/dev/null` to a destruction command — its outcome must be visible. Sanitization applies ONLY to the agent's own local working files; never delete or alter target logs, audit trails, defender telemetry, or evidence of compromise.
+- **Account for target artifacts.** Anything created on the target (accounts, records, items) is a residual until disposed of. Maintain a ledger with a final disposition per artifact; a synthetic **privileged** artifact (e.g. an admin account from an escalation test) must be removed or loudly flagged, never left silently active.
+- **Token hygiene.** Re-acquire tokens from a live login or hold them in process memory — never read a token from a file you have marked for destruction.
 
 ## INITIALIZATION SEQUENCE
 

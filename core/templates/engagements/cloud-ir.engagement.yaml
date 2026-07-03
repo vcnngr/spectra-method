@@ -1,0 +1,45 @@
+# SPECTRA scenario template — CLOUD INCIDENT RESPONSE (IRT + SOC)
+# Recommended agents: Stratus (cloud IR), Surge (incident coordinator), Sentinel (SOC)
+# Recommended workflows: spectra-cloud-incident-response -> spectra-incident-handling ->
+#   spectra-digital-forensics -> spectra-report-generator
+# Fill the CAPS placeholders, set status to "active", then validate:
+#   spectra engagement validate --engagement engagement.yaml
+engagement:
+  id: "ENG-YYYY-NNN"
+  name: "Cloud Incident Response"
+  type: "incident-response"
+  status: "planning"
+
+  authorization:
+    client: "CLIENT NAME"
+    authorized_by: "INCIDENT COMMANDER, TITLE"
+    authorization_document: "PATH/TO/IR-ENGAGEMENT-LETTER.pdf"
+    start_date: "YYYY-MM-DD"
+    end_date: "YYYY-MM-DD"
+    timezone: "UTC"
+
+  rules_of_engagement:
+    testing_hours: "any"
+    notify_before_exploit: true
+    notify_on_critical: true
+    social_engineering_allowed: false
+    physical_access_allowed: false
+    dos_testing_allowed: false
+    data_exfiltration_allowed: false
+    production_systems: true
+    max_impact_level: "high"
+
+  scope:
+    in_scope:
+      cloud_accounts: ["AWS:123456789012", "AWS:210987654321"]
+      applications: ["CloudTrail", "GuardDuty", "affected workloads"]
+      notes: "Read-first forensics on the affected accounts. Preserve evidence before containment."
+    out_of_scope:
+      cloud_accounts: ["AWS:000000000000"]
+      critical_systems: ["billing", "identity provider control plane"]
+      notes: "Do not alter the IdP control plane without explicit IC approval."
+
+  deconfliction:
+    primary_contact: "INCIDENT COMMANDER"
+    primary_email: "ir@example.com"
+    emergency_stop_procedure: "Notify IC before any containment action that changes state."
