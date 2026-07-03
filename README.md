@@ -42,7 +42,7 @@ npx spectra-method install --tools claude-code,codex -y
 | **IRT** | :orange_circle: | 6 | 5 | Incident Response — forensics, malware analysis, cloud security, threat intel |
 | **GRC** | :white_circle: | 4 | 4 | Governance, Risk & Compliance — risk, audit, policy, privacy |
 | **OT** | :gear: | 1 | 1 | OT/ICS — Purdue model, ICS protocol exposure, ATT&CK for ICS, IEC 62443 (assessment-only) |
-| **Core** | :zap: | 3 | 11 skills | Engagement framework, War Room, reporting, Duel adjudication |
+| **Core** | :zap: | 3 | 19 skills | Engagement framework, War Room, reporting, Duel adjudication, tool-run/exec-target, posture-diff, remediation-export, quickstart |
 
 ---
 
@@ -125,6 +125,12 @@ npx spectra-method party plan --topic "lateral movement detection gap review"
 | **Scribe** | Policy Author | Policy lifecycle, RFC 2119 |
 | **Counsel** | Privacy / Breach Governance Specialist | Privacy impact, breach governance, legal hold |
 
+### OT :gear: OT/ICS Security
+
+| Agent | Persona | Specialty |
+|-------|---------|-----------|
+| **Relay** | OT/ICS Security Specialist | Purdue model, ICS protocols, ATT&CK for ICS, IEC 62443 — assessment-only |
+
 ---
 
 ## Workflows
@@ -169,6 +175,12 @@ npx spectra-method party plan --topic "lateral movement detection gap review"
 | `spectra-compliance-audit` | 7 | 8 frameworks, gap analysis, remediation |
 | `spectra-policy-lifecycle` | 7 | Drafting, review, enforcement, exceptions |
 | `spectra-privacy-breach-assessment` | 7 | Data exposure, legal hold, notification clock, governance decisions |
+
+### OT :gear: OT/ICS Assessment (6 steps)
+
+| Workflow | Steps | Coverage |
+|----------|-------|----------|
+| `spectra-ot-assessment` | 6 | Purdue-model architecture, ICS protocol exposure, ATT&CK for ICS, IEC 62443, segmentation/detection-gap findings (assessment-only) |
 
 ### Core :zap: Orchestration (7 steps)
 
@@ -254,7 +266,7 @@ Development background:
 
 ```
 project/
-├── .claude/skills/       60 skills as Claude Code slash commands
+├── .claude/skills/       70 skills as Claude Code slash commands
 ├── .codex/spectra/       Codex skill index and routing instructions
 ├── AGENTS.md             Codex repo-native SPECTRA adapter block
 ├── _spectra/             Framework: agents, workflows, configs

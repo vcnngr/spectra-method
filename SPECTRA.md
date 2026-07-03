@@ -4,7 +4,7 @@
 
 ## What is SPECTRA
 
-Multi-agent framework for cybersecurity operations, modeled on BMAD architecture. 28 AI agents with full persona, organized into 4 operational modules + core. Each agent is a domain professional who DOES the work (writes exploits, creates detection rules, conducts forensics), not just plans it.
+Multi-agent framework for cybersecurity operations, modeled on BMAD architecture. 29 AI agents with full persona, organized into 5 operational modules + core. Each agent is a domain professional who DOES the work (writes exploits, creates detection rules, conducts forensics), not just plans it.
 
 ## Architecture
 
@@ -72,7 +72,7 @@ _spectra/
 - GRC: spectra-compliance-audit (7 steps, ~4,064 lines — structured compliance audit: scope & methodology (8 frameworks), control mapping (SoA, cross-framework), evidence collection (4 types, 5-dimension quality), gap analysis (FIND-NNN, compliance scoring), remediation (phased roadmap, PDCA), cross-framework efficiency, reporting)
 - GRC: spectra-policy-lifecycle (7 steps, ~4,267 lines — complete policy lifecycle: requirement & scope (policy/standard/procedure/guideline hierarchy), research & benchmarking, drafting (RFC 2119), stakeholder review (5 categories), approval & publication, enforcement & exceptions, review & maintenance). **GRC MODULE COMPLETE (3/3 workflows).**
 
-**ALL 22 WORKFLOWS COMPLETE. ALL 4 MODULES + CORE ADJUDICATION COMPLETE.**
+**ALL 23 WORKFLOWS COMPLETE. ALL 5 MODULES + CORE ADJUDICATION COMPLETE.**
 
 ### To be completed:
 - Future targets: authenticated broker bundles, richer SIEM/API adapters, workflow-specific report generators, Codex-native skill packaging if Codex exposes a stable project-local skill registry, and scenario packs.
