@@ -28,7 +28,7 @@ _spectra/
 6. **Persona Carrythrough** — The persona stays active when invoking sub-skills.
 7. **Step-File Architecture** — JIT loading, "read fully and follow", append-only, frontmatter state.
 
-## Current Status (v0.6.0) — CODEX ADAPTER READY
+## Current Status (v0.7.0) — CODEX ADAPTER READY
 
 ### Complete and operational:
 - All 29 agents with SKILL.md + spectra-skill-manifest.yaml
@@ -48,7 +48,7 @@ _spectra/
 - CLI installer: npx spectra-method install/validate/status/update/modules/report plus `spectra engagement validate|status|gate|transition`
 - IDE adapters: Claude Code slash-command skills plus Codex repo-native `AGENTS.md` and `.codex/spectra/skill-index.json`
 - E2E integration testing: 8/8 tests passed (config loading, scripts, framework data, workflow continuity, cross-refs, manifests, CLI, validator)
-- Distribution: package.json (spectra-method@0.6.0), README.md, LICENSE (MIT), CHANGELOG.md, .npmignore
+- Distribution: package.json (spectra-method@0.7.0), README.md, LICENSE (MIT), CHANGELOG.md, .npmignore
 - RTK: spectra-external-recon (10 steps, ~3,289 lines — flagship workflow)
 - RTK: spectra-initial-access (10 steps, ~3,852 lines — full kill chain from recon to foothold)
 - SOC: spectra-alert-triage (7 steps, ~2,687 lines — first Blue Team workflow, includes Purple Team bridge)
