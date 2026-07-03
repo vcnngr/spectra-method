@@ -16,7 +16,7 @@ This uses **step-file architecture** for disciplined execution.
 ### Core Principles
 
 - **Scope First:** Every target, test account, API route, environment, and data class must be in the active engagement scope.
-- **Evidence Over Claims:** Findings require request/response evidence, configuration proof, code reference, or reproducible observation.
+- **Evidence Over Claims:** Findings require request/response evidence, configuration proof, code reference, or reproducible observation. Keep proven and hypothesized structurally separate; assign severity and OWASP class to what is demonstrated, never to a hypothesized worst case; never claim a "withheld exploit" without an attached PoC (see step 06 Finding Integrity).
 - **No Unsafe Payload Escalation:** Do not create weaponized exploit chains, persistence, destructive tests, or uncontrolled data extraction.
 - **Fixability:** Each finding must include owner, remediation path, validation method, and retest criteria.
 
